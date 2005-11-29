@@ -1,0 +1,251 @@
+%\VignetteIndexEntry{Segmentation Overview}
+%\VignetteDepends{limma, DNAcopy, GLAD}
+%\VignetteKeywords{Segmentation, aCGH}
+%\VignettePackage{snapCGH}
+
+\documentclass[11pt,a4paper]{article}
+
+\title{Sample of aCGH analysis}
+\author{ML Smith}
+
+%\settocname{Table of Contents}
+
+\setlength{\oddsidemargin}{0.5cm} %margin
+\setlength{\evensidemargin}{0.5cm} %margin
+\setlength{\textwidth}{15.2cm}
+\addtolength\footskip{1cm}
+\pagestyle{plain}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\textit{#1}}}
+
+\usepackage{Sweave}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This document outlines some of the commands used to read in,
+investigate and subsequently segment array CGH data. The files
+analysed represent 50 breast cancer cell lines obtained from Jessica M
+Pole and Paul AW Edwards.
+
+%%%make code chunk names
+
+
+<<1,results=hide>>=
+options(width=75)
+library(snapCGH)
+@
+
+\Rpackage{snapCGH} is designed to be used in conjunction with \Rpackage{limma} and
+so it will automatically load that library before proceeding.\\
+
+\section{Reading Data}
+
+We read in the samples and create the initial RG object using the
+following commands.
+
+<<2>>=
+datadir <- system.file("testdata", package="snapCGH")
+targets <- readTargets("targets.txt", path=datadir)
+RG1 <- read.maimages(targets$FileName, path=datadir, source = "genepix")
+@
+
+%%The second of the above commands is very similar to the \texttt{read.maimages} function available in limma.
+%%The only difference is that addition of the \texttt{TestChan} parameter.  
+
+When aCGH experiments are carried out, the reference channel is dyed
+using Cy5 and the test channel is dyed using Cy3. 
+
+Information about the clones on the array (e.g. what part of the
+genome they represent) can be read in separately using the
+\Rfunction{read.clonesinfo} function. In order to do this it is necessary
+to create a clones info file. Such a file (which can be created using
+Excel and saved as a 'txt' file) must contain columns called Position
+and Chr which give the position along a chromosome (in kb) and the
+chromosome to which a clone belongs. It must be ordered in the same
+way as the clones are ordered in the genepix file. The information is
+added to the \Robject{RG\$genes} object. The second command adds information
+about the structure of the slide (blocks/rows/columns) to the \Robject{RG}
+object.  Finally we read in a spot types file.  This file contains
+information about the control status of particular spots on the array
+and allows specific spots to be highlighted in many of the plotting
+functions.  The content of a spot types file is covered extensively
+within the \Rpackage{limma} manual.
+
+<<3>>=
+RG1 <- read.clonesinfo("cloneinfo.txt", RG1, path=datadir)
+RG1$printer <- getLayout(RG1$genes)
+types <- readSpotTypes("SpotTypes.txt", path=datadir)
+RG1$genes$Status <- controlStatus(types, RG1)
+@
+
+We now proceed to use some information provided by control spots to
+remove clones which we deem to be of a poor quality. The clone spots
+which we will use as our control are drosophila clones. We remove
+clones whose intensity is too low relative to the control spots. (The
+background correction is carried out within this function.)
+
+<<<3a>>=
+RG2 <- backgroundCorrect(RG1, method="minimum")
+@ 
+
+%% Drop this step below?????? this should be a weight function
+
+Next, we normalise the data. Here we will carry out a (global) median
+normalisation. Other options for normalization methods are: \Rfunarg{none},
+\Rfunarg{loess}, \Rfunarg{printtiploess}, \Rfunarg{composite} and \Rfunarg{robustspline}.  The output
+of the normalization function is a new type of object called an
+\Rclass{MAList}.  This is composed of the $log_{2}$ ratios,
+intensities, gene and slide layout information which it gleans from
+the \Robject{RG} object.
+
+<<5>>=
+MA <- normalizeWithinArrays(RG2, method="median")
+@
+
+We are now ready to process the data with the purpose of segmenting
+the dataset into regions corresponding to sections of the genome where
+there are the same number of copy number gains or losses.
+
+
+Firstly, we use the \Rfunction{process.MAList} to 'tidy up' the MAList
+object. The \Rfunarg{unmapScreen} option removes those clones which are
+incompletely mapped and the \Rfunarg{dupRemove} option indicates whether clones
+with duplicate names should be averaged and removed from the dataset
+leaving only one occurence of each duplicated set (this option
+defaults to TRUE).
+
+<<6>>=
+MA <- process.MAList(MA)
+@
+
+The next step is to overcome the problem that the segmentation
+functions (as written at present) can not cope with missing
+values. Hence, we use an interpolating method to overcome this
+problem. This is carried out using the \Rfunction{impute.lowess}
+function.
+
+<<7,results=hide>>=
+MA2 <- impute.lowess(MA)
+@
+
+We are now ready to fit the segmentation method. For larger data sets
+this step can take a long time (several hours).  We fit the HMM using
+the following commands.  The other segmentation methods included in
+this library are \Rpackage{GLAD} and \Rpackage{DNAcopy}.  See manual pages for the functions
+\Rfunction{run.DNAcopy} and \Rfunction{run.GLAD} for details of how to use
+them.
+
+<<8,results=hide>>=
+SegInfo <- fitHMM(MA2, criteria = "AIC")
+@
+
+We now deal with the fact that the HMM sometimes has a tendency to fit
+states whose means are very close together. We overcome this problem
+by merging states whose means are within a given threshold. There are
+two different methods for carrying out the merging process.  For more
+information on their differences please see the appropriate page in
+the helpfiles.
+
+<<9>>=
+SegInfo.merged <- mergeSegList(SegInfo, MergeType = 1)
+@ 
+
+After merging, the next step is to find any points of particular
+interest amongst the data.  For instance outliers, focal aberrations
+and transitions.  The function \Rfunction{find.genomic.events} performs
+this task and stores the information in an object of class
+\Rfunction{GEList}.
+
+<<10,results=hide>>=
+GenList <- find.genomic.events(SegInfo.merged)
+@
+
+We are now ready to use any of the plotting functions available in the
+library.
+
+\section{Plotting Functions}
+
+The library comes with a variety of plotting functions that provide
+visual representations of the data at various stages of the analysis
+process.  Firstly we will look at the \texttt{plotGenome}
+function. This function takes either an \texttt{MAList} or a
+\texttt{SegList} object (in this example we've used an MAList) and
+plots the M-value for each gene against it's position on the genome.
+The \texttt{array} argument indicates which array is plotted.
+This function utilizes the spot types data that was read in earlier to
+highlight specific genes of interest.
+
+<<label=11, include=FALSE>>=
+plotGenome(MA2, array = 1)                                               
+@ 
+
+
+\begin{figure}[!h]
+\begin{center}
+<<label=11a,fig=TRUE,echo=FALSE>>=
+<<11>>
+@ 
+\end{center}
+\end{figure}
+
+
+\pagebreak
+
+Using the \texttt{labelled.genome.plot} function it is possible to
+look at specific chromosomes, rather than the entire genome as in the
+previous function.  Which particular chromosome is to be plotted is
+specified using the \texttt{chrom.to.plot} argument.
+
+
+Here we cluster the samples.  Again this function will except an
+object of class \texttt{MAList} or \texttt{SegList}.  We have
+specified which chromosomes to cluster using the \texttt{vecchrom}
+argument as well as defining the colours that represent areas of
+amplification or deletion.
+
+<<label=12,include=FALSE>>=
+clusterGenome(MA2)
+@ 
+
+\begin{figure}[!h]
+\begin{center}
+<<label=12a,fig=TRUE,echo=FALSE>>=
+<<12>>
+@ 
+\end{center}
+\end{figure}
+
+\pagebreak
+
+The \texttt{plotSegmentationStates} function provides a visual
+representation of the observed M-values for a particular chromosome
+alongside the predicted values produced by the segementation
+algorithm.  It requires both a \texttt{SegList} and a \texttt{GenList}
+object.  The \texttt{sample.ind} argument specifies which array(s) we
+would like to be plotted, whilst the desired chromosome(s) are passed
+via the \texttt{chr} parameter.
+
+<<label=13,include=FALSE>>=
+plotSegmentationStates(SegInfo.merged, GenList, array = 1, chr = 8)
+@ 
+
+\begin{figure}[!h]
+\begin{center}
+<<label=13a,fig=TRUE,echo=FALSE>>=
+<<13>>
+@ 
+\end{center}
+\end{figure}
+
+
+
+
+\end{document}
