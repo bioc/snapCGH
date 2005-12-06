@@ -8,7 +8,7 @@
 \usage{
 process.MAList(MA, chrom.remove.threshold = 22, chrom.below.threshold
                  = 1, prop.missing = 1, sample.quality.threshold =
-                 0.4, unmapScreen = TRUE, dupRemove = TRUE,
+                 0.4, unmapScreen = TRUE, dupMerge = TRUE,
                  method.of.averaging = mean, ID = "ID")
 }
 %- maybe also 'usage' for other objects documented here.
@@ -29,7 +29,7 @@ process.MAList(MA, chrom.remove.threshold = 22, chrom.below.threshold
   \item{sample.quality.threshold}{Mark those samples that have their
     proportion of missing values \code{sample.quality.threshold}.}
   \item{unmapScreen}{Indicator for whether clones with incomplete mapping information should be removed from the dataset. Note that leaving them in may cause plotting routines fail. Defaults to TRUE}
-   \item{dupRemove}{Indicator for whether clones with duplicate names should be averaged and removed from the dataset leaving only one occurence of each duplicated set.Defaults to TRUE}
+   \item{dupMerge}{Indicator for whether clones with duplicate names should be averaged and removed from the dataset leaving only one occurence of each duplicated set.Defaults to TRUE}
    \item{method.of.averaging}{Function which takes a vector of
                  duplicates and combines them into a single value.}
    \item{ID}{Name of column in \code{RG\$genes} corresponding to the clone names. For most

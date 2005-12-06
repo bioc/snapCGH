@@ -4,7 +4,6 @@
 \alias{rbind.RGList}
 \alias{rbind.MAList}
 \alias{cbind.SegList}
-%\alias{rbind.SegList}
 \title{Combine RGList, MAList or SegList Objects}
 \description{
 Combine a series of \code{RGList} or combine a series of \code{MAList}
@@ -25,7 +24,14 @@ objects or combine a series of \code{SegList} objects.
 For \code{cbind}, the matrices of expression data from the individual objects are cbinded.
 The data.frames of target information, if they exist, are rbinded.
 The combined data object will preserve any additional components or attributes found in the first object to be combined.
-For \code{rbind}, the matrices of expression data are rbinded while the target information, in any, is unchanged.
+For \code{rbind}, the matrices of expression data are rbinded while the
+target information, in any, is unchanged.  There is no \code{rbind}
+function for the \code{\link[snapCGH:SegList]{SegList}} object.  This is
+  because it would require \code{SegLists} with mutually exclusive
+  chromosomes or would result in combining multiple different segmentations
+  for the same chromosome, which is pointless.  If \code{rbind} is
+  required perform it on an \code{\link[limma:malist]{MAList}} and then
+    segment it.
 }
 \value{
 An \code{\link[limma:rglist]{RGList}} or \code{\link[limma:malist]{MAList}} object holding data from all the arrays and all genes from the individual objects.

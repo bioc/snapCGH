@@ -1,22 +1,19 @@
-\name{plotGenome}
-\alias{plotGenome}
-\alias{maxna}
-\alias{minna}
-\alias{sample.names}
+\name{plotSegmentedGenome}
+\alias{plotSegmentedGenome}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Plots the genome}
 \description{
   Basic plot of the log2 ratios for each array ordered along the genome.
 }
 \usage{
-plotGenome(input, array = 1, naut = 22, Y = TRUE, X
+plotSegmentedGenome(segList, array = 1, naut = 22, Y = TRUE, X
                  = TRUE, status, values, pch, cex, col, chrominfo =
                  chrominfo.basepair, ylim = c(-2, 2), ylb = "Log2Ratio",
                  chrom.to.plot = NA, xlim = c(0,NA))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{input}{an object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
+  \item{segList}{an object of class \code{\link[snapCGH:SegList]{SegList}}}
   \item{array}{integer of the array (sample) to be plotted.}
   \item{naut}{number of autosomes in the organism}
   \item{Y}{TRUE if chromosome Y is to be plotted, FALSE otherwise}
@@ -43,10 +40,10 @@ plotGenome(input, array = 1, naut = 22, Y = TRUE, X
   to highlight any subset of spots.
 }
 \seealso{
-  \code{\link[limma]{MAList}}
+  \code{\link{plotGenome}}
   \code{\link[snapCGH:SegList]{SegList}}
 }
-\author{John Marioni}
+\author{Mike Smith}
 \examples{
 
 %#reading the spot types file

@@ -31,6 +31,7 @@ function(object, i, j, ...) {
 			object$prob <- object$prob[,j,drop=FALSE]
 			object$M.predicted <- object$M.predicted[,j,drop=FALSE]
 			object$dispersion <- object$dispersion[,j,drop=FALSE]
+                        object$variance <- object$variance[,j,drop=FALSE]
 			object$M.observed <- object$M.observed[,j,drop=FALSE]
                         object$num.states <- object$num.states[,j,drop=FALSE]
                       }
@@ -41,6 +42,7 @@ function(object, i, j, ...) {
 			object$prob <- object$prob[i,,drop=FALSE]
 			object$M.predicted <- object$M.predicted[i,,drop=FALSE]
 			object$dispersion <- object$dispersion[i,,drop=FALSE]
+                        object$variance <- object$variance[i,,drop=FALSE]
 			object$M.observed <- object$M.observed[i,,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
 #                        object$num.states <- object$num.states[i,,drop=FALSE]
@@ -50,6 +52,7 @@ function(object, i, j, ...) {
 			object$prob <- object$prob[i,j,drop=FALSE]
 			object$M.predicted <- object$M.predicted[i,j,drop=FALSE]
 			object$dispersion <- object$dispersion[i,j,drop=FALSE]
+                        object$variance <- object$variance[i,j,drop=FALSE]
 			object$M.observed <- object$M.observed[i,j,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
 		}
@@ -64,7 +67,8 @@ cbind.SegList <- function(..., deparse.level=1){
   if (nobjects > 1) {
     for (i in 2:nobjects){
       out$M.predicted <- cbind(out$M.predicted, objects[[i]]$M.predicted)
-      out$dispersion <- cbind(out$dispersion, objects[[i]]$disp)
+      out$dispersion <- cbind(out$dispersion, objects[[i]]$dispersion)
+      out$variance <- cbind(out$variance, objects[[i]]$variance)
       out$M.observed <- cbind(out$M.observed, objects[[i]]$M.observed)
       out$state <- cbind(out$state, objects[[i]]$state)
       out$num.states <- cbind(out$num.states, objects[[i]]$num.states)
@@ -72,3 +76,16 @@ cbind.SegList <- function(..., deparse.level=1){
     out
   }
 }
+
+
+##rbind.SegList <- function(..., deparse.level=1){
+##  objects <- list(...)
+##  nobjects <- length(objects)
+##  out <- objects[[1]]
+##  if(nobjects > 1)
+##    for(i in 2:nobjects){
+##      out$M.predicted <- rbind(out$M.predicted, objects[[i]]$M.predicted)
+##      out$dispersion <- rbind(out$dispersion, objects[[i]]$dispersion)
+##      out$variance <- rbind(out$variance, objects[[i]]$variance)
+##      out$M.observed <- rbind(out$M.predicted, objects[[i]]$M.predicted)
+##      out$genes <- rbind(out$genes,objects[[i]]$genes)

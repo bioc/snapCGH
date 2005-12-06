@@ -2,7 +2,7 @@
 "process.MAList" <-
 function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, 
     prop.missing = 1, sample.quality.threshold = 0.4, unmapScreen = TRUE, 
-    dupRemove = TRUE, method.of.averaging = mean, ID = "ID") 
+    dupMerge = TRUE, method.of.averaging = mean, ID = "ID") 
 {
     ord <- order(MA$genes$Chr, MA$genes$Position)
 #renaming the the specified column to "ID"
@@ -50,7 +50,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1,
     if (any(tbl > 1)) {
         tbl <- tbl[tbl > 1]
         nms <- names(tbl)
-        if (dupRemove) {
+        if (dupMerge) {
             cat("\nAveraging duplicated clones\n")
         }
         for (i in 1:length(tbl)) {
@@ -58,7 +58,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1,
             vec <- apply(as.matrix(as.matrix(M)[ind1,]), 2, method.of.averaging, na.rm = TRUE)
             md <- apply(as.matrix(as.matrix(M)[ind1,]), 2, maxdiff.func)
             md <- md[md > 0]
-            if (dupRemove) {
+            if (dupMerge) {
                 for (j in 1:length(ind1)) {
                   if (ncol(log2.ratios(MA)) > 1) 
                     M[ind1[j], ] <- vec
@@ -67,7 +67,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1,
             }
         }
     }
-    if (dupRemove) {
+    if (dupMerge) {
     		dupl <- duplicated(genes$ID)
         genes <- genes[!dupl, ]
         M <- matrix(M[!dupl,], nrow = nrow(as.matrix(M[!dupl,])), ncol = ncol(M),

@@ -1,6 +1,6 @@
 run.DNAcopy <- function(MA) {
-  library(DNAcopy)
-  cna <- CNA(MA$M, MA$genes$Chr, MA$genes$Position, sampleid = colnames(MA$M))
+##  library(DNAcopy)
+  cna <- CNA(log2.ratios(MA), MA$genes$Chr, MA$genes$Position, sampleid = colnames(MA$M))
   cna <- smooth.CNA(cna) #add some param's later
   dna <- segment(cna)
   #changing the output back to the segmentation.info object

@@ -1,120 +1,122 @@
+"plotSegmentedGenome" <-
+  function(segList, array=1, naut=22, Y=TRUE, X=TRUE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
+    ylim=c(-2, 2), ylb="Log2Ratio", chrom.to.plot=NA, xlim=c(0,NA))
+  {
+    plotGenome(input=segList, array=array, naut=naut, Y=Y, X=X, status=status, values=values,
+               chrominfo=chrominfo, ylim=ylim, ylb=ylb, chrom.to.plot=chrom.to.plot, xlim=xlim,
+               pch=pch, col=col, cex=cex)
+
+    nchr <- naut
+    if (X) nchr <- nchr + 1
+    if (Y) nchr <- nchr + 1
+    chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
+
+##If there is only one chromosome to be plotted.    
+    if(!is.na(chrom.to.plot)) {
+      current <- segList[segList$genes$Chr == chrom.to.plot,]
+      for(j in 2:length(segList[segList$genes$Chr == chrom.to.plot,array])){
+        segments(y0 = current$M.predicted[(j-1),array],
+                 x0 = (current$genes$Position[(j-1)])/1000,
+                 y1 = current$M.predicted[(j),array],
+                 x1 = (current$genes$Position[(j)])/1000,
+                 col = "blue", lwd = 2)
+      }
+    }
+##Show the entire genome.
+    else {
+      for(i in 1:nchr){
+        current <- segList[segList$genes$Chr == i,]
+        for(j in 2:length(segList[segList$genes$Chr == i,1])){
+          segments(y0 = current$M.predicted[(j-1),1],
+                   x0 = (current$genes$Position[(j-1)]+chrom.start[i])/1000,
+                   y1 = current$M.predicted[(j),1],
+                   x1 = (current$genes$Position[(j)]+chrom.start[i])/1000,
+                   col = "blue", lwd = 2) 
+        }
+      }
+    }
+  }
+
 "plotGenome" <-
 function (input, array = 1, naut = 22, 
-    Y = TRUE, X = TRUE, status, values, pch, col, cex, chrominfo = chrominfo.basepair, 
-    yScale = c(-2, 2), samplenames = (colnames(input))[array], 
-    ylb = "Log2Ratio", title.font = 2, chrom.to.plot = 1, Z = FALSE, 
-    xlower = 0, xupper = clone.genomepos[sum(clone.genomepos > 0)]/1000) 
+    Y = TRUE, X = TRUE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
+    ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA)) 
 {
   
-  data = log2.ratios(input)
+  data <- log2.ratios(input)
   datainfo <- input$genes
-    nchr <- naut
-    if (X) 
-        nchr <- nchr + 1
-    if (Y) 
-        nchr <- nchr + 1
-    if (Z) 
-        nchr <- chrom.to.plot
     
-    ord <- order(datainfo$Chr, datainfo$Position)
-    chrom <- datainfo$Chr[ord]
-    kb <- datainfo$Position[ord]
+  ord <- order(datainfo$Chr, datainfo$Position)
+  chrom <- datainfo$Chr[ord]
+  kb <- datainfo$Position[ord]
+  name <- (colnames(data))[array]
 
-    data <- matrix(data[ord, ], nrow = nrow(as.matrix(data[ord,])),
-                   ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data))
-    ind.unmap <- which(chrom < 1 | is.na(chrom) | is.na(kb) | (chrom > (naut + 
-        2)))
+  data <- matrix(data[ord, ], nrow = nrow(as.matrix(data[ord,])),ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
+  ind.unmap <- which(chrom < 1 | is.na(chrom) | is.na(kb) | (chrom > (naut + 2)))
   
-  if (missing(status)) 
-          status <- input$genes$Status
+  if (missing(status)) status <- input$genes$Status
   
-    if (length(ind.unmap) > 0) {
+  if (length(ind.unmap) > 0) {
         chrom <- chrom[-ind.unmap]
         kb <- kb[-ind.unmap]
-        data <- matrix(data[-ind.unmap, ], nrow = nrow(as.matrix(data[-ind.unmap,])),
-                   ncol = ncol(data), byrow = FALSE,  dimnames = dimnames(data))
+        data <- matrix(data[-ind.unmap, ], nrow = nrow(as.matrix(data[-ind.unmap,])), ncol = ncol(data), b = FALSE,  dimnames = dimnames(data))
 #code dealing with the spot types functionality
-          valStore <- attr(status,"values")
-          colStore <- attr(status,"col")
-          status <- status[-ind.unmap]
-          attr(status,"values") <- valStore
-          attr(status,"col") <- colStore
-        }
+        valStore <- attr(status,"values")
+        colStore <- attr(status,"col")
+        status <- status[-ind.unmap]
+        attr(status,"values") <- valStore
+        attr(status,"col") <- colStore
+      }
 
-      
-    if (Z) 
-        data <- matrix(data[chrom == nchr, ], nrow = nrow(as.matrix(data[chrom == nchr,])),
-                   ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data))
-    else data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= nchr,])),
-                   ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data))
-   if (Z) 
-        kb <- kb[chrom == nchr]
-    else kb <- kb[chrom <= nchr]
-    if (Z) 
-        chrom <- chrom[chrom == nchr]
-    else chrom <- chrom[chrom <= nchr]
-    if (Z) 
-        chrominfo <- chrominfo[nchr, ]
-    else chrominfo <- chrominfo[1:nchr, ]
-    if (Z) 
-        chrom.start <- 0
-    else chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
-    chrom.centr <- chrom.start + chrominfo$centr
-    chrom.mid <- chrom.start + chrominfo$length/2
-    chrom.rat <- chrominfo$length/max(chrominfo$length)
-    if (Z) 
-        par(cex = 0.6, pch = 18, lab = c(6, 6, 7), cex.axis = 1.5, 
-            xaxs = "i")
-    else par(cex = 0.6, pch = 18, lab = c(1, 6, 7), cex.axis = 1.5, 
-        xaxs = "i")
+  nchr <- naut
+  if (X) nchr <- nchr + 1
+  if (Y) nchr <- nchr + 1
+  
+  if (!is.na(chrom.to.plot)){
+    nchr <- chrom.to.plot 
+    data <- matrix(data[chrom==nchr,], nrow = nrow(as.matrix(data[chrom==nchr,])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
+    clone.genomepos <- kb[chrom == nchr]
+    chrom <- chrom[chrom == nchr]
+    chrominfo <- chrominfo[nchr, ]
+    chrominfo <- chrominfo[1:nchr, ]
+    chrom.start <- 0
+    par(cex = 0.6, pch = 18, lab = c(6, 6, 7), cex.axis = 1.5, xaxs = "i")
+    } else {
+      data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= nchr,])),ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data)) 
+      kb <- kb[chrom <= nchr]
+      chrom <- chrom[chrom <= nchr]
+      chrominfo <- chrominfo[1:nchr, ]
+      chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
+      clone.genomepos <- vector()
+      for (i in 1:nchr) {clone.genomepos[chrom == i] <- kb[chrom == i] + chrom.start[i]}
+      par(cex = 0.6, pch = 18, lab = c(1, 6, 7), cex.axis = 1.5, xaxs = "i")#########
+    }
 
-  k <- array
-  vec <- data[, array]
-  name <- samplenames
+  chrom.centr <- chrom.start + chrominfo$centr
+  chrom.mid <- chrom.start + chrominfo$length/2
+  x <- clone.genomepos/1000
+  y <- data[, array]
+  if (is.na(xlim[2])) {xlim[2] <- clone.genomepos[sum(clone.genomepos > 0)]/1000}
   
-  clone.genomepos <- rep(0, length(kb))
-  if (Z) 
-    clone.genomepos <- kb + chrom.start
-  else
-    for (i in 1:nrow(chrominfo)) clone.genomepos[chrom == i] <- kb[chrom == i] + chrom.start[i]
-  y.min <- rep(yScale[1], nrow(chrominfo))
-  y.max <- rep(yScale[2], nrow(chrominfo))
-  for (i in 1:nrow(chrominfo)) {
-    if (minna(vec[(chrom == i)]) < y.min[i]) 
-      y.min[i] <- minna(vec[(chrom == i)])
-    if (maxna(vec[(chrom == i)]) > y.max[i]) 
-      y.max[i] <- maxna(vec[(chrom == i)])
-  }
-  ygenome.min <- minna(y.min)
-  ygenome.max <- maxna(y.max)
+   #Plotting functions
   
-                                        #Testing new plotting functions
-  x = clone.genomepos/1000
-  y = vec
+ 
+  if (!is.na(chrom.to.plot)){
+    plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", ylab = "" , col = "black")
+    mtext(chrom.to.plot, side = 1, line = 0.3, col = "red")}  else {
+      plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, col = "black")
+      for (i in seq(1, naut, b = 2)) mtext(i, side = 1, at = chrom.mid[i]/1000, line = 0.3, col = "red")
+      for (i in seq(2, naut, b = 2)) mtext(i, side = 3, at = chrom.mid[i]/1000, line = 0.3, col = "red")}
+
+  title(main = paste(array, " ", name), ylab = ylb, xlab = "", cex.lab = 1.5)    
+  if (X & is.na(chrom.to.plot)){ mtext("X", side = 1, at = chrom.mid[naut + 1]/1000, line = 0.3, col = "red")}
+  if (Y & is.na(chrom.to.plot)){ mtext("Y", side = 3, at = chrom.mid[naut + 2]/1000, line = 0.3, col = "red")}
+
+
   
-  if (Z) 
-    plot(clone.genomepos/1000, vec, ylim = yScale, xlab = "Distance along chromosome (Mb)", 
-         ylab = "", xlim = c(xlower, xupper), col = "black")
-  else plot(clone.genomepos/1000, vec, ylim = yScale, xlab = "", 
-            ylab = "", xlim = c(0, clone.genomepos[sum(clone.genomepos > 0)]/1000), col = "black")
-  title(main = paste(k, " ", name), ylab = ylb, xlab = "", cex.lab = 1.5, cex.main = title.font)
-  if (Z) 
-    mtext(paste("", chrom.to.plot), side = 1, at = (chrom.mid/1000), 
-          line = 0.3, col = "red")
-  else
-    for (i in seq(1, naut, b = 2)) mtext(paste("", i), side = 1, at = chrom.mid[i]/1000, line = 0.3, col = "red")
-  if (Z) ""
-  else
-    for (i in seq(2, naut, b = 2)) mtext(paste("", i), side = 3, at = chrom.mid[i]/1000, line = 0.3, col = "red")
-  if (X) 
-    mtext("X", side = 1, at = chrom.mid[naut + 1]/1000, line = 0.3, col = "red")
-  if (Y) 
-    mtext("Y", side = 3, at = chrom.mid[naut + 2]/1000, line = 0.3, col = "red")
-  abline(v = c(chrom.start/1000, (chrom.start[nrow(chrominfo)] + 
-           chrominfo$length[nrow(chrominfo)])/1000), lty = 1)
-  abline(h = seq(min(yScale), max(yScale), b = 0.5), lty = 3)
-  abline(v = (chrominfo$centromere + chrom.start)/1000, 
-         lty = 3, col = "red")
+  abline(v = c(chrom.start/1000, (chrom.start[nchr] + chrominfo$length[nchr])/1000), lty = 1)
+  abline(h = seq(min(ylim), max(ylim), b = 0.5), lty = 3)
+  abline(v = (chrominfo$centromere + chrom.start)/1000, lty = 3, col = "red")
 
                                         #Code stolen from limma to use the spottype functionality
   if(is.null(status) || all(is.na(status))) {

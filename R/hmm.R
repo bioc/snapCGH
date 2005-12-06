@@ -384,7 +384,7 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
       segList <- list(M.predicted=template,dispersion=template,state=template,rpred=template,prob=template)
     }
     else {
-      segList <- list(M.predicted=template,dispersion=template,state=template,)
+      segList <- list(M.predicted=template,dispersion=template,state=template)
     }
     if (criteria == "BIC") {
         if (is.na(delta)) {
