@@ -1,12 +1,10 @@
 
 "process.MAList" <-
-function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, 
-    prop.missing = 1, sample.quality.threshold = 0.4, unmapScreen = TRUE, 
-    dupMerge = TRUE, method.of.averaging = mean, ID = "ID") 
+function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.averaging = NULL, ID = "ID") 
 {
-    ord <- order(MA$genes$Chr, MA$genes$Position)
-#renaming the the specified column to "ID"
-    colnames(MA$genes)[which(colnames(MA$genes) == ID)] = "ID"
+    ord <- order(MA$genes$Chr, MA$genes$Position) # re-ordering the clones by chromosome and position on a chromosome
+    colnames(MA$genes)[which(colnames(MA$genes) == ID)] = "ID" #renaming the the specified column to "ID"
+
 #Code to stop the Status attributes being lost when the MAList is reordered.
     if(!is.null(MA$genes$Status)){
       valStore <- attr(MA$genes$Status, "values")
@@ -14,70 +12,36 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1,
     }
       MA <- MA[ord,]
     
-  maxdiff.func <- function(x) abs(max(x, na.rm = TRUE) - min(x, 
-        na.rm = TRUE))
-    mincorr.func <- function(A) min(cor(A, use = "pair", method = "spearman"))
-    M <- as.matrix(log2.ratios(MA))
-    genes <- MA$genes
-
-    if (unmapScreen) {
-        ind.unmap <- which(genes$Chr > chrom.remove.threshold | 
-            is.na(genes$Chr) | is.na(genes$Position) | 
-            genes$Chr < chrom.below.threshold)
+    ind.unmap <- which(genes$Chr > chrom.remove.threshold | is.na(genes$Chr) | is.na(genes$Position) | genes$Chr < chrom.below.threshold)
         if (length(ind.unmap) > 0) {
-            genes <- genes[-ind.unmap, ]
-            M <- matrix(M[-ind.unmap,], nrow = nrow(as.matrix(M[-ind.unmap,])),
-                        ncol = ncol(M), byrow = FALSE, dimnames = dimnames(M))
-            MA$A <- matrix(MA$A[-ind.unmap,], nrow = nrow(as.matrix(MA$A[-ind.unmap,])),
-                        ncol = ncol(MA$A), byrow = FALSE, dimnames = dimnames(MA$A))
-        }
+          MA <- MA[-ind.unmap, ]
+          }
     }
- # can't see much reason for the bad quality index at the moment
- #   bad.quality.index <- which(apply(M, 2, function(col) mean(is.na(col)) > 
- #       sample.quality.threshold))
-    prop.miss <- apply(M, 1, prop.na)
-    genes <- genes[prop.miss <= prop.missing, ]
-    M <- matrix(M[prop.miss <= prop.missing, ], nrow = nrow(as.matrix(M[prop.miss <= prop.missing, ])),
-                ncol = ncol(M), byrow = FALSE, dimnames = dimnames(M))
-    if(!is.null(MA$A)){
-    MA$A <- matrix(MA$A[prop.miss <= prop.missing, ], nrow = nrow(as.matrix(MA$A[prop.miss <= prop.missing, ])),
-                ncol = ncol(MA$A), byrow = FALSE, dimnames = dimnames(MA$A))
+    prop.miss <- apply(MA$M, 1, prop.na)
+    MA <- MA[prop.miss < 0.1, ]
   }
-    ##Should this really go here? Can definitly be improved
-    ##Look at it later.
+    ## Removing duplicated clones
 
-    tbl <- table(genes$ID)
+    tbl <- table(MA$genes$ID)
     if (any(tbl > 1)) {
         tbl <- tbl[tbl > 1]
         nms <- names(tbl)
-        if (dupMerge) {
+        if (!is.null(method.of.averaging)) {
             cat("\nAveraging duplicated clones\n")
-        }
         for (i in 1:length(tbl)) {
-            ind1 <- which(genes$ID == nms[i])
-            vec <- apply(as.matrix(as.matrix(M)[ind1,]), 2, method.of.averaging, na.rm = TRUE)
-            md <- apply(as.matrix(as.matrix(M)[ind1,]), 2, maxdiff.func)
-            md <- md[md > 0]
-            if (dupMerge) {
-                for (j in 1:length(ind1)) {
+            ind1 <- which(MA$genes$ID == nms[i])
+            vec <- apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)}
+            for (j in 1:length(ind1)) {
                   if (ncol(log2.ratios(MA)) > 1) 
-                    M[ind1[j], ] <- vec
-                  else M[ind1[j]] <- vec
+                    MA$M[ind1[j], ] <- vec else MA$M[ind1[j]] <- vec
                 }
-            }
-        }
-    }
-    if (dupMerge) {
-    		dupl <- duplicated(genes$ID)
-        genes <- genes[!dupl, ]
-        M <- matrix(M[!dupl,], nrow = nrow(as.matrix(M[!dupl,])), ncol = ncol(M),
-                    byrow = FALSE, dimnames = dimnames(M))
-       if(!is.null(MA$A)){
-        MA$A <- matrix(MA$A[!dupl,], nrow = nrow(as.matrix(MA$A[!dupl,])), ncol = ncol(MA$A),
-                    byrow = FALSE, dimnames = dimnames(MA$A))
-      }
-    }
-    genes$ID <- factor(genes$ID)
+          }
+         dupl <- duplicated(MA$genes$ID)
+         MA$genes <- MA$genes[!dupl, ]
+         MA$M <- MA$M[!dupl, ,drop = FALSE]
+
+}
+    MA$genes$ID <- factor(MA$genes$ID)
     rownames(genes) <- c(1:length(genes$ID))
     if(!is.null(genes$Status)){
             attr(genes$Status, "values") <- valStore
