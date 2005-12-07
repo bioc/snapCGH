@@ -45,6 +45,13 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
             attr(MA$genes$Status, "values") <- valStore
             attr(MA$genes$Status, "col") <- colStore
           }
+    MA$printer <- NULL
+    MA$A <- NULL
+
+    # The imputation step
+    
+    MA.imputed <- impute.lowess(MA, chrominfo = chrominfo.basepair, maxChrom = chrom.remove.threshold, smooth = 0.1)
+    MA$M <- MA.imputed$M
     MA
 }
 
@@ -107,7 +114,6 @@ function (MA, chrominfo = chrominfo.basepair, maxChrom = 23,
         print(paste("Missing values still remain in samples ", 
             which(prop.miss > 0)))
     MA$M <- as.matrix(data.imp)
- #   acghList2 <- create.aCGHList2(data.imp, acghList$genes)
     MA
 }
 
