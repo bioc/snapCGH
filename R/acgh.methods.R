@@ -1,5 +1,5 @@
 
-"process.MAList" <-
+"processCGH" <-
 function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.averaging = NULL, ID = "ID") 
 {
     if (is.null(MA$design)) 

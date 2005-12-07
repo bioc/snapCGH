@@ -365,6 +365,14 @@ states.hmm.func <- function(sample, chrom, dat, datainfo = clones.info, vr = .01
 "fitHMM" <-
 function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.output = FALSE) 
 {
+
+  if (is.null(MA$design)) 
+        stop("MA$design component is null")
+
+  for(i in 1:length(MA$design)){
+  temp <- MA$design[i]* MA$object$M[,i]
+  MA$M[,i] <- temp
+  }
   #some clunky code so you can put the Criteria argument in characters and still perform the
   #boolean opperators on it below:
           if( criteria == "AIC") {crit = 1}

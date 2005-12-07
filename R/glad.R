@@ -1,6 +1,15 @@
-run.GLAD <- function(MA, smoothfunc="aws", base=FALSE, sigma, bandwidth=10, round=2, lambdabreak=8, lambdacluster=8, lambdaclusterGen=40, type="tricubic", param=c(d=6), alpha=0.001, method="centroid", nmax=8, verbose=FALSE, ...)
+runGLAD <- function(MA, smoothfunc="aws", base=FALSE, sigma = NULL, bandwidth=10, round=2, lambdabreak=8, lambdacluster=8, lambdaclusterGen=40, type="tricubic", param=c(d=6), alpha=0.001, method="centroid", nmax=8, verbose=FALSE, ...)
 
 {
+
+  if (is.null(MA$design)) 
+        stop("MA$design component is null")
+
+  for(i in 1:length(MA$design)){
+  temp <- MA$design[i]* MA$object$M[,i]
+  MA$M[,i] <- temp
+  }
+  
   library(GLAD)
     template = matrix(NA,nrow(MA$M),ncol(MA),dimnames=dimnames(MA))
     segList <- list(M.predicted=template,state=template,M.observed=template, num.states=matrix(NA,nrow = length(unique(MA$genes$Chr)), ncol = ncol(MA), dimnames = dimnames(MA)))

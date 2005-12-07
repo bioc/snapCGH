@@ -1,15 +1,14 @@
-\name{process.MAList}
-\alias{process.MAList}
+\name{processCGH}
+\alias{processCGH}
 \title{Process data in aCGH object}
 \description{
   This function takes object of class \code{MAList} and it re-orderes
-  and filters clones based on their mapping information and proportion missing. It also average duplicated clones.
+  and filters clones based on their mapping information and proportion missing. It also average duplicated clones and imputes missing values for clones
+  that are still NA after the filetering step.
 }
 \usage{
-process.MAList(MA, chrom.remove.threshold = 22, chrom.below.threshold
-                 = 1, prop.missing = 1, sample.quality.threshold =
-                 0.4, unmapScreen = TRUE, dupMerge = TRUE,
-                 method.of.averaging = mean, ID = "ID")
+processCGH(MA, chrom.remove.threshold = 22, chrom.below.threshold
+                 = 1, method.of.averaging = mean, ID = "ID")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,12 +23,6 @@ process.MAList(MA, chrom.remove.threshold = 22, chrom.below.threshold
     genome have numbers 23 and 24 repsectivelly, in for Mus musculus 20
     and 21, etc. Remove chromosomes from segmentation analysis which re
                  lower than this value.}
-  \item{prop.missing}{Clones are screened out and if the proportion
-    missing in the samples is \code{prop.missing} they are removed.}
-  \item{sample.quality.threshold}{Mark those samples that have their
-    proportion of missing values \code{sample.quality.threshold}.}
-  \item{unmapScreen}{Indicator for whether clones with incomplete mapping information should be removed from the dataset. Note that leaving them in may cause plotting routines fail. Defaults to TRUE}
-   \item{dupMerge}{Indicator for whether clones with duplicate names should be averaged and removed from the dataset leaving only one occurence of each duplicated set.Defaults to TRUE}
    \item{method.of.averaging}{Function which takes a vector of
                  duplicates and combines them into a single value.}
    \item{ID}{Name of column in \code{RG\$genes} corresponding to the clone names. For most
@@ -39,7 +32,7 @@ process.MAList(MA, chrom.remove.threshold = 22, chrom.below.threshold
 \value{
   Object of class \code{\link[limma]{MAList}}
 }
-\author{Jane Fridlyand, Peter Dimitrov and Mike Smith}
+\author{Jane Fridlyand, Peter Dimitrov, John Marioni and Mike Smith}
 \seealso{
   \code{\link[limma]{MAList}}
 }
