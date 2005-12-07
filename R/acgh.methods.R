@@ -57,13 +57,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
     MA$M <- MA.imputed$M
     MA
 
-    # The flipping step
-
-    for(i in 1:length(MA$design)){
-      temp <- MA$design[i]* MA$object$M[,i]
-      MA$M[,i] <- temp
-    }
-}
+   }
 
 "impute.lowess" <- 
 function (MA, chrominfo = chrominfo.basepair, maxChrom = 23, 
