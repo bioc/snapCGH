@@ -61,6 +61,13 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
     MA$printer <- NULL
     MA$A <- NULL
 
+	MA$genes$ID <- factor(MA$genes$ID)
+    	rownames(genes) <- c(1:length(genes$ID))
+    	if(!is.null(genes$Status)){
+            attr(genes$Status, "values") <- valStore
+            attr(genes$Status, "col") <- colStore
+          }
+
     # The imputation step
     
     MA.imputed <- impute.lowess(MA, chrominfo = chrominfo.basepair, maxChrom = chrom.remove.threshold, smooth = 0.1)
