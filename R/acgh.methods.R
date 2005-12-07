@@ -12,7 +12,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
     }
       MA <- MA[ord,]
     
-    ind.unmap <- which(genes$Chr > chrom.remove.threshold | is.na(genes$Chr) | is.na(genes$Position) | genes$Chr < chrom.below.threshold)
+    ind.unmap <- which(MA$genes$Chr > chrom.remove.threshold | is.na(MA$genes$Chr) | is.na(MA$genes$Position) | MA$genes$Chr < chrom.below.threshold)
         if (length(ind.unmap) > 0) {
           MA <- MA[-ind.unmap, ]
           }
