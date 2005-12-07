@@ -18,7 +18,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
           }
     }
     prop.miss <- apply(MA$M, 1, prop.na)
-    MA <- MA[prop.miss < 0.1, ]
+    MA <- MA[prop.miss < 0.1]
   }
     ## Removing duplicated clones
 
