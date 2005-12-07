@@ -1,4 +1,4 @@
-"find.genomic.events" <-
+"findGenomicEvents" <-
 function (segList, maxChrom = 22, factor = 5, maxClones = 1, 
     maxLen = 1000, absValSingle = 1, absValRegion = 1, diffVal1 = 1, 
     diffVal2 = 0.5, maxSize = 10000, pChrom.min = 0.9, medChrom.min = 0.1,
