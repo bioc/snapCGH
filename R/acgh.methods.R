@@ -40,13 +40,11 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
 
 }
     MA$genes$ID <- factor(MA$genes$ID)
-    rownames(genes) <- c(1:length(genes$ID))
-    if(!is.null(genes$Status)){
-            attr(genes$Status, "values") <- valStore
-            attr(genes$Status, "col") <- colStore
+    rownames(MA$genes) <- c(1:length(MA$genes$ID))
+    if(!is.null(MA$genes$Status)){
+            attr(MA$genes$Status, "values") <- valStore
+            attr(MA$genes$Status, "col") <- colStore
           }
-    MA$M <- M
-    MA$genes <- genes
     MA
 }
 
