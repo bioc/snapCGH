@@ -2,6 +2,9 @@
 "process.MAList" <-
 function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.averaging = NULL, ID = "ID") 
 {
+    if (is.null(MA$design)) 
+        stop("MA object doesn't contain design component")
+
     ord <- order(MA$genes$Chr, MA$genes$Position) # re-ordering the clones by chromosome and position on a chromosome
     colnames(MA$genes)[which(colnames(MA$genes) == ID)] = "ID" #renaming the the specified column to "ID"
 
@@ -53,6 +56,13 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
     MA.imputed <- impute.lowess(MA, chrominfo = chrominfo.basepair, maxChrom = chrom.remove.threshold, smooth = 0.1)
     MA$M <- MA.imputed$M
     MA
+
+    # The flipping step
+
+    for(i in 1:length(MA$design)){
+      temp <- MA$design[i]* MA$object$M[,i]
+      MA$M[,i] <- temp
+    }
 }
 
 "impute.lowess" <- 
