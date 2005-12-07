@@ -31,22 +31,32 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
             cat("\nAveraging duplicated clones\n")
         for (i in 1:length(tbl)) {
             ind1 <- which(MA$genes$ID == nms[i])
-            vec <- apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)}
+            vec <- apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)
+		if(!is.null(MA$weights)){
+			vec2 <-  apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)
+		}
             for (j in 1:length(ind1)) {
-                  if (ncol(log2.ratios(MA)) > 1) 
-                    MA$M[ind1[j], ] <- vec else MA$M[ind1[j]] <- vec
+                  if (ncol(log2.ratios(MA)) > 1) {
+                    MA$M[ind1[j], ] <- vec
+                    if(!is.null(MA$weights)){
+                      MA$weights[ind1[j], ] <- vec2
+                    }
+                  }
+                  else {
+                    MA$M[ind1[j]] <- vec
+                    if(!is.null(MA$weights)){
+                      MA$weights[ind1[j]] <- vec2
+                    }
+                  }
                 }
           }
          dupl <- duplicated(MA$genes$ID)
          MA$genes <- MA$genes[!dupl, ]
          MA$M <- MA$M[!dupl, ,drop = FALSE]
+            if(!is.null(MA$weights)){
+              MA$weights <- MA$weights[!dupl,,drop = FALSE]
+            }
 
-}
-    MA$genes$ID <- factor(MA$genes$ID)
-    rownames(MA$genes) <- c(1:length(MA$genes$ID))
-    if(!is.null(MA$genes$Status)){
-            attr(MA$genes$Status, "values") <- valStore
-            attr(MA$genes$Status, "col") <- colStore
           }
     MA$printer <- NULL
     MA$A <- NULL
