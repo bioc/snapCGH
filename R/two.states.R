@@ -39,7 +39,10 @@ fr.two.het <- function(x) {
   
   for (j in 1:nrow(data))
   {for (k in 1:2)
-     { if (S[k] > 0.001) emis.prob[k,j] <-  dnorm(data[j,1], mean = mu[k], sd = S[k], log = FALSE) else {if (data[j,1] >= mu[k]*(1-0.001) & data[j,1] <= mu[k]*(1+0.001)) emis.prob[k,j] <- 1 else {emis.prob[k,j] <- 0}}}}
+     { if (S[k] > 0.001) emis.prob[k,j] <-  dnorm(data[j,1], mean = mu[k], sd = S[k], log = FALSE)
+     else {
+       if (data[j,1] >= mu[k]*(1-0.001) & data[j,1] <= mu[k]*(1+0.001))
+         emis.prob[k,j] <- 1 else {emis.prob[k,j] <- 0}}}}
   alpha[1,1] <- pr1*emis.prob[1,1]
   alpha[2,1] <- (1 - pr1)*emis.prob[2,1]
 
