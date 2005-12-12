@@ -78,14 +78,3 @@ cbind.SegList <- function(..., deparse.level=1){
 }
 
 
-##rbind.SegList <- function(..., deparse.level=1){
-##  objects <- list(...)
-##  nobjects <- length(objects)
-##  out <- objects[[1]]
-##  if(nobjects > 1)
-##    for(i in 2:nobjects){
-##      out$M.predicted <- rbind(out$M.predicted, objects[[i]]$M.predicted)
-##      out$dispersion <- rbind(out$dispersion, objects[[i]]$dispersion)
-##      out$variance <- rbind(out$variance, objects[[i]]$variance)
-##      out$M.observed <- rbind(out$M.predicted, objects[[i]]$M.predicted)
-##      out$genes <- rbind(out$genes,objects[[i]]$genes)
