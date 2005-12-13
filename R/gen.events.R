@@ -346,6 +346,7 @@ function (segList, maxmadUse = 0.2, maxmedUse = 0.2,
                 for (k in states.uniq) {
                   obs.state <- obs[states == k]
                   md <- mad(obs.state, na.rm = TRUE)
+
                   med <- median(obs.state, na.rm = TRUE)
                   if ((length(obs.state) >= minClone) && (md <= 
                     maxmadUse) && (abs(med) <= maxmedUse)) {
@@ -367,4 +368,4 @@ function (segList, maxmadUse = 0.2, maxmedUse = 0.2,
     if (length(madGenome[is.na(madGenome)]) > 0) 
         cat("Warning: MAD may not have been computed for one of the\nsamples\n")
     list(madChrom = madChrom, madGenome = madGenome)
-}
+  }

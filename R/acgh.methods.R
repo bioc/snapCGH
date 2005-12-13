@@ -28,53 +28,54 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
         tbl <- tbl[tbl > 1]
         nms <- names(tbl)
         if (!is.null(method.of.averaging)) {
-            cat("\nAveraging duplicated clones\n")
-        for (i in 1:length(tbl)) {
+          cat("\nAveraging duplicated clones\n")
+          for (i in 1:length(tbl)) {
             ind1 <- which(MA$genes$ID == nms[i])
             vec <- apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)
-		if(!is.null(MA$weights)){
-			vec2 <-  apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)
-		}
+            if(!is.null(MA$weights)){
+              vec2 <-  apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)
+            }
             for (j in 1:length(ind1)) {
-                  if (ncol(log2.ratios(MA)) > 1) {
-                    MA$M[ind1[j], ] <- vec
-                    if(!is.null(MA$weights)){
-                      MA$weights[ind1[j], ] <- vec2
-                    }
-                  }
-                  else {
-                    MA$M[ind1[j]] <- vec
-                    if(!is.null(MA$weights)){
-                      MA$weights[ind1[j]] <- vec2
-                    }
+              if (ncol(log2.ratios(MA)) > 1) {
+                MA$M[ind1[j], ] <- vec
+                if(!is.null(MA$weights)){
+                  MA$weights[ind1[j], ] <- vec2
+                }
+                else {
+                  MA$M[ind1[j]] <- vec
+                  if(!is.null(MA$weights)){
+                    MA$weights[ind1[j]] <- vec2
                   }
                 }
-          }
-         dupl <- duplicated(MA$genes$ID)
-         MA$genes <- MA$genes[!dupl, ]
-         MA$M <- MA$M[!dupl, ,drop = FALSE]
+              }
+            }
+            dupl <- duplicated(MA$genes$ID)
+            MA$genes <- MA$genes[!dupl, ]
+            MA$M <- MA$M[!dupl, ,drop = FALSE]
             if(!is.null(MA$weights)){
               MA$weights <- MA$weights[!dupl,,drop = FALSE]
             }
-
           }
-    MA$printer <- NULL
-    MA$A <- NULL
+        }
+        MA$printer <- NULL
+        MA$A <- NULL
 
 	MA$genes$ID <- factor(MA$genes$ID)
-    	rownames(genes) <- c(1:length(genes$ID))
-    	if(!is.null(genes$Status)){
-            attr(genes$Status, "values") <- valStore
-            attr(genes$Status, "col") <- colStore
+    	rownames(MA$genes) <- c(1:length(MA$genes$ID))
+    	if(!is.null(MA$genes$Status)){
+            attr(MA$genes$Status, "values") <- valStore
+            attr(MA$genes$Status, "col") <- colStore
           }
+      }
+                                        # The imputation step
 
-    # The imputation step
-    
+    if (!is.null(method.of.averaging)){
     MA.imputed <- impute.lowess(MA, chrominfo = chrominfo.basepair, maxChrom = chrom.remove.threshold, smooth = 0.1)
-    MA$M <- MA.imputed$M
+    MA$M <- MA.imputed$M}
     MA
 
-   }
+  }
+  
 
 "impute.lowess" <- 
 function (MA, chrominfo = chrominfo.basepair, maxChrom = 23, 
@@ -95,18 +96,18 @@ function (MA, chrominfo = chrominfo.basepair, maxChrom = 23,
         for (i in 1:ncol(log2.ratios)) {
             if (length(indl) > 0) {
                 vecl <- log2.ratios[indl, i]
-                ind <- which(!is.na(vecl))
-                if (length(ind) > 2) 
+                if (length(vecl[!is.na(vecl) == TRUE])!= 0)  ind <- which(!is.na(vecl)) else {ind <- 0}
+                if (length(ind) > 2){ 
                   data.imp[indl, i][-ind] <- approx(lowess(kbl[ind], 
                     vecl[ind], f = smooth), xout = kbl[-ind])$y
-            }
+              }}
             if (length(indr) > 0) {
                vecr <- log2.ratios[indr, i]
-                ind <- which(!is.na(vecr))
-                if (length(ind) > 2) 
+               if (length(vecr[!is.na(vecr) == TRUE])!= 0)   ind <- which(!is.na(vecr)) else {ind <- 0}
+                if (length(ind) > 2){ 
                   data.imp[indr, i][-ind] <- approx(lowess(kbr[ind], 
                     vecr[ind], f = smooth), xout = kbr[-ind])$y
-            }
+            }}
         }
     }
     prop.miss <- apply(data.imp, 2, prop.na)
@@ -136,7 +137,7 @@ function (MA, chrominfo = chrominfo.basepair, maxChrom = 23,
             which(prop.miss > 0)))
     MA$M <- as.matrix(data.imp)
     MA
-}
+  }
 
 #selection of little accessor methods.
 #Might put these somewhere else in a bit

@@ -370,7 +370,7 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
         stop("MA$design component is null")
 
   for(i in 1:length(MA$design)){
-  temp <- MA$design[i]* MA$object$M[,i]
+  temp <- MA$design[i]* MA$M[,i]
   MA$M[,i] <- temp
   }
   #some clunky code so you can put the Criteria argument in characters and still perform the
@@ -433,3 +433,334 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
         }
           
 }
+
+
+runHomogeneousHMM <- function(MA, vr = .01, maxiter = 100, criteria = "AIC", delta = NA)
+{
+
+  if (is.null(MA$design)) 
+        stop("MA$design component is null")
+
+  for(i in 1:length(MA$design)){
+  temp <- MA$design[i]* MA$object$M[,i]
+  MA$M[,i] <- temp
+  }
+  
+  #some clunky code so you can put the Criteria argument in characters and still perform the
+  #boolean opperators on it below:
+          if( criteria == "AIC") {AIC = TRUE}
+           if (criteria == "BIC") {BIC = TRUE}
+          else crit = 0
+  
+    if ((crit == 1) || (crit == 2)) {
+    datainfo = MA$genes
+    dat = log2.ratios(MA)
+    chrom.uniq <- unique(datainfo$Chr)
+    nstates <- matrix(NA, nrow = length(chrom.uniq), ncol = ncol(dat))
+
+    #matrix template.  It saves me having to define a new empty matrix 6 times in next bit of code
+    	template = matrix(NA,nrow(dat),ncol(dat),dimnames=dimnames(dat))
+    #we use template here
+    if (full.output == TRUE) {
+      segList <- list(M.predicted=template,dispersion=template,state=template,rpred=template,prob=template)
+    }
+    else {
+      segList <- list(M.predicted=template,dispersion=template,state=template)
+    }
+    if (criteria == "BIC") {
+        if (is.na(delta)) {
+            delta <- c(1)
+        }
+		}
+    for (i in 1:ncol(dat)) {
+        cat("sample is ", i, "  Chromosomes: ")
+		counter = 0  #counter to mark place in segList so we know where to put the values for the next chromosome
+        for (j in 1:length(chrom.uniq)) {
+            cat(j, " ")
+            res <- try(states.hmm.func(sample = i, chrom = chrom.uniq[j], 
+                dat = dat, datainfo = datainfo, vr = vr, maxiter = maxiter, 
+                criteria = crit, delta = delta))
+                  nstates[j, i] <- res$nstates.list
+ 				foo = dat[datainfo$Chr == chrom.uniq[j],i]	
+ 				segList$M.predicted[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,4])
+ 				segList$dispersion[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,5])
+ 		#		segList$obs[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,6])
+                                segList$state[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,1])
+                                if (full.output == TRUE) { #adding the additional output
+                                  
+                                  segList$rpred[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,4])
+                                  segList$prob[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,5])
+                                }
+            		counter = counter + length(foo)
+        }
+        cat("\n")
+    }
+                segList$M.observed = MA$M
+                segList$num.states = nstates
+                colnames(segList$num.states) <- colnames(dat)
+		segList$genes <- datainfo
+		new("SegList",segList)
+  }
+        else {
+          cat("You must enter AIC or BIC for the criteria argument\n")
+        }
+          
+} 
+
+states.hmm.func.real <-
+    function(sample, chrom, dat, datainfo = clones.info, vr = .01,
+             maxiter = 100, aic = FALSE, bic = TRUE, delta = 1,
+             nlists = 1)
+{
+
+    obs <- dat[datainfo$Chrom==chrom, sample]
+    kb <- datainfo$kb[datainfo$Chrom==chrom]
+    ##with current sproc files, data is already ordered by kb's
+    obs.ord <- obs[order(kb)]
+    kb.ord <- kb[order(kb)]
+
+    ind.nonna <- which(!is.na(obs.ord))
+
+    y <- obs.ord[ind.nonna]
+    kb <- kb.ord[ind.nonna]
+
+
+#####################################
+
+    numobs <- length(y)
+
+######################################
+
+    ##have been taken outside
+    ##mu1.func <- function(p) {matrix(p, nrow=1)}
+
+######################################
+    ##initial clustering:
+
+    pam2 <- kmeans(y,2)
+    pam3 <- kmeans(y,3)
+    pam4 <- kmeans(y,4)
+    pam5 <- kmeans(y,5)
+
+#####################
+    ##means:
+
+    mu2 <- c(pam2$centers)
+    mu3 <- c(pam3$centers)
+    mu4 <- c(pam4$centers)
+    mu5 <- c(pam5$centers)
+
+####################################
+    ##trans. matrices:
+
+    gamma2 <- matrix(c(.9,.1,.1,.9),ncol=2, b = TRUE)
+    gamma3 <-
+        matrix(c(.9,.05,.05,.05,.9,.05,.05,.05,.9),ncol=3, b = TRUE)
+    gamma4 <-
+        matrix(c(.9, rep(.1 / 3, 3), .1 / 3, .9, rep(.1 / 3, 2),
+                 rep(.1 / 3, 2), .9, .1 / 3, rep(.1 / 3, 3), .9 ),
+               ncol = 4, b = TRUE)
+    gamma5 <-
+        matrix(c(.9, rep(.025, 4), .025, .9, rep(.025, 3),
+                 rep(.025, 2), .9, rep(.025, 2), rep(.025, 3), .9,
+                 .025, rep(.025, 4), .9),
+               ncol = 5, b = TRUE)
+
+####################################
+    ##df's for each model
+
+    ##for uniform variance:
+    ##number of states (means) + number of states*(number of states-1) (transitions) #+ 1 (variance)
+
+    k1 <- 2
+    k2 <- 5
+    ##k2.heter <- 6
+    k3 <- 10
+    ##k3.heter <- 12
+    k4 <- 17
+    ##k4.heter <- 20
+    k5 <- 26
+    ##k5.heter <- 30
+
+###################################
+    z1 <- -sum(log(dnorm(y, mean=mean(y), sd=sqrt(var(y)))))
+    z2 <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu2, pshape=vr, pgamma=gamma2, iterlim=maxiter))
+    ##z2.heter <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu2, pshape=rep(vr,2), pgamma=gamma2, iterlim=maxiter))
+    z3 <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu3, pshape=vr, pgamma=gamma3, iterlim=maxiter))
+    ##z3.heter <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu3, pshape=rep(vr,3), pgamma=gamma3, iterlim=maxiter))
+    z4 <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu4, pshape=vr, pgamma=gamma4, iterlim=maxiter))
+    ##z4.heter <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu4, pshape=rep(vr,4), pgamma=gamma4, iterlim=maxiter))
+    z5 <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu5, pshape=vr, pgamma=gamma5, iterlim=maxiter))
+    ##z5.heter <- try(hidden(y,dist="normal", cmu=mu1.func, pcmu=mu5, pshape=rep(vr,5), pgamma=gamma5, iterlim=maxiter))
+
+
+    options(show.error.messages = TRUE)
+#################################
+
+
+    if (length(names(z2)) == 0)
+    {
+        z2$maxlik <- NA
+    }
+    ##if (length(names(z2.heter)) == 0)
+    ##{
+    ##        z2.heter$maxlik <- NA
+    ##}
+
+    if (length(names(z3)) == 0)
+    {
+        z3$maxlik <- NA
+    }
+    ##if (length(names(z3.heter)) == 0)
+    ##{
+    ##        z3.heter$maxlik <- NA
+    ##}
+    if (length(names(z4)) == 0)
+    {
+        z4$maxlik <- NA
+    }
+    ##if (length(names(z4.heter)) == 0)
+    ##{
+    ##        z4.heter$maxlik <- NA
+    ##}
+    if (length(names(z5)) == 0)
+    {
+        z5$maxlik <- NA
+    }
+    ##if (length(names(z5.heter)) == 0)
+    ##{
+    ##        z5.heter$maxlik <- NA
+    ##}
+
+
+###############################################3
+###############################################3
+    ##identify the model with the smallest model selection criteria
+
+    ##now, scroll over all options:
+
+    for (nl in 1:nlists)
+    {
+        if ((aic) && (nl==1))
+        {
+            ##-loglik+2*k/2
+            factor <- 2
+        }
+        else if (bic)
+        {
+            ##-loglik+log(n)*k*delta/2
+            if (aic)
+            {
+                factor <- log(numobs)*delta[nl-1]
+            }
+            else
+            {
+                factor <- log(numobs)*delta[nl]
+            }
+        }
+
+        lik <- c((z1+k1*factor/2),(z2$maxlik+k2*factor/2),(z3$maxlik+k3*factor/2),(z4$maxlik+k4*factor/2),(z5$maxlik+k5*factor/2))
+        likmin <- which.min(lik)
+
+        if (likmin == 1)
+        {
+            z <- z1
+            name <- "z1"
+            nstates <- 1
+        }
+        else if (likmin == 2)
+        {
+            z <- z2
+            name <- "z2"
+            nstates <- 2
+        }
+        else if (likmin == 3)
+        {
+            z <- z3
+            name <- "z3"
+            nstates <- 3
+        }
+        else if (likmin == 4)
+        {
+            z <- z4
+            name <- "z4"
+            nstates <- 4
+        }
+        else if (likmin == 5)
+        {
+            z <- z5
+            name <- "z5"
+            nstates <- 5
+        }
+
+
+######################################
+        ##out rpred and state
+
+        if (nstates  > 1) #if non-generic
+        {
+            ##print(nstates)
+            maxstate <- apply(z$filter,2,which.max)
+            rpred <- z$rpred
+            prob <- apply(z$filter,2,max)
+            ##pred <- z$coef[maxstate]
+            ##use median for prediction and mad for state dispersions
+            maxstate.unique <- unique(maxstate)
+            pred <- rep(0, length(y))
+            disp <- rep(0, length(y))
+            for (m in 1:length(maxstate.unique))
+            {
+                pred[maxstate==maxstate.unique[m]] <- median(y[maxstate==maxstate.unique[m]])
+                disp[maxstate==maxstate.unique[m]] <- mad(y[maxstate==maxstate.unique[m]])
+            }
+
+            ##if (length(z$pshape) == 1)
+            ##{
+            ##        disp <- rep(z$pshape, length(maxstate))
+            ##}
+            ##else
+            ##{
+            ##        disp <- z$pshape[maxstate]
+            ##}
+            
+        }
+        else #if generic
+        {
+            maxstate <- rep(1, length(y))
+            ##rpred <- rep(mean(y), length(y))
+            rpred <- rep(median(y), length(y))
+            prob <- rep(1, length(y))
+            ##pred <- rep(mean(y), length(y))
+            pred <- rep(median(y), length(y))
+            ##disp <- rep(var(y), length(y))
+            disp <- rep(mad(y), length(y))
+            
+        }
+        
+        out <- cbind(matrix(maxstate, ncol=1), matrix(rpred, ncol=1), matrix(prob, ncol=1), matrix(pred, ncol=1), matrix(disp, ncol=1))
+        
+        out.all <- matrix(NA, nrow=length(kb.ord), ncol=6)
+        out.all[ind.nonna,1:5] <- out
+        
+        out.all[,6] <- obs.ord
+        out.all <- as.data.frame(out.all)
+        dimnames(out.all)[[2]] <- c("state", "rpred", "prob", "pred", "disp", "obs")
+        
+        
+        if (nl==1)
+        {
+            out.all.list <- list(out.all)
+            nstates.list <- list(nstates)
+        }
+        else
+        {
+            out.all.list[[nl]] <- out.all
+            nstates.list[[nl]] <- nstates
+        }
+        
+        ##cloneinfo <- as.data.frame(cbind(rep(chrom, length(kb.ord)), kb.ord))
+        ##dimnames(cloneinfo)[[2]] <- c("Chrom", "kb")
+    }
+    list(out.list = out.all.list, nstates.list = nstates.list)
+    
+  }

@@ -102,3 +102,4 @@ runGLAD <- function(MA, smoothfunc="aws", base=FALSE, sigma = NULL, bandwidth=10
     new("SegList", segList)
 }
 
+

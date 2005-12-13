@@ -84,6 +84,7 @@ RG1 <- read.clonesinfo("cloneinfo.txt", RG1, path=datadir)
 RG1$printer <- getLayout(RG1$genes)
 types <- readSpotTypes("SpotTypes.txt", path=datadir)
 RG1$genes$Status <- controlStatus(types, RG1)
+RG1$design <- c(1,1)
 @
 
 We now proceed to use some information provided by control spots to
@@ -115,7 +116,7 @@ the dataset into regions corresponding to sections of the genome where
 there are the same number of copy number gains or losses.
 
 
-Firstly, we use the \Rfunction{process.MAList} to 'tidy up' the MAList
+Firstly, we use the \Rfunction{processCGH} to 'tidy up' the MAList
 object. The \Rfunarg{unmapScreen} option removes those clones which are
 incompletely mapped and the \Rfunarg{dupRemove} option indicates whether clones
 with duplicate names should be averaged and removed from the dataset
@@ -123,17 +124,7 @@ leaving only one occurence of each duplicated set (this option
 defaults to TRUE).
 
 <<6>>=
-MA <- process.MAList(MA)
-@
-
-The next step is to overcome the problem that the segmentation
-functions (as written at present) can not cope with missing
-values. Hence, we use an interpolating method to overcome this
-problem. This is carried out using the \Rfunction{impute.lowess}
-function.
-
-<<7,results=hide>>=
-MA2 <- impute.lowess(MA)
+MA2 <- processCGH(MA,method.of.averaging=mean)
 @
 
 We are now ready to fit the segmentation method. For larger data sets
@@ -143,7 +134,7 @@ this library are \Rpackage{GLAD} and \Rpackage{DNAcopy}.  See manual pages for t
 \Rfunction{run.DNAcopy} and \Rfunction{run.GLAD} for details of how to use
 them.
 
-<<8,results=hide>>=
+<<7,results=hide>>=
 SegInfo <- fitHMM(MA2, criteria = "AIC")
 @
 
@@ -155,7 +146,7 @@ information on their differences please see the appropriate page in
 the helpfiles.
 
 <<9>>=
-SegInfo.merged <- mergeSegList(SegInfo, MergeType = 1)
+SegInfo.merged <- mergeStates(SegInfo, MergeType = 1)
 @ 
 
 After merging, the next step is to find any points of particular
@@ -165,7 +156,7 @@ this task and stores the information in an object of class
 \Rfunction{GEList}.
 
 <<10,results=hide>>=
-GenList <- find.genomic.events(SegInfo.merged)
+GenList <- findGenomicEvents(SegInfo.merged)
 @
 
 We are now ready to use any of the plotting functions available in the
