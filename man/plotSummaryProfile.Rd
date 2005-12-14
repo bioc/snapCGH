@@ -46,7 +46,7 @@ plotSummaryProfile(input, geList, response = as.factor(rep("All",
   \item{thresAbs}{Threshold for gain. Set very high for homozygous deletion}
 }
 \details{
-  This function utilizes output of the \code{\link{find.genomic.events}}
+  This function utilizes output of the \code{\link{findGenomicEvents}}
   by plotting it and testing between groups. The test are performed
   using kruskal-wallis rank test.
 }
@@ -55,7 +55,7 @@ plotSummaryProfile(input, geList, response = as.factor(rep("All",
 % }
 \seealso{
   \code{\link[limma]{MAList}}
-  \code{\link{find.genomic.events}}
+  \code{\link{findGenomicEvents}}
 }
 
 }

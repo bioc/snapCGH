@@ -34,7 +34,7 @@ findOutliers.func(segList, thres = madGenome, factor = 4)
     sample. The entries are the median value for the state }
 }
 \seealso{
-  \code{\link{find.genomic.events}}
+  \code{\link{findGenomicEvents}}
 }
 \references{Application of Hidden Markov Models to the analysis of the
   array CGH  data, Fridlyand et.al., \emph{JMVA}, 2004

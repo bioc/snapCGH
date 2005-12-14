@@ -8,7 +8,7 @@
 }
 \usage{
 processCGH(MA, chrom.remove.threshold = 22, chrom.below.threshold
-                 = 1, method.of.averaging = mean, ID = "ID")
+                 = 1, method.of.averaging = NULL, ID = "ID")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,7 +23,7 @@ processCGH(MA, chrom.remove.threshold = 22, chrom.below.threshold
     genome have numbers 23 and 24 repsectivelly, in for Mus musculus 20
     and 21, etc. Remove chromosomes from segmentation analysis which re
                  lower than this value.}
-   \item{method.of.averaging}{Function which takes a vector of
+   \item{method.of.averaging}{If left as the default no combining of replicate spots takes place.  Other wise this should specify a function which takes a vector of
                  duplicates and combines them into a single value.}
    \item{ID}{Name of column in \code{RG\$genes} corresponding to the clone names. For most
                  data the default will work, however for affy data the

@@ -31,8 +31,8 @@ fitHMM(MA, vr = 0.01,
 }
 }
 \seealso{
-  \code{\link{run.DNAcopy}}
-  \code{\link{run.GLAD}}
+  \code{\link{runDNAcopy}}
+  \code{\link{runGLAD}}
   \code{\link[snapCGH:SegList]{SegList}}
 }
 \keyword{models}% at least one, from doc/KEYWORDS

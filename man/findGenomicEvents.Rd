@@ -131,7 +131,7 @@ findGenomicEvents(segList, maxChrom = 22, factor = 5, maxClones = 1,
 }
 \seealso{
   \code{\link{fitHMM}}
-  \code{\link{mergeSegList}}
+  \code{\link{mergeStates}}
   \code{\link{findAber.func}}
   \code{\link{findTrans.func}}
   \code{\link{findAmplif.func}}

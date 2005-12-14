@@ -78,7 +78,7 @@ nmax=8, verbose=FALSE, ...)
   \code{\link[GLAD]{glad}}
   \code{\link[limma]{MAList}}
   \code{\link{fitHMM}}
-  \code{\link{run.DNAcopy}}
+  \code{\link{runDNAcopy}}
   \code{\link[snapCGH:SegList]{SegList}}
 }
 \keyword{methods}

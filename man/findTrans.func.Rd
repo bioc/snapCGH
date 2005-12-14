@@ -35,7 +35,7 @@ findTrans.func(segList, outliers = res1$outliers, aber = res2$aber)
     aberrations. This output may be buggy at the moment.}
 }
 \seealso{
-  \code{\link{find.genomic.events}}
+  \code{\link{findGenomicEvents}}
 }
 \references{
   Application of Hidden Markov Models to the analysis of the array CGH

@@ -8,7 +8,7 @@
   within the data set following the segmentation step.  Events include whole chromosomal gains and losses,
   aberrations, transitions, amplifications and their respective counts
   and sizes.  They are
-  generally created by running the function \code{\link{find.genomic.events}}.
+  generally created by running the function \code{\link{findGenomicEvents}}.
 }
 
 \section{Slots/List Components}{

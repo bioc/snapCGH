@@ -45,8 +45,8 @@ mergeStates(segList, MergeType = 1, pv.thres=0.0001, ansari.sign=0.01, minDiff =
 \author{Jane Fridlyand}
 \seealso{\code{\link[snapCGH:SegList]{SegList}},
   \code{\link{fitHMM}},
-  \code{\link{run.GLAD}},
-  \code{\link{run.DNAcopy}}
+  \code{\link{runGLAD}},
+  \code{\link{runDNAcopy}}
   }
 
 \keyword{models}% at least one, from doc/KEYWORDS
