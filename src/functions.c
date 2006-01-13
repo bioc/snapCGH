@@ -1,3 +1,7 @@
+/* Most of the code for the optimization was written by Karl Gegenfurtner
+and the original version is available from:
+http://archives.math.utk.edu/software/msdos/numerical.analysis/praxis/.html */
+
 #include <R.h>
 #include <Rmath.h>
 #include <math.h>
@@ -40,7 +44,7 @@ double (*fun)();
 static double h, macheps, t;
 
 float
-random()	/* return random no between 0 and 1 */
+rand1()	/* return random no between 0 and 1 */
 {
   float x;
   //  return (double)(rand()%(8192*2))/(double)(8192*2);
@@ -464,7 +468,7 @@ next:
        df1 = 0.0;
        if (illc) {        /* random step to get off resolution valley */
           for (i=0; i<n; i++) {
-              z[i] = (0.1 * ldt + t2 * pow(10.0,(double)kt)) * (random() - 0.5);
+              z[i] = (0.1 * ldt + t2 * pow(10.0,(double)kt)) * (rand1() - 0.5);
               s = z[i];
               for (j=0; j < n; j++)
                   x[j] += s * v[j][i];
