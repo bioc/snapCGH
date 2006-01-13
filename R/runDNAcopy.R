@@ -3,23 +3,23 @@ runDNAcopy <- function(MA) {
         stop("MA$design component is null")
 
   for(i in 1:length(MA$design)){
-  temp <- MA$design[i]* MA$object$M[,i]
+  temp <- MA$design[i]* MA$M[,i]
   MA$M[,i] <- temp
   }
 ##  library(DNAcopy)
-  cna <- CNA(log2.ratios(MA), MA$genes$Chr, MA$genes$Position, sampleid = colnames(MA$M))
+  cna <- CNA(log2ratios(MA), MA$genes$Chr, MA$genes$Position, sampleid = colnames(MA$M))
   cna <- smooth.CNA(cna) #add some param's later
   dna <- segment(cna)
   #changing the output back to the segmentation.info object
 
-  template <- matrix(NA, nrow(log2.ratios(MA)), ncol(log2.ratios(MA)), dimnames = dimnames(log2.ratios(MA)))
+  template <- matrix(NA, nrow(log2ratios(MA)), ncol(log2ratios(MA)), dimnames = dimnames(log2ratios(MA)))
   
-  seg.info <- list(M.predicted = template, state = template, M.observed = template, num.states = matrix(NA, length(unique(MA$genes$Chr)), ncol(log2.ratios(MA))))
+  seg.info <- list(M.predicted = template, state = template, M.observed = template, num.states = matrix(NA, length(unique(MA$genes$Chr)), ncol(log2ratios(MA))))
 
-  nsamples <- ncol(log2.ratios(MA))
+  nsamples <- ncol(log2ratios(MA))
   names <- unique(dna$output$ID)
 
-  seg.info$M.observed <- log2.ratios(MA)
+  seg.info$M.observed <- log2ratios(MA)
   for(i in 1:nsamples) {
     temp <- dna$output[dna$output$ID == names[i],]
 

@@ -1,6 +1,6 @@
 "fit.model" <-
-function (sample, chrom, dat, datainfo = clones.info, covariates, vr = 0.01, 
-    iterlim = iterlim, criteria = 1, delta = 1, nlists = 1,var.fixed=FALSE) 
+function (sample, chrom, dat, datainfo = clones.info, covariates, 
+    iterlim = iterlim, aic = TRUE, bic = FALSE, delta = 1, nlists = 1,var.fixed=FALSE) 
 {
     obs <- dat[datainfo$Chr == chrom, sample]
     kb <- datainfo$Position[datainfo$Chr == chrom]
@@ -16,20 +16,137 @@ function (sample, chrom, dat, datainfo = clones.info, covariates, vr = 0.01,
     kb <- kb.ord[ind.nonna]
     covars <- cov
     numobs <- length(y)
+    data <- y
     
     if(numobs > 5){
-     
+    
     k1 <- 2
     k2 <- 8
     k3 <- 15
     k4 <- 24
     k5 <- 35
 
-    z1.pre <- one.state(y,iterlim)
-    z2.pre <- two.states(y,covars,iterlim,var.fixed)
-    z3.pre <- three.states(y,covars,iterlim,var.fixed)
-    z4.pre <- four.states(y,covars,iterlim,var.fixed)
-    z5.pre <- five.states(y,covars,iterlim,var.fixed)
+    one.NM <- function(nrow, xin, data){
+	res <- .C("one_state_praxis", as.integer(nrow), as.double(xin), as.double(data), result = double(1), PACKAGE = "snapCGH")
+  	list(x = res[[2]],val = res[[4]])
+    	}
+
+    two.NM <- function(nrow, xin, data, covars){
+      res <- .C("two_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1), PACKAGE = "snapCGH")
+ 	list(x = res[[2]],val = res[[5]])
+	}
+
+    three.NM <- function(nrow, xin, data, covars){
+      res <- .C("three_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1), PACKAGE = "snapCGH")
+
+	list(x = res[[2]],val = res[[5]])
+	}
+
+    four.NM <- function(nrow, xin, data, covars){
+      res <- .C("four_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1), PACKAGE = "snapCGH")
+ 	list(x = res[[2]],val = res[[5]])
+	}
+
+    five.NM <- function(nrow, xin, data, covars){
+      res <- .C("five_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1),  PACKAGE = "snapCGH")
+ 	list(x = res[[2]],val = res[[5]])	
+	}
+
+    # Initialisation for one state
+
+    init.mean <- mean(data)
+
+    z1.init <- c(init.mean,0.5)
+
+    # Initialisation for two states
+
+    init.mean.two <- pam(data,2)$medoids
+
+init.var.two <- vector()
+
+if (var.fixed == FALSE){
+if (length(pam(data,2)$data[pam(data,2)$clustering==1]) > 1)  init.var.two[1] <- log(sqrt(var(pam(data,2)$data[pam(data,2)$clustering==1]))) else init.var.two[1] <- log(0.5)
+if (length(pam(data,2)$data[pam(data,2)$clustering==2]) > 1)  init.var.two[2] <- log(sqrt(var(pam(data,2)$data[pam(data,2)$clustering==2]))) else init.var.two[2] <- log(0.5)} else {
+init.var.two[1] <- log(sqrt(var(data)))
+init.var.two[2] <- log(sqrt(var(data)))}
+
+    z2.init <- c(init.mean.two[,1],init.var.two,-1,-3.6,-3.6,0)
+
+    # Initialisation for three states
+
+init.mean.three <- vector()
+init.mean.three <- pam(data,3)$medoids
+
+init.var.three <- vector()
+
+
+if (var.fixed == FALSE){
+if (length(pam(data,3)$data[pam(data,3)$clustering==1]) > 1)  init.var.three[1] <- log(sqrt(var(pam(data,3)$data[pam(data,3)$clustering==1]))) else init.var.three[1] <- log(0.5)
+if (length(pam(data,3)$data[pam(data,3)$clustering==2]) > 1)  init.var.three[2] <- log(sqrt(var(pam(data,3)$data[pam(data,3)$clustering==2]))) else init.var.three[2] <- log(0.5)
+if (length(pam(data,3)$data[pam(data,3)$clustering==3]) > 1)  init.var.three[3] <- log(sqrt(var(pam(data,3)$data[pam(data,3)$clustering==3]))) else init.var.three[3] <- log(0.5)} else {
+init.var.three[1] <- log(sqrt(var(data)))
+init.var.three[2] <- log(sqrt(var(data)))
+init.var.three[3] <- log(sqrt(var(data)))}
+
+
+    z3.init <- c(init.mean.three[,1],init.var.three,-0.7,-0.7,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,0)
+
+    # Initialisation for four states
+
+    init.mean.four <- vector()
+init.mean.four <- pam(data,4)$medoids
+
+init.var.four <- list()
+
+init.var.four <- vector()
+
+if (var.fixed == FALSE){
+if (length(pam(data,4)$data[pam(data,4)$clustering==1]) > 1)  init.var.four[1] <- log(sqrt(var(pam(data,4)$data[pam(data,4)$clustering==1]))) else init.var.four[1] <- log(0.5)
+if (length(pam(data,4)$data[pam(data,4)$clustering==2]) > 1)  init.var.four[2] <- log(sqrt(var(pam(data,4)$data[pam(data,4)$clustering==2]))) else init.var.four[2] <- log(0.5)
+if (length(pam(data,4)$data[pam(data,4)$clustering==3]) > 1)  init.var.four[3] <- log(sqrt(var(pam(data,4)$data[pam(data,4)$clustering==3]))) else init.var.four[3] <- log(0.5)
+if (length(pam(data,4)$data[pam(data,4)$clustering==4]) > 1)  init.var.four[4] <- log(sqrt(var(pam(data,4)$data[pam(data,4)$clustering==4]))) else init.var.four[4] <- log(0.5)} else {
+init.var.four[1] <- log(sqrt(var(data)))
+init.var.four[2] <- log(sqrt(var(data)))
+init.var.four[3] <- log(sqrt(var(data)))
+init.var.four[4] <- log(sqrt(var(data)))}
+
+    z4.init <- c(init.mean.four[,1],init.var.four,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,0)
+    
+    # Initialisation for five states
+
+    init.mean.five <- vector()
+    init.mean.five <- pam(data,5)$medoids
+
+    init.var.five <- list()
+
+    init.var.five <- vector()
+
+    if (var.fixed == FALSE){
+      if (length(pam(data,5)$data[pam(data,5)$clustering==1]) > 1)  init.var.five[1] <- log(sqrt(var(pam(data,5)$data[pam(data,5)$clustering==1]))) else init.var.five[1] <- log(0.5)
+    if (length(pam(data,5)$data[pam(data,5)$clustering==2]) > 1)  init.var.five[2] <- log(sqrt(var(pam(data,5)$data[pam(data,5)$clustering==2]))) else init.var.five[2] <- log(0.5)
+    if (length(pam(data,5)$data[pam(data,5)$clustering==3]) > 1)  init.var.five[3] <- log(sqrt(var(pam(data,5)$data[pam(data,5)$clustering==3]))) else init.var.five[3] <- log(0.5)
+    if (length(pam(data,5)$data[pam(data,5)$clustering==4]) > 1)  init.var.five[4] <- log(sqrt(var(pam(data,5)$data[pam(data,5)$clustering==4]))) else init.var.five[4] <- log(0.5)
+    if (length(pam(data,5)$data[pam(data,5)$clustering==5]) > 1)  init.var.five[5] <- log(sqrt(var(pam(data,5)$data[pam(data,5)$clustering==5]))) else init.var.five[5] <- log(0.5)} else {
+      init.var.five[1] <- log(sqrt(var(data)))
+      init.var.five[2] <- log(sqrt(var(data)))
+      init.var.five[3] <- log(sqrt(var(data)))
+      init.var.five[4] <- log(sqrt(var(data)))
+      init.var.five[5] <- log(sqrt(var(data)))}
+
+z5.init <- c(init.mean.five[,1],init.var.five,-0.7,-0.7,-0.7,-0.7,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,-3.6,0) 
+    
+
+    z1.pre <- one.NM(numobs,z1.init ,y)
+    z2.pre <- two.NM(numobs, z2.init, y, covars)
+    z3.pre <- three.NM(numobs,z3.init,y,covars)
+    z4.pre <- four.NM(numobs,z4.init,y,covars)
+    z5.pre <- five.NM(numobs,z5.init,y,covars)
+    
+    #z1.pre <- one.state(y,iterlim)
+    #z2.pre <- two.states(y,covars,iterlim,var.fixed)
+    #z3.pre <- three.states(y,covars,iterlim,var.fixed)
+    #z4.pre <- four.states(y,covars,iterlim,var.fixed)
+    #z5.pre <- five.states(y,covars,iterlim,var.fixed)
 
     z1 <- find.param.one(z1.pre)
     z2 <- find.param.two(z2.pre,var.fixed)
@@ -55,11 +172,16 @@ function (sample, chrom, dat, datainfo = clones.info, covariates, vr = 0.01,
 
         
     for (nl in 1:nlists) {
-        if (criteria == 1) {
+        if ((aic) && (nl == 1)) {
             factor <- 2
         }
-        else if (criteria == 2) {
-          factor <- log(numobs) * delta
+        else if (bic) {
+            if (aic) {
+                factor <- log(numobs) * delta[nl - 1]
+            }
+            else {
+                factor <- log(numobs) * delta[nl]
+            }
         }
         lik <- c((z1$minus.logLikelihood + k1 * factor/2), (z2$minus.logLikelihood + k2 * factor/2), 
             (z3$minus.logLikelihood + k3 * factor/2), (z4$minus.logLikelihood + k4 * factor/2), 
@@ -130,17 +252,16 @@ function (sample, chrom, dat, datainfo = clones.info, covariates, vr = 0.01,
         out.all[, 4] <- obs.ord
         out.all <- as.data.frame(out.all)
         dimnames(out.all)[[2]] <- c("state", "mean", "var", "obs")
-##        if (nl == 1) {
-##            out.all.list <- list(out.all)
-##            nstates.list <- list(nstates)
-##        }
-##        else {
-##            out.all.list[[nl]] <- out.all
-##            nstates.list[[nl]] <- nstates
-##        }
+#        if (nl == 1) {
+#            out.all.list <- list(out.all)
+#            nstates.list <- list(nstates)
+#        }
+#        else {
+#            out.all.list[[nl]] <- out.all
+#            nstates.list[[nl]] <- nstates
+#        }
       }
-  }
-   else {
+  }  else {
      out.all <- matrix(NA, nrow = length(kb.ord), ncol = 4)
      out.all[ind.nonna,1] <- c(rep(1,numobs))
      out.all[ind.nonna,2] <- c(rep(mean(obs.ord),numobs))
@@ -152,3 +273,5 @@ function (sample, chrom, dat, datainfo = clones.info, covariates, vr = 0.01,
    }
     list(out.list = out.all, nstates.list = nstates)
   }
+
+

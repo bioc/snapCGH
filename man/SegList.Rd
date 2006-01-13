@@ -6,7 +6,7 @@
 \description{
 A list based class for storing the results of a segmentation algorithm.
 They are generally created by running one of the following functions
-\code{\link{fitHMM}}, \code{\link{runGLAD}} or \code{\link{runDNAcopy}} on an \code{\link[limma]{MAList} object}.
+\code{\link{runHomHMM}}, \code{\link{runGLAD}} or \code{\link{runDNAcopy}} on an \code{\link[limma]{MAList} object}.
 }
 
 \section{Slots/List Components}{

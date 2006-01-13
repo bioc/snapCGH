@@ -1,14 +1,14 @@
-\name{summarize.clones}
-\alias{summarize.clones}
+\name{summarizeClones}
+\alias{summarizeClones}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Extracting summary information for all clones}
 \description{
- \code{summarize.clones} function is the text equivalent of
-\code{\link{plotFreqStat}} function - it summarizes the frequencies of
+ \code{summarizeClones} function is the text equivalent of
+\code{\link{plotGainLoss}} function - it summarizes the frequencies of
 changes for each clone across tumors and when available assigns statistics. The resulting table can be easily exported.
 }
 \usage{
-summarize.clones(MA, resT = NULL, pheno = rep(1, ncol(MA)), rsp.uniq =
+summarizeClones(MA, resT = NULL, pheno = rep(1, ncol(MA)), rsp.uniq =
                  unique(pheno), thres = 0.25, factor = 2.5, all =
                  length(rsp.uniq) == 1 && is.null(resT), titles = if
                  (all) "all" else rsp.uniq)
@@ -46,6 +46,6 @@ summarize.clones(MA, resT = NULL, pheno = rep(1, ncol(MA)), rsp.uniq =
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{\code{\link{plotFreqStat}}}
+\seealso{\code{\link{plotGainLoss}}}
 
 \keyword{models}

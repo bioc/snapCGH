@@ -123,7 +123,7 @@ with duplicate names should be averaged and removed from the dataset
 leaving only one occurence of each duplicated set (this option
 defaults to TRUE).
 
-<<6>>=
+<<6, results=hide>>=
 MA2 <- processCGH(MA,method.of.averaging=mean)
 @
 
@@ -135,7 +135,7 @@ this library are \Rpackage{GLAD} and \Rpackage{DNAcopy}.  See manual pages for t
 them.
 
 <<7,results=hide>>=
-SegInfo <- fitHMM(MA2, criteria = "AIC")
+SegInfo <- runHomHMM(MA2, criteria = "AIC")
 @
 
 We now deal with the fact that the HMM sometimes has a tendency to fit
@@ -203,7 +203,7 @@ argument as well as defining the colours that represent areas of
 amplification or deletion.
 
 <<label=12,include=FALSE>>=
-clusterGenome(MA2)
+heatmapGenome(MA2)
 @ 
 
 \begin{figure}[!h]

@@ -6,18 +6,19 @@ function (MA, covariates, maxiter=100,
         stop("MA$design component is null")
 
   for(i in 1:length(MA$design)){
-  temp <- MA$design[i]* MA$object$M[,i]
+  temp <- MA$design[i]* MA$M[,i]
   MA$M[,i] <- temp
   }
   #some clunky code so you can put the Criteria argument in characters and still perform the
   #boolean opperators on it below:
-  if( criteria == "AIC") {crit = 1}
-  else if (criteria == "BIC") {crit = 2}
-  else crit = 0
+  crit = TRUE
+  if( criteria == "AIC") {aic = TRUE}
+  else if (criteria == "BIC") {bic = TRUE}
+  else crit = FALSE
 
   if ((crit == 1) || (crit == 2)) {
     datainfo = MA$genes
-    dat = log2.ratios(MA)   
+    dat = log2ratios(MA)   
     chrom.uniq <- unique(datainfo$Chr)
     nstates <- matrix(NA, nrow = length(chrom.uniq), ncol = ncol(dat))
 
@@ -44,7 +45,7 @@ function (MA, covariates, maxiter=100,
         cat(j, " ")
         res <- try(fit.model(sample=i, chrom=chrom.uniq[j], 
                              dat=dat, datainfo=datainfo, covariates=covariates, iterlim = maxiter, 
-               criteria=crit, delta=delta, var.fixed=var.fixed)) 
+               aic = aic, bic = bic, delta=delta, var.fixed=var.fixed)) 
         nstates[j,i] <- res$nstates.list
         foo = dat[datainfo$Chr == chrom.uniq[j],i]	
         segList$M.predicted[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list$mean)

@@ -21,7 +21,7 @@ plotGenome(input, array = 1, naut = 22, Y = TRUE, X
   \item{naut}{number of autosomes in the organism}
   \item{Y}{TRUE if chromosome Y is to be plotted, FALSE otherwise}
   \item{X}{TRUE if chromosome X is to be plotted, FALSE otherwise}
-  \item{status}{character vector giving the control status of each spot on the array, of same length as the number of rows of \code{log2.ratios(input)}. If omitted, all points are plotted in the default color, symbol and size.}
+  \item{status}{character vector giving the control status of each spot on the array, of same length as the number of rows of \code{log2ratios(input)}. If omitted, all points are plotted in the default color, symbol and size.}
   \item{values}{character vector giving values of \code{status} to be highlighted on the plot. Defaults to unique values of \code{status}. Ignored if there is no \code{status} vector.}
   \item{pch}{vector or list of plotting characters. Default to integer code 16. Ignored is there is no \code{status} vector.}
   \item{col}{numeric or character vector of colors, of the same length as \code{values}. Defaults to \code{1:length(values)}. Ignored if there is no \code{status} vector.}

@@ -1,5 +1,5 @@
-\name{clusterGenome}
-\alias{clusterGenome}
+\name{heatmapGenome}
+\alias{heatmapGenome}
 \alias{plotvalChrom.func}
 \alias{plotValGenome}
 \alias{plotValChrom}
@@ -12,7 +12,7 @@
   This function clusters samples and shows their heatmap
 }
 \usage{
-clusterGenome(input, response = as.factor(rep("All", ncol(input))),
+heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
                  chrominfo = chrominfo.basepair, cutoff = 1, lowCol =
                  "blue", highCol = "yellow", midCol = "white", ncolors =
                  50, byclass = FALSE, showaber = FALSE, amplif = 1,

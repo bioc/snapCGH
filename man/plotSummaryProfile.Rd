@@ -1,14 +1,13 @@
-\name{plotSummaryProfile}
-\alias{plotSummaryProfile}
-\alias{length.num.func}
+\name{plotSegmentationSummary}
+\alias{plotSegmentationSummary}
 \alias{prop.num.func}
-\title{plotSummaryProfile}
+\title{plotSegmentationSummary}
 \description{
   This function display the genomic events and tests for the differences
   between groups if they are specified.
 }
 \usage{
-plotSummaryProfile(input, geList, response = as.factor(rep("All",
+plotSegmentationSummary(input, geList, response = as.factor(rep("All",
                  ncol(input))), titles =
                  unique(response[!is.na(response)]), X = TRUE, Y =
                  FALSE, maxChrom = 23, chrominfo = chrominfo.basepair,

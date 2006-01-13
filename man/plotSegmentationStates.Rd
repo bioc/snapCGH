@@ -12,7 +12,7 @@
 
 plotSegmentationStates(segList, geList, array=1, chr = 1:length(unique(segList$genes$Chr)), maxChrom = 22,
                  chrominfo = chrominfo.basepair, yScale = c(-2, 2),
-                 samplenames = sample.names(segList), xlower = 0,
+                 samplenames = colnames(segList), xlower = 0,
                  xupper = chrominfo$length[chr[j]]/1000)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -44,7 +44,7 @@ plotSegmentationStates(segList, geList, array=1, chr = 1:length(unique(segList$g
 \author{Jane Fridlyand}
 \seealso{
   \code{\link[snapCGH:SegList]{SegList}}
-  \code{\link{fitHMM}}
+  \code{\link{runHomHMM}}
   \code{\link{plotGenome}}
 }
 \examples{

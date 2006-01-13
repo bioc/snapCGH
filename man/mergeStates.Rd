@@ -44,7 +44,7 @@ mergeStates(segList, MergeType = 1, pv.thres=0.0001, ansari.sign=0.01, minDiff =
 }
 \author{Jane Fridlyand}
 \seealso{\code{\link[snapCGH:SegList]{SegList}},
-  \code{\link{fitHMM}},
+  \code{\link{runHomHMM}},
   \code{\link{runGLAD}},
   \code{\link{runDNAcopy}}
   }

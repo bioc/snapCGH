@@ -1,5 +1,5 @@
-\name{computeSD.func}
-\alias{computeSD.func}
+\name{computeSD}
+\alias{computeSD}
 \alias{}
 %- Also NEED an `\alias' for EACH other topic documented here.
 \title{Function to estimate experimental variability of a sample}
@@ -9,7 +9,7 @@
   as well as to derive thresholds for declaring gained and lost clones.
 }
 \usage{
-computeSD.func(segList, maxmadUse = 0.2, maxmedUse = 0.2,
+computeSD(segList, maxmadUse = 0.2, maxmedUse = 0.2,
                maxState = 3, maxStateChange = 10, minClone = 5,
                maxChrom = 22)
 }

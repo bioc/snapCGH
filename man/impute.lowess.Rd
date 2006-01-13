@@ -1,12 +1,12 @@
-\name{impute.lowess}
-\alias{impute.lowess}
+\name{imputeMissingValues}
+\alias{imputeMissingValues}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Imputing log2 ratios}
 \description{
   Imputing log2 ratios
 }
 \usage{
-impute.lowess(MA, chrominfo = chrominfo.basepair, maxChrom =
+imputeMissingValues(MA, chrominfo = chrominfo.basepair, maxChrom =
 23, smooth = 0.1)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -41,7 +41,7 @@ impute.lowess(MA, chrominfo = chrominfo.basepair, maxChrom =
 
 %## Imputing the log2 ratios 
 
-%MA2 <- impute.lowess(MA1,maxChrom=24)
+%MA2 <- imputeMissingValues(MA1,maxChrom=24)
 
 }
 \keyword{models}% at least one, from doc/KEYWORDS

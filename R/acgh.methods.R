@@ -36,11 +36,12 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
               vec2 <-  apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)
             }
             for (j in 1:length(ind1)) {
-              if (ncol(log2.ratios(MA)) > 1) {
+              if (ncol(log2ratios(MA)) > 1) {
                 MA$M[ind1[j], ] <- vec
                 if(!is.null(MA$weights)){
                   MA$weights[ind1[j], ] <- vec2
                 }
+   		}
                 else {
                   MA$M[ind1[j]] <- vec
                   if(!is.null(MA$weights)){
@@ -66,22 +67,22 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
             attr(MA$genes$Status, "values") <- valStore
             attr(MA$genes$Status, "col") <- colStore
           }
-      }
+      
                                         # The imputation step
 
     if (!is.null(method.of.averaging)){
-    MA.imputed <- impute.lowess(MA, chrominfo = chrominfo.basepair, maxChrom = chrom.remove.threshold, smooth = 0.1)
+    MA.imputed <- imputeMissingValues(MA, chrominfo = chrominfo.basepair, maxChrom = chrom.remove.threshold, smooth = 0.1)
     MA$M <- MA.imputed$M}
     MA
 
   }
   
 
-"impute.lowess" <- 
+"imputeMissingValues" <- 
 function (MA, chrominfo = chrominfo.basepair, maxChrom = 23, 
     smooth = 0.1) 
 {
-    data.imp <- log2.ratios <- log2.ratios(MA)
+    data.imp <- log2ratios <- log2ratios(MA)
     clones.info <- MA$genes
     uniq.chrom <- unique(clones.info$Chr)
     for (j in uniq.chrom[uniq.chrom <= maxChrom]) {
@@ -93,16 +94,16 @@ function (MA, chrominfo = chrominfo.basepair, maxChrom = 23,
             centr)
         kbl <- clones.info$Position[indl]
         kbr <- clones.info$Position[indr]
-        for (i in 1:ncol(log2.ratios)) {
+        for (i in 1:ncol(log2ratios)) {
             if (length(indl) > 0) {
-                vecl <- log2.ratios[indl, i]
+                vecl <- log2ratios[indl, i]
                 if (length(vecl[!is.na(vecl) == TRUE])!= 0)  ind <- which(!is.na(vecl)) else {ind <- 0}
                 if (length(ind) > 2){ 
                   data.imp[indl, i][-ind] <- approx(lowess(kbl[ind], 
                     vecl[ind], f = smooth), xout = kbl[-ind])$y
               }}
             if (length(indr) > 0) {
-               vecr <- log2.ratios[indr, i]
+               vecr <- log2ratios[indr, i]
                if (length(vecr[!is.na(vecr) == TRUE])!= 0)   ind <- which(!is.na(vecr)) else {ind <- 0}
                 if (length(ind) > 2){ 
                   data.imp[indr, i][-ind] <- approx(lowess(kbr[ind], 
@@ -139,26 +140,4 @@ function (MA, chrominfo = chrominfo.basepair, maxChrom = 23,
     MA
   }
 
-#selection of little accessor methods.
-#Might put these somewhere else in a bit
-
-lengthGain.na <-
-    function(x)
-    sum(x == 1, na.rm = TRUE)
-
-propGain.na <-
-    function(x)
-    mean(x == 1, na.rm = TRUE)
-
-lengthLoss.na <-
-    function(x)
-    sum(x == -1, na.rm = TRUE)
-
-propLoss.na <-
-    function(x)
-    mean(x == -1, na.rm = TRUE)
-
-prop.na <-
-    function(x)
-    mean(is.na(x))
 

@@ -17,7 +17,7 @@ runDNAcopy(MA)
 }
 \seealso{
   \code{\link[limma]{MAList}}
-  \code{\link{fitHMM}}
+  \code{\link{runHomHMM}}
   \code{\link{runGLAD}}
   \code{\link[snapCGH:SegList]{SegList}}
 }

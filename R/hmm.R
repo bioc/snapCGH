@@ -12,7 +12,7 @@
 ##  
 ##    if ((crit == 1) || (crit == 2)) {
 ##    datainfo = acghList$genes
-##    dat = log2.ratios(acghList)
+##    dat = log2ratios(acghList)
 ##    chrom.uniq <- unique(datainfo$Chrom)
 ##    nstates <- matrix(NA, nrow = length(chrom.uniq), ncol = ncol(dat))
 
@@ -184,186 +184,8 @@
 ##    list(out.list = out.all, nstates.list = nstates)
 ##}
 
-
-
-states.hmm.func <- function(sample, chrom, dat, datainfo = clones.info, vr = .01,
-             maxiter = 100, criteria = 1, delta = 1,
-             nlists = 1, eps = .01, print.info = FALSE,
-             diag.prob = .99)
-{
-
-    obs <- dat[datainfo$Chr==chrom, sample]
-    kb <- datainfo$Position[datainfo$Chr==chrom]
-    ##with current sproc files, data is already ordered by kb's
-    obs.ord <- obs[order(kb)]
-    kb.ord <- kb[order(kb)]
-
-    ind.nonna <- which(!is.na(obs.ord))
-
-    y <- obs.ord[ind.nonna]
-    kb <- kb.ord[ind.nonna]
-
-
-#####################################
-
-    numobs <- length(y)
-    zz <- vector(mode = "list", 5)
-    zz[[1]] <-
-        list(log.lik =
-             sum(dnorm(y, mean = mean(y), sd = sd(y), log = T)))
-    for(k in 2:5)
-    {
-##Code added by Mike to make this work if there are less than 5 observations
-      if(numobs > k){      
-        mu <- kmeans(y, k)$centers
-      }
-      else{
-        mu <- y
-      }
-#      mu <- kmeans(y, k)$centers
-##Finished editing here
-      gamma <- matrix((1 - diag.prob) / (k - 1), k, k)
-        diag(gamma) <- diag.prob
-        zz[[k]] <-
-        {
-
-            res <-
-                .C("calc_observed_likelihood",
-                   as.integer(numobs),
-                   as.double(y),
-                   as.integer(k),
-                   mu = as.double(mu),
-                   sigma = as.double(sqrt(vr)),
-                   gamma = as.double(gamma),
-                   pi = as.double(rep(-log(k), k)),
-                   num.iter = as.integer(maxiter),
-                   as.double(eps),
-                   log.lik = double(1),
-                   filtered.cond.probs = double(k * numobs),
-                   hidden.states = integer(numobs),
-                   as.logical(print.info),
-                   PACKAGE = "snapCGH")
-            res$hidden.states <- res$hidden.states + 1
-            res$filtered.cond.probs <-
-                matrix(res$filtered.cond.probs, nr = k)
-            res$gamma <- exp(matrix(res$gamma, nr = k))
-            res
-            
-        }
-        
-    }
-
-###############################################3
-###############################################3
-    ##identify the model with the smallest model selection criteria
-
-    ##now, scroll over all options:
-
-    ##number of states (means) + number of states*(number of states-1) (transitions) #+ 1 (variance)
-
-#    kk <- c(2, 5, 10, 17, 26)
-    kk <- (1:5) ^ 2 + 1
-    for (nl in 1:nlists)
-    {
-      if (criteria == 1)
-        {
-          factor <- 2
-        }
-      else if (criteria == 2)
-        {
-          factor <- log(numobs)*delta
-        }
-    
-        lik <- sapply(zz, function(z) -z$log.lik) + kk * factor / 2
-        nstates <- likmin <- which.min(lik)
-        z <- zz[[likmin]]
-
-######################################
-        ##out rpred and state
-
-        if (nstates > 1) #if non-generic
-        {
-            ##print(nstates)
-            maxstate <- apply(z$filter, 2, which.max)
-###            maxstate <- z$hidden.states
-            rpred <- as.vector(z$mu %*% z$filter)
-            prob <- apply(z$filter, 2, max)
-            ##use median for prediction and mad for state dispersions
-            maxstate.unique <- unique(maxstate)
-            pred <- rep(0, length(y))
-            disp <- rep(0, length(y))
-            for (m in 1:length(maxstate.unique))
-            {
-                
-                pred[maxstate==maxstate.unique[m]] <-
-                    median(y[maxstate==maxstate.unique[m]])
-                disp[maxstate==maxstate.unique[m]] <-
-                    mad(y[maxstate==maxstate.unique[m]])
-                
-            }
-
-            ##if (length(z$pshape) == 1)
-            ##{
-            ##        disp <- rep(z$pshape, length(maxstate))
-            ##}
-            ##else
-            ##{
-            ##        disp <- z$pshape[maxstate]
-            ##}
-            
-        }
-        else #if generic
-        {
-            maxstate <- rep(1, length(y))
-            ##rpred <- rep(mean(y), length(y))
-            rpred <- rep(median(y), length(y))
-            prob <- rep(1, length(y))
-            ##pred <- rep(mean(y), length(y))
-            pred <- rep(median(y), length(y))
-            ##disp <- rep(var(y), length(y))
-            disp <- rep(mad(y), length(y))
-            
-        }
-        
-        out <-
-            cbind(matrix(maxstate, ncol=1),
-                  matrix(rpred, ncol=1),
-                  matrix(prob, ncol=1),
-                  matrix(pred, ncol=1),
-                  matrix(disp, ncol=1))
-        
-        out.all <- matrix(NA, nrow=length(kb.ord), ncol=6)
-        out.all[ind.nonna,1:5] <- out
-        
-        out.all[,6] <- obs.ord
-        out.all <- as.data.frame(out.all)
-        dimnames(out.all)[[2]] <- c("state", "rpred", "prob", "pred", "dispersion", "M.observed")
-        
-#        if (nl==1)
-#        {
-#            out.all.list <- list(out.all)
-#            nstates.list <- list(nstates)
-#        }
-#        else
-#        {
-#            out.all.list[[nl]] <- out.all
-#            nstates.list[[nl]] <- nstates
-#        }
-        
-        ##cloneinfo <- as.data.frame(cbind(rep(chrom, length(kb.ord)), kb.ord))
-        ##dimnames(cloneinfo)[[2]] <- c("Chrom", "kb")
-    }
-#    list(out.list = out.all.list, nstates.list = nstates.list)
-    list(out.list = out.all, nstates.list = nstates)
-    
-}
-
-
-#criteria used below are:
-	# AIC or BIC
-	#if BIC is choosen then it is possible to enter a value for delta as well
-"fitHMM" <-
-function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.output = FALSE) 
+"runHomHMM" <- 
+function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.output = FALSE, eps = 0.01) 
 {
 
   if (is.null(MA$design)) 
@@ -373,15 +195,24 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
   temp <- MA$design[i]* MA$M[,i]
   MA$M[,i] <- temp
   }
+##Changing the names of the Chr and Position columns so that the aCGH code can access them.
+
+  colnames(MA$genes)[colnames(MA$genes) == "Position"] = "kb"
+  colnames(MA$genes)[colnames(MA$genes) == "Chr"] = "Chrom"
+
+  #colnames(MA$genes)[[6]] <- "kb"
+  #colnames(MA$genes)[[7]] <- "Chrom"
+
   #some clunky code so you can put the Criteria argument in characters and still perform the
   #boolean opperators on it below:
-          if( criteria == "AIC") {crit = 1}
-          else if (criteria == "BIC") {crit = 2}
-          else crit = 0
+  crit = TRUE
+  if( criteria == "AIC") {aic = TRUE}
+  else if (criteria == "BIC") {bic = TRUE}
+  else crit = FALSE
   
-    if ((crit == 1) || (crit == 2)) {
+    if (crit == TRUE) {
     datainfo = MA$genes
-    dat = log2.ratios(MA)
+    dat = log2ratios(MA)
     chrom.uniq <- unique(datainfo$Chr)
     nstates <- matrix(NA, nrow = length(chrom.uniq), ncol = ncol(dat))
 
@@ -404,21 +235,30 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
 		counter = 0  #counter to mark place in segList so we know where to put the values for the next chromosome
         for (j in 1:length(chrom.uniq)) {
             cat(j, " ")
-            res <- try(states.hmm.func(sample = i, chrom = chrom.uniq[j], 
+            foo = dat[datainfo$Chrom == chrom.uniq[j],i]
+            if(length(dat[datainfo$Chrom == j,i]) > 5){
+              res <- try(states.hmm.func(sample = i, chrom = chrom.uniq[j], 
                 dat = dat, datainfo = datainfo, vr = vr, maxiter = maxiter, 
-                criteria = crit, delta = delta))
-                  nstates[j, i] <- res$nstates.list
- 				foo = dat[datainfo$Chr == chrom.uniq[j],i]	
- 				segList$M.predicted[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,4])
- 				segList$dispersion[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,5])
- 		#		segList$obs[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,6])
-                                segList$state[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,1])
+                aic = aic, bic = bic, delta = delta, eps = eps, nlists = 1))
+                  nstates[j, i] <- res$nstates.list[[1]]
+ 				segList$M.predicted[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$pred)
+ 				segList$dispersion[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$disp)
+                                segList$state[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$state)
                                 if (full.output == TRUE) { #adding the additional output
                                   
-                                  segList$rpred[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,4])
-                                  segList$prob[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,5])
+                             #     segList$rpred[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,4])
+                          #        segList$prob[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,5])
                                 }
             		counter = counter + length(foo)
+          }
+            else {
+              cat("\nToo few observations.  See help file for how this is handled\n")
+              nstates[j, i] <- 1
+              segList$M.predicted[(counter+1):(counter+length(foo)),i] = rep(mean(foo), length(foo))
+              segList$dispersion[(counter+1):(counter+length(foo)),i] = rep(mad(foo), length(foo))
+              segList$state[(counter+1):(counter+length(foo)),i] = rep(1, length(foo))
+              counter = counter + length(foo)
+            }
         }
         cat("\n")
     }
@@ -426,6 +266,14 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
                 segList$num.states = nstates
                 colnames(segList$num.states) <- colnames(dat)
 		segList$genes <- datainfo
+    
+                ##Changing the names of the Chr and Position back.
+
+    colnames(segList$genes)[colnames(segList$genes) == "kb"] = "Position"
+    colnames(segList$genes)[colnames(segList$genes) == "Chrom"] = "Chr"
+#                colnames(segList$genes)[[6]] <- "Position"
+#                colnames(segList$genes)[[7]] <- "Chr"
+
 		new("SegList",segList)
   }
         else {

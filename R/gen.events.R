@@ -7,22 +7,22 @@ function (segList, maxChrom = 22, factor = 5, maxClones = 1,
     maxState = 3, maxStateChange = 10, minClone = 5) 
 {
  #computing Std. Devs of aCGH samples
- sd.samples <- computeSD.func(segList, maxmadUse, maxmedUse, maxState, maxStateChange, minClone, maxChrom)
+ sd.samples <- computeSD(segList, maxmadUse, maxmedUse, maxState, maxStateChange, minClone, maxChrom)
  
-    l2r <- log2.ratios(segList)
+    l2r <- log2ratios(segList)
     genes <- segList$genes
     
     ncols <- ncol(l2r)
     cat("Finding outliers\n")
-    outliers <- findOutliers.func(segList, thres = sd.samples$madGenome, 
+    outliers <- findOutliers(segList, thres = sd.samples$madGenome, 
         factor = factor)
     cat("Finding focal low level aberrations\n")
-    aberrations <- findAber.func(segList, maxClones = maxClones, maxLen = maxLen)
+    aberrations <- findAberrations(segList, maxClones = maxClones, maxLen = maxLen)
     cat("Finding transitions\n")
-    transitions <- findTrans.func(segList, outliers = outliers$outlier, 
+    transitions <- findTranslocations(segList, outliers = outliers$outlier, 
         aber = aberrations$aber)
     cat("Finding focal amplifications\n")
-    amplifications <- findAmplif.func(segList, absValSingle = absValSingle, 
+    amplifications <- findAmplifications(segList, absValSingle = absValSingle, 
         absValRegion = absValRegion, diffVal1 = diffVal1, diffVal2 = diffVal2, 
         maxSize = maxSize, translen.matr = transitions$translen.matrix, 
         trans.matr = transitions$trans.matr, aber = aberrations$aber, 
@@ -119,7 +119,7 @@ function (segList, maxChrom = 22, factor = 5, maxClones = 1,
     new("GEList", ge)    
 }
 
-"findAmplif.func" <-
+"findAmplifications" <-
 function (segList, absValSingle = 1, absValRegion = 1.5, diffVal1 = 1, 
     diffVal2 = 0.5, maxSize = 10000, translen.matr = res3$translen.matrix, 
     trans.matr = res3$trans.matr, aber = res2$aber, outliers = res1$outlier, 
@@ -182,7 +182,7 @@ function (segList, absValSingle = 1, absValRegion = 1.5, diffVal1 = 1,
     list(amplif = amplif.matrix)
 }
 
-"findTrans.func" <-
+"findTranslocations" <-
 function (segList, outliers = res1$outliers, aber = res2$aber) 
 {
     chrom <- segList$genes$Chr
@@ -221,7 +221,7 @@ function (segList, outliers = res1$outliers, aber = res2$aber)
     }
     list(trans.matrix = trans.matrix, translen.matrix = translen.matrix)
 }
-"findAber.func" <-
+"findAberrations" <-
 function (segList, maxClones = 1, maxLen = 1000) 
 {
     chrom <- segList$genes$Chr
@@ -268,7 +268,7 @@ function (segList, maxClones = 1, maxLen = 1000)
     list(aber = aber)
 }
 
-"findOutliers.func" <-
+"findOutliers" <-
 function (segList, thres = madGenome, factor = 4) 
 {
     thres <- thres * factor
@@ -319,7 +319,7 @@ function (segList, thres = madGenome, factor = 4)
     list(outlier=outlier, pred.obs.out=pred.obs.out, pred.out=pred.out)
 }
 
-"computeSD.func" <-
+"computeSD" <-
 function (segList, maxmadUse = 0.2, maxmedUse = 0.2, 
     maxState = 3, maxStateChange = 10, minClone = 5, maxChrom = 22) 
 {

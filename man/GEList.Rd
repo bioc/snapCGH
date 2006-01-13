@@ -57,16 +57,16 @@
     of disjoint amplicons on a given chromosome for a given sample.\cr
   \code{outliers}:\tab
     list containing 3 matrices of dimensions number of clones by number
-    of samples. See \code{\link{findOutliers.func}}.\cr
+    of samples. See \code{\link{findOutliers}}.\cr
   \code{aberrations}:\tab
     list containing a matrix of dimensions number of clones by number
-    of samples. See \code{\link{findAber.func}}.\cr
+    of samples. See \code{\link{findAberrations}}.\cr
   \code{transitions}:\tab
     list containing 2 matrices of dimensions number of clones by number
-    of samples. See \code{\link{findTrans.func}}.\cr
+    of samples. See \code{\link{findTranslocations}}.\cr
   \code{amplifications}:\tab
     list containing a matrix of dimensions number of clones by number
-    of samples. See \code{\link{findAmplif.func}}.\cr
+    of samples. See \code{\link{findAmplifications}}.\cr
   }
 }
 

@@ -1,5 +1,5 @@
-\name{fitHMM}
-\alias{fitHMM}
+\name{runHomHMM}
+\alias{runHomHMM}
 \alias{mu1.func}
 \alias{states.hmm.func}
 %- Also NEED an `\alias' for EACH other topic documented here.
@@ -8,9 +8,9 @@
   This function fits an unsupervised Hidden Markov model to a given \code{\link[limma]{MAList}}
 }
 \usage{
-fitHMM(MA, vr = 0.01,
+runHomHMM(MA, vr = 0.01,
                 maxiter = 100, criteria = "AIC", delta = NA,
-                full.output = FALSE)
+                full.output = FALSE, eps = 0.01)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
@@ -26,10 +26,11 @@ fitHMM(MA, vr = 0.01,
     entered it defaults to 1.}
   \item{full.output}{if true the SegList output includes a probability
     that a clone is in its assigned state and a smoothed value for the
-    clone.
+    clone.}
+  \item{eps}{parameter controlling the convergence of the EM
+    algorithm. }
   }
-}
-}
+
 \seealso{
   \code{\link{runDNAcopy}}
   \code{\link{runGLAD}}

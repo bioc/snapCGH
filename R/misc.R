@@ -78,53 +78,13 @@ function (file, RG, path = NULL, sep="\t", quote="\"")
     RG
 }
 
-"minna" <-
-function (x) 
-min(x, na.rm = TRUE)
-
-"maxna" <-
-function (x) 
-max(x, na.rm = TRUE)
-
-"floor.func" <- 
-function (x, floor, x.na = x[!is.na(x)]) 
-{
-    x[!is.na(x)] <- ifelse(x.na > floor, floor, ifelse(x.na < 
-        -floor, -floor, x.na))
-    x
-}
-
-"maPalette" <- 
-function (low = "white", high = c("green", "red"), mid = NULL, 
-    k = 50) 
-{
-    low <- col2rgb(low)/255
-    high <- col2rgb(high)/255
-    if (is.null(mid)) {
-        r <- seq(low[1], high[1], len = k)
-        g <- seq(low[2], high[2], len = k)
-        b <- seq(low[3], high[3], len = k)
-    }
-    if (!is.null(mid)) {
-        k2 <- round(k/2)
-        mid <- col2rgb(mid)/255
-        r <- c(seq(low[1], mid[1], len = k2), seq(mid[1], high[1], 
-            len = k2))
-        g <- c(seq(low[2], mid[2], len = k2), seq(mid[2], high[2], 
-            len = k2))
-        b <- c(seq(low[3], mid[3], len = k2), seq(mid[3], high[3], 
-            len = k2))
-    }
-    rgb(r, g, b)
-}
-
 "mu1.func" <- 
 function (p) 
 {
     matrix(p, nrow = 1)
 }
 
-"summarize.clones" <- 
+"summarizeClones" <- 
 function (MA, resT = NULL, pheno = rep(1, ncol(MA)), 
     rsp.uniq = unique(pheno), thres = 0.25, factor = 2.5, all = length(rsp.uniq) == 
         1 && is.null(resT), titles = if (all) "all" else rsp.uniq) 
@@ -137,7 +97,7 @@ function (MA, resT = NULL, pheno = rep(1, ncol(MA)),
 #        thres <- factor * (sd.samples(aCGH.obj)$madGenome)
 #    }
 
-  data <- log2.ratios(MA)
+  data <- log2ratios(MA)
     datainfo <- MA$genes
     rsp.uniq <- sort(rsp.uniq)
     colmatr <- if (length(rsp.uniq) > 1) 
@@ -145,7 +105,7 @@ function (MA, resT = NULL, pheno = rep(1, ncol(MA)),
             rsp.uniq.level, 1, 0)))
     else matrix(rep(1, length(pheno)), ncol = length(pheno), 
         nrow = 1)
-    data.thres <- as.matrix(threshold.func(data, thresAbs = thres))
+    data.thres <- as.matrix(threshold(data, thresAbs = thres))
     bac.summary <- table.bac.func(dat = data.thres, colMatr = colmatr)
     if (!is.null(resT)) {
         res <- resT[order(resT$index), ]
@@ -168,7 +128,7 @@ function (MA, resT = NULL, pheno = rep(1, ncol(MA)),
     invisible(bac.summary)
 }
 
-"threshold.func" <- 
+"threshold" <- 
 function (dat, thresAbs) 
 {
     out <- matrix(0, nrow = nrow(dat), ncol = ncol(dat))
@@ -186,50 +146,7 @@ function (dat, thresAbs)
     })
 }
 
-"table.bac.func" <- 
-function (dat, colMatr) 
-{
-    nr <- if (nrow(colMatr) > 1) 
-        6 * (nrow(colMatr) + 1)
-    else 6
-    out <- matrix(0, nrow = nrow(dat), ncol = nr)
-    sample.ind <- which(colMatr[1, ] == 1)
-    if (nrow(colMatr) > 1) 
-        for (j in 2:nrow(colMatr)) sample.ind <- c(sample.ind, 
-            which(colMatr[j, ] == 1))
-    sample.ind <- unique(sample.ind)
-    dat.all <- as.matrix(dat[, sample.ind])
-    for (i in 1:nrow(dat)) {
-        len <- length(sample.ind)
-        vec <- dat.all[i, ]
-        out[i, 1] <- sum(!is.na(vec))
-        out[i, 2] <- lengthGain.na(vec)
-        out[i, 3] <- lengthLoss.na(vec)
-        out[i, 4] <- round(1 - prop.na(vec), 2)
-        out[i, 5] <- round(propGain.na(vec), 2)
-        out[i, 6] <- round(propLoss.na(vec), 2)
-        if (nr > 6) {
-            for (j in 1:nrow(colMatr)) {
-                vec <- dat[i, colMatr[j, ] == 1]
-                out[i, (6 * j + 1):(6 * j + 6)] <- c(sum(!is.na(vec)), 
-                  lengthGain.na(vec), lengthLoss.na(vec), round(1 - 
-                    prop.na(vec), 2), round(propGain.na(vec), 
-                    2), round(propLoss.na(vec), 2))
-            }
-        }
-    }
-    out
-}
-
-"sample.names" <-
-function(segList)
-colnames(segList[[1]])
-
-length.num.func <- 
-function (x, num) 
-sapply(num, function(i) sum(x == i, na.rm = TRUE))
-
-log2.ratios <- function(x) {
+log2ratios <- function(x) {
   if(!is.null(x$M.observed)){
     matrix(x$M.observed, nrow = nrow(x$M.observed), ncol = ncol(x$M.observed), byrow = FALSE, dimnames = dimnames(x$M.observed))
   }
@@ -238,7 +155,4 @@ log2.ratios <- function(x) {
   }
 }
 
-prop.num.func <-
-    function(x, num)
-    sapply(num, function(i) mean(x == i, na.rm = TRUE))
 

@@ -512,7 +512,7 @@ class.output <- matrix(nrow=length(actual.clones1),ncol=20)
   		datamatrix[,t]<-datamatrix[,t]+rnorm(length(datamatrix[,t]),mean=0,sd=sdev)
 		
 		# Save parameter values
-		samples[[t]] <- data.frame(p=p,log2.ratios=data)
+		samples[[t]] <- data.frame(p=p,log2ratios=data)
 
         # Write acutal classes
         

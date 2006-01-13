@@ -77,7 +77,7 @@ nmax=8, verbose=FALSE, ...)
 \seealso{
   \code{\link[GLAD]{glad}}
   \code{\link[limma]{MAList}}
-  \code{\link{fitHMM}}
+  \code{\link{runHomHMM}}
   \code{\link{runDNAcopy}}
   \code{\link[snapCGH:SegList]{SegList}}
 }

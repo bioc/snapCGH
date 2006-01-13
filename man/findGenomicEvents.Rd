@@ -21,14 +21,14 @@ findGenomicEvents(segList, maxChrom = 22, factor = 5, maxClones = 1,
     Object of class \code{\link[snapCGH:SegList]{SegList}}.
   }
   \item{maxChrom}{Highest chromosomal number to find events.}
-  \item{factor}{Determines outliers. See \code{\link{findOutliers.func}}.}
-  \item{maxClones}{Determines aberrations. See \code{\link{findAber.func}}.}
-  \item{maxLen}{Determines aberrations. See \code{\link{findAber.func}}.}
-  \item{absValSingle}{Determines amplifications. See \code{\link{findAmplif.func}}.}
-  \item{absValRegion}{Determines amplifications. See \code{\link{findAmplif.func}}.}
-  \item{diffVal1}{Determines amplifications. See \code{\link{findAmplif.func}}.}
-  \item{diffVal2}{Determines amplifications. See \code{\link{findAmplif.func}}.}
-  \item{maxSize}{Determines amplifications. See \code{\link{findAmplif.func}}.}
+  \item{factor}{Determines outliers. See \code{\link{findOutliers}}.}
+  \item{maxClones}{Determines aberrations. See \code{\link{findAberrations}}.}
+  \item{maxLen}{Determines aberrations. See \code{\link{findAberrations}}.}
+  \item{absValSingle}{Determines amplifications. See \code{\link{findAmplifications}}.}
+  \item{absValRegion}{Determines amplifications. See \code{\link{findAmplifications}}.}
+  \item{diffVal1}{Determines amplifications. See \code{\link{findAmplifications}}.}
+  \item{diffVal2}{Determines amplifications. See \code{\link{findAmplifications}}.}
+  \item{maxSize}{Determines amplifications. See \code{\link{findAmplifications}}.}
   \item{pChrom.min}{
     Determines whole chromosomal gains and losses. Chromosome should
     contain no transitions, have its absolute median equal or greater
@@ -41,11 +41,11 @@ findGenomicEvents(segList, maxChrom = 22, factor = 5, maxClones = 1,
     than \code{medChrom.min} and at least \code{medChrom.min} has to be
     greater or less than 0.
   }
-  \item{maxmadUse}{See: \code{\link{computeSD.func}}}
-  \item{maxmedUse}{See: \code{\link{computeSD.func}}}
-  \item{maxState}{See: \code{\link{computeSD.func}}}
-  \item{maxStateChange}{See: \code{\link{computeSD.func}}}
-  \item{minClone}{See: \code{\link{computeSD.func}}}
+  \item{maxmadUse}{See: \code{\link{computeSD}}}
+  \item{maxmedUse}{See: \code{\link{computeSD}}}
+  \item{maxState}{See: \code{\link{computeSD}}}
+  \item{maxStateChange}{See: \code{\link{computeSD}}}
+  \item{minClone}{See: \code{\link{computeSD}}}
 }
 \details{
   The default parameters generally work. Threshold for merging may be
@@ -114,27 +114,27 @@ findGenomicEvents(segList, maxChrom = 22, factor = 5, maxClones = 1,
   }
   \item{outliers}{
     list containing 3 matrices of dimensions number of clones by number
-    of samples. See \code{\link{findOutliers.func}}.
+    of samples. See \code{\link{findOutliers}}.
   }
   \item{aberrations}{
     list containing a matrix of dimensions number of clones by number
-    of samples. See \code{\link{findAber.func}}.
+    of samples. See \code{\link{findAberrations}}.
   }
   \item{transitions}{
     list containing 2 matrices of dimensions number of clones by number
-    of samples. See \code{\link{findTrans.func}}.
+    of samples. See \code{\link{findTranslocations}}.
   }
   \item{amplifications}{
     list containing a matrix of dimensions number of clones by number
-    of samples. See \code{\link{findAmplif.func}}.
+    of samples. See \code{\link{findAmplifications}}.
   }
 }
 \seealso{
-  \code{\link{fitHMM}}
+  \code{\link{runHomHMM}}
   \code{\link{mergeStates}}
-  \code{\link{findAber.func}}
-  \code{\link{findTrans.func}}
-  \code{\link{findAmplif.func}}
-  \code{\link{findOutliers.func}}
+  \code{\link{findAberrations}}
+  \code{\link{findTranslocations}}
+  \code{\link{findAmplifications}}
+  \code{\link{findOutliers}}
 }
 \keyword{models}

@@ -1,5 +1,5 @@
-\name{fga.func}
-\alias{fga.func}
+\name{fractionAltered}
+\alias{fractionAltered}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Function to compute fraction of genome altered for each sample}
 \description{
@@ -7,7 +7,7 @@
  are gained and lost for each sample. 
 }
 \usage{
-fga.func(input, thres = 0.25, factor = 2.5, 
+fractionAltered(input, thres = 0.25, factor = 2.5, 
          samplenames = colnames(input$M), 
          chrominfo = chrominfo.basepair)
 }
@@ -44,7 +44,7 @@ fga.func(input, thres = 0.25, factor = 2.5,
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 
-%\seealso{\code{\link{plotSummaryProfile}}}
+%\seealso{\code{\link{plotSegmentationSummary}}}
 
 \keyword{htest}
 

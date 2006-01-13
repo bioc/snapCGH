@@ -26,10 +26,10 @@
     else {
       for(i in 1:nchr){
         current <- segList[segList$genes$Chr == i,]
-        for(j in 2:length(segList[segList$genes$Chr == i,1])){
-          segments(y0 = current$M.predicted[(j-1),1],
+        for(j in 2:length(segList[segList$genes$Chr == i,array])){
+          segments(y0 = current$M.predicted[(j-1),array],
                    x0 = (current$genes$Position[(j-1)]+chrom.start[i])/1000,
-                   y1 = current$M.predicted[(j),1],
+                   y1 = current$M.predicted[(j),array],
                    x1 = (current$genes$Position[(j)]+chrom.start[i])/1000,
                    col = "blue", lwd = 2) 
         }
@@ -43,7 +43,7 @@ function (input, array = 1, naut = 22,
     ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA)) 
 {
   
-  data <- log2.ratios(input)
+  data <- log2ratios(input)
   datainfo <- input$genes
     
   ord <- order(datainfo$Chr, datainfo$Position)
@@ -63,6 +63,7 @@ function (input, array = 1, naut = 22,
 #code dealing with the spot types functionality
         valStore <- attr(status,"values")
         colStore <- attr(status,"col")
+        status <- status[ord]
         status <- status[-ind.unmap]
         attr(status,"values") <- valStore
         attr(status,"col") <- colStore
@@ -73,6 +74,7 @@ function (input, array = 1, naut = 22,
   if (Y) nchr <- nchr + 1
   
   if (!is.na(chrom.to.plot)){
+    status <-  NULL
     nchr <- chrom.to.plot 
     data <- matrix(data[chrom==nchr,], nrow = nrow(as.matrix(data[chrom==nchr,])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
     clone.genomepos <- kb[chrom == nchr]
@@ -168,7 +170,7 @@ function (input, array = 1, naut = 22,
 }
 
 
-plotSummaryProfile <-
+plotSegmentationSummary <-
     function(input, geList,
              response = as.factor(rep("All", ncol(input))),
              titles = unique(response[!is.na(response)]), X = TRUE,
@@ -221,7 +223,7 @@ plotSummaryProfile <-
     attach(df.not.na)
     numchromchange <- numchromgain + numchromloss
 
-    deletions <- threshold.func(log2.ratios(input), thresAbs = thresAbs)
+    deletions <- threshold(log2ratios(input), thresAbs = thresAbs)
     
     boxplot.this <-
         function(events, title, sig = 6)
@@ -260,7 +262,7 @@ plotSummaryProfile <-
 #############################################
     ##Plot3:
 
-    out <- as.data.frame(fga.func(input, factor=factor,
+    out <- as.data.frame(fractionAltered(input, factor=factor,
         chrominfo=chrominfo))[ which(!is.na(response)), ]
     boxplot.this(out$gainP, "Fraction of Genome Gained")
     boxplot.this(out$lossP, "Fraction of Genome Lost")
@@ -363,7 +365,7 @@ plotSummaryProfile <-
 #returns a single value and the plotting function doesn't accept the
 #hcl object.
 
-"clusterGenome" <-
+"heatmapGenome" <-
 function (input, response = as.factor(rep("All", ncol(input))), 
     chrominfo = chrominfo.basepair, cutoff = 1, lowCol = "blue", 
    highCol = "yellow", midCol = "white", ncolors = 50, byclass = FALSE, 
@@ -398,9 +400,9 @@ function (input, response = as.factor(rep("All", ncol(input))),
     }
     datainfo <- input$genes
  #   if (imp) 
- #       data <- log2.ratios.imputed(input)
- #   else data <- log2.ratios(input)
-    data <- log2.ratios(input)
+ #       data <- log2ratios.imputed(input)
+ #   else data <- log2ratios(input)
+    data <- log2ratios(input)
     indUse <- vector()
     chromb <- 0
     for (i in 1:length(vecchrom)) indUse <- c(indUse, which(datainfo$Chr == 
@@ -514,13 +516,13 @@ function (input, response = as.factor(rep("All", ncol(input))),
 ##        Y = Y, X = X, status = status, values = values, pch = pch, col = col, cex = cex, chrominfo = chrominfo, chrom.to.plot = chrom.to.plot, 
 ##        Z = Z, xlower = xlower, xupper = xupper)
 ##    identify(input$genes[input$genes$Chr == chrom.to.plot, colnames(input$genes) == "Position"]/1000,
-##             log2.ratios(input)[input$genes$Chr == chrom.to.plot, samples], labels = label)
+##             log2ratios(input)[input$genes$Chr == chrom.to.plot, samples], labels = label)
 ##}
 
 "plotSegmentationStates" <-
 function (segList, geList, array=1, chr = 1:length(unique(segList$genes$Chr)), 
     maxChrom = 22, chrominfo = chrominfo.basepair, 
-    yScale = c(-2, 2), samplenames = sample.names(segList), 
+    yScale = c(-2, 2), samplenames = colnames(segList), 
     xlower = 0, xupper = chrominfo$length[chr[j]]/1000) 
 {
     if (length(array) > 1) 

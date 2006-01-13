@@ -1,6 +1,6 @@
-\name{plotFreqStat}
-\alias{plotFreqStat}
-%- \alias{threshold.func}
+\name{plotGainLoss}
+\alias{plotGainLoss}
+%- \alias{threshold}
 \alias{changeProp.func}
 \alias{changeProp.overall.func}
 \alias{table.bac.func}
@@ -19,8 +19,8 @@
   changes.
 }
 \usage{
-plotFreqStat(segList, resT = NULL, pheno = rep(1,
-                 ncol(log2.ratios(segList))), chrominfo =
+plotGainLoss(segList, resT = NULL, pheno = rep(1,
+                 ncol(log2ratios(segList))), chrominfo =
                  chrominfo.basepair, X = TRUE, Y = FALSE, rsp.uniq =
                  unique(pheno), all = length(rsp.uniq) == 1 &&
                  is.null(resT), titles = if (all) "All Samples" else

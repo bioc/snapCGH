@@ -1,132 +1,12 @@
-create.resT <-
-    function(resT.raw, p.adjust.method = "fdr")
-{
-    
-    rawp <- resT.raw[ 2, ]
-    adjp <- p.adjust(rawp, p.adjust.method)
-    teststat <- resT.raw[ 1, ]
-    
-    data.frame(index = 1:ncol(resT.raw),
-               teststat = teststat,
-               rawp = rawp,
-               adjp = adjp
-               )[ order(adjp, rawp, teststat), ]
-
-}
-
-aCGH.test <- function(MA, rsp, test = c("survdiff", "coxph", "linear.regression"),p.adjust.method = "fdr", subset = NULL, strt = NULL, ...)
-{
-
-    l2r <- as.matrix(log2.ratios(MA))
-    if (!is.null(subset))
-        l2r <- l2r[ subset, ]
-    test <- match.arg(test)
-    pheno <- phenotype(MA)
-    resT <- 
-        sapply(1:nrow(l2r),
-               function(i) {
-                   
-###                   if (i %% 100 == 0)
-###                       print(i)
-                   clone <- l2r[ i, ]
-                   fmla <-
-                       if (!is.null(strt))
-                           rsp ~ clone + strata(strt)
-                       else
-                           rsp ~ clone
-                   switch(test,
-                          survdiff = {
-                              
-                              survdiff.fit <- try(survdiff(fmla, ...))
-                              if (inherits(survdiff.fit, "try-error"))
-                                  c(0, 1)
-                              else
-                              {
-                                  
-                                  etmp <- 
-                                      if (is.matrix(survdiff.fit$obs))
-                                          apply(survdiff.fit$exp,
-                                                1,
-                                                sum)
-                                      else
-                                          survdiff.fit$exp
-                                  c(survdiff.fit$chisq,
-                                    1 - pchisq(survdiff$chisq,
-                                               sum(etmp > 0) - 1))
-                                  
-                              }
-                              
-                          },
-                          coxph = {
-
-                              coxph.fit <- try(coxph(fmla, ...))
-                              if (inherits(coxph.fit, "try-error"))
-                                  c(0, 1)
-                              else
-                              {
-                                  cf <-  coxph.fit$coef
-				  cf.se <- sqrt(coxph.fit$var)
-				  cf.std <- cf/cf.se
-				  c(cf.std, 2*(1-pnorm(abs(cf.std))))
-                                  #logtest <-
-                                  #    -2 * (coxph.fit$loglik[1] -
-                                  #          coxph.fit$loglik[2])
-                                  #beta <- coxph.fit$coef
-                                  #df <- length(beta[!is.na(beta)])
-                                  #c(logtest, 1 - pchisq(logtest, df))
-                                  
-                              }
-                              
-                          },
-                          linear.regression = {
-                              
-				reg <- lm(fmla, ...)
-				cf <- (summary(reg))$coef
-				c(cf[2,3], cf[2,4])
-                        ##      fstat <-
-                        ##       summary(lm(clone ~ rsp, ...))$fstatistic
-                        ##   c(fstat[1],
-                        ##    1 - pf(fstat[1], fstat[2], fstat[3]))
-                              
-                          }
-###                          logistic.regression = {
-###
-###                              glm.fit <-
-###                                  try(glm(fmla, family=binomial()))
-###                              if (inherits(glm.fit, "try-error"))
-###                                  c(0, 1)
-###                              else
-###                              {
-###                                  
-###                                  stat <-
-###                                      2 * (glm.fit$null.deviance -
-###                                           glm.fit$deviance)
-###                                  c(stat,
-###                                    1 - pchisq(stat,
-###                                               glm.fit$df.null -
-###                                               glm.fit$df.residual))
-###
-###                              }
-###                              
-###                          }
-                          )
-                   
-               }
-               )
-    
-    create.resT(resT, p.adjust.method)
-    
-}
-
-fga.func <- function(input, thres=0.25, factor=2.5, samplenames = colnames(input$M), chrominfo=chrominfo.basepair) {
+fractionAltered <- function(input, thres=0.25, factor=2.5, samplenames = colnames(input$M), chrominfo=chrominfo.basepair) {
 
 #        #check if sd.samples are non-empty:
 	#if (!is.null(sd.samples(aCGH.obj)) && (factor > 0)) {
 #		thres <- factor*(sd.samples(aCGH.obj)$madGenome)
 #	}
     
-	data <- log2.ratios(input)
-	data.thres <- threshold.func(data, thresAbs=thres)
+	data <- log2ratios(input)
+	data.thres <- threshold(data, thresAbs=thres)
 	datainfo <- input$genes
 	ord <- order(datainfo$Chr,datainfo$Position)
 	datainfo <- datainfo[ord,]
@@ -155,52 +35,8 @@ fga.func <- function(input, thres=0.25, factor=2.5, samplenames = colnames(input
 	list(gainP = gain, lossP = loss)
 }
 
-gainLoss <-
-    function (input, cols = c(1:ncol(input)), thres = 0.25)
-{
-
-    if (length(thres) == 1)
-        thres <- rep(thres, ncol(input))
-    if (length(thres) != ncol(input))
-        stop("Error: number of thresholds is not the same as number\
-of samples")
-    if(class(input) == "aCGHList"){
-      dt <- input$M
-    }
-    else if (class(input) == "SegList"){
-      dt <- input$M.predicted
-    }
-    else{
-      dt <- as.matrix(input[,cols])
-    }
-#    dt <- as.matrix(input[ ,cols ])
-#    dt <- matrix(input[,cols], nrow = nrow(input), ncol= length(cols), byrow = FALSE)
-    thr <- thres[cols]
-    loss <- gain <- rep(0, nrow(dt))
-    
-    for (i in 1:nrow(dt))
-        if (!all(is.na(dt[ i, ])))
-        {
-            
-            x <- dt[ i, ]
-            th <- thr[!is.na(x)]
-            x <- x[!is.na(x)]
-            tmp.gain <- x >= th
-            gain[i] <- mean(tmp.gain)
-            #if (any(tmp.gain))
-            #    gain.med[i] <- quantile(x[tmp.gain], 1 - quant)
-            tmp.loss <- x <= -th
-            loss[i] <- mean(tmp.loss)
-            #if (any(tmp.loss))
-            #    loss.med[i] <- quantile(x[tmp.loss], quant)
-            
-        }
-    
-    list(gainP = gain,lossP = loss)    
-}
-
-"plotFreqStat" <-
-function (segList, resT = NULL, pheno = rep(1, ncol(log2.ratios(segList))), 
+"plotGainLoss" <-
+function (segList, resT = NULL, pheno = rep(1, ncol(log2ratios(segList))), 
     chrominfo = chrominfo.basepair, X = TRUE, Y = FALSE, 
     rsp.uniq = unique(pheno), all = length(rsp.uniq) == 1 && 
         is.null(resT), titles = if (all) "All Samples" else rsp.uniq, 
@@ -223,7 +59,7 @@ function (segList, resT = NULL, pheno = rep(1, ncol(log2.ratios(segList))),
         loss.high = "grey50", abline1 = "grey50", abline2 = "grey50", 
         mtext = "black", kb.loc = "black", abline3 = "black", 
         abline4 = "grey50", )
-    data <- log2.ratios(segList)
+    data <- log2ratios(segList)
     datainfo <- segList$genes
     rsp.uniq <- sort(rsp.uniq)
     colmatr <- if (length(rsp.uniq) > 1) 
@@ -354,21 +190,5 @@ function (segList, resT = NULL, pheno = rep(1, ncol(log2.ratios(segList))),
                   2]), line = 0.3, col = col.scheme$mtext, cex.main = 0.5)
             else mtext("Y", side = 1, at = (chrom.mid[numaut + 
                 2]), line = 0.3, col = col.scheme$mtext, cex.main = 0.5)
-    }
-}
-
-is.even <-
-function (x) 
-{
-    if (is.numeric(x)) {
-        if (x%%2 == 0) {
-            TRUE
-        }
-        else {
-            FALSE
-        }
-    }
-    else {
-        print("Warning: Input must be an integer value")
     }
 }

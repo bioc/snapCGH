@@ -1,12 +1,12 @@
-\name{threshold.func}
-\alias{threshold.func}
+\name{threshold}
+\alias{threshold}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Function to indicate gain or loss for each clone for each sample}
 \description{
  This function outputs a matrix containing gain/loss indicator for each clone and sample. 
 }
 \usage{
-threshold.func(dat, thresAbs)
+threshold(dat, thresAbs)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,13 +25,13 @@ threshold.func(dat, thresAbs)
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 
-%\seealso{\code{\link{plotFreqStat}}}
+%\seealso{\code{\link{plotGainLoss}}}
 \examples{
 
 %data(colorectal)
 
 %factor <- 3
-%tbl <- threshold.func(log2.ratios(colorectal),posThres=factor*(sd.samples(colorectal)$madGenome))
+%tbl <- threshold(log2ratios(colorectal),posThres=factor*(sd.samples(colorectal)$madGenome))
 %rownames(tbl) <- clone.names(colorectal)
 %colnames(tbl) <- sample.names(colorectal)
 %tbl[1:5,1:5]
