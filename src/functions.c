@@ -11,9 +11,9 @@ http://archives.math.utk.edu/software/msdos/numerical.analysis/praxis/.html */
 #include <time.h>
 #include "machine.h"
 
-#ifdef MSDOS
-static double e[N];	/* to save stack space */
-#endif
+//#ifdef MSDOS
+//static double e[N];	/* to save stack space */
+//#endif
 
 /* control parameters */
 double tol = SQREPSILON,
@@ -21,7 +21,7 @@ double tol = SQREPSILON,
        step = 1.0;
 int    ktm = 1,
        prin = 0,
-       maxfun = 1,
+       maxfun = 0,
        illc = 0;
        
 /* some global variables */
@@ -48,7 +48,6 @@ rand1()	/* return random no between 0 and 1 */
 {
   float x;
   //  return (double)(rand()%(8192*2))/(double)(8192*2);
-  srand( (unsigned)time( NULL ) );
   x = (float) rand()/RAND_MAX;
   return(x);
 }
@@ -87,9 +86,9 @@ void minfit(int n, double eps, double tol, double ab[N][N], double q[N])
 {
    int l, kt, l2, i, j, k;
    double c, f, g, h, s, x, y, z;
-#ifndef MSDOS
+
    double e[N];		/* plenty of stack on a vax */
-#endif
+
 
    /* householder's reduction to bidiagonal form */
    l = 0;
@@ -172,25 +171,6 @@ TestFsplitting:
 	      goto TestFconvergence;
 	   if (fabs(q[l-1]) <= eps)
    	      break;	/* goto Cancellation; */
-       }
-Cancellation:
-       c = 0.0; s = 1.0;
-       for (i=l; i<=k; i++) {
-           f = s * e[i]; e[i] *= c;
-	   if (fabs(f) <= eps)
-	      goto TestFconvergence;
-	   g = q[i];
-   	   if (fabs(f) < fabs(g)) {
-	      double fg = f/g;
-	      h = fabs(g)*sqrt(1.0+fg*fg);
-	   }
-	   else {
-	      double gf = g/f;
-	      h = (f!=0.0 ? fabs(f)*sqrt(1.0+gf*gf) : 0.0);
-	   }
-	   q[i] = h;
-	   if (h == 0.0) { h = 1.0; g = 1.0; }
-	   c = g/h; s = -f/h;
        }
 TestFconvergence:
        z = q[k];
@@ -1472,6 +1452,7 @@ void one_state_praxis(int *nrow, double *xin, double *data, double *result){
   ext->data = data;
   ext->nrow = *nrow;
 
+  srand( (unsigned)time( NULL ) );
   *result = praxis(fr_one, xin, 2, ext);
 }
 
@@ -1484,6 +1465,7 @@ void two_states_praxis(int *nrow, double *xin, double *data, double *covars, dou
   ext->nrow = *nrow;
   ext->covars1 = covars;
 
+  srand( (unsigned)time( NULL ) );
   *result = praxis(fr_two, xin, 8, ext);
 }
 
@@ -1496,6 +1478,7 @@ void three_states_praxis(int *nrow, double *xin, double *data, double *covars, d
   ext->nrow = *nrow;
   ext->covars1 = covars;
 
+  srand( (unsigned)time( NULL ) );
   *result = praxis(fr_three, xin, 15, ext);
 }
 
@@ -1508,6 +1491,7 @@ void four_states_praxis(int *nrow, double *xin, double *data, double *covars, do
   ext->nrow = *nrow;
   ext->covars1 = covars;
 
+  srand( (unsigned)time( NULL ) );
   *result = praxis(fr_four, xin, 24, ext);
 }
 
@@ -1520,5 +1504,6 @@ void five_states_praxis(int *nrow, double *xin, double *data, double *covars, do
   ext->nrow = *nrow;
   ext->covars1 = covars;
 
+  srand( (unsigned)time( NULL ) );
   *result = praxis(fr_five, xin, 35, ext);
 }
