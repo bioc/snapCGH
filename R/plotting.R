@@ -1,5 +1,5 @@
 "plotSegmentedGenome" <-
-  function(segList, array=1, naut=22, Y=TRUE, X=TRUE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
+  function(segList, array=1, naut=22, Y=FALSE, X=FALSE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
     ylim=c(-2, 2), ylb="Log2Ratio", chrom.to.plot=NA, xlim=c(0,NA))
   {
     plotGenome(input=segList, array=array, naut=naut, Y=Y, X=X, status=status, values=values,
@@ -104,9 +104,9 @@ function (input, array = 1, naut = 22,
   
  
   if (!is.na(chrom.to.plot)){
-    plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", ylab = "" , col = "black")
+    plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", ylab = "" , col = "black", bg="white", mar = c(0,0,0,0))
     mtext(chrom.to.plot, side = 1, line = 0.3, col = "red")}  else {
-      plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, col = "black")
+      plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, col = "black", mar=c(0,0,0,0), bg="white")
       for (i in seq(1, naut, b = 2)) mtext(i, side = 1, at = chrom.mid[i]/1000, line = 0.3, col = "red")
       for (i in seq(2, naut, b = 2)) mtext(i, side = 3, at = chrom.mid[i]/1000, line = 0.3, col = "red")}
 

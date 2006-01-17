@@ -31,25 +31,25 @@ function (sample, chrom, dat, datainfo = clones.info, covariates,
   	list(x = res[[2]],val = res[[4]])
     	}
 
-    two.NM <- function(nrow, xin, data, covars){
-      res <- .C("two_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1), PACKAGE = "snapCGH")
- 	list(x = res[[2]],val = res[[5]])
+    two.NM <- function(nrow, xin, data, covars, var.fixed){
+      res <- .C("two_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), as.integer(var.fixed), result = double(1), PACKAGE = "snapCGH")
+ 	list(x = res[[2]],val = res[[6]])
 	}
 
-    three.NM <- function(nrow, xin, data, covars){
-      res <- .C("three_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1), PACKAGE = "snapCGH")
+    three.NM <- function(nrow, xin, data, covars, var.fixed){
+      res <- .C("three_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), as.integer(var.fixed), result = double(1), PACKAGE = "snapCGH")
 
-	list(x = res[[2]],val = res[[5]])
+	list(x = res[[2]],val = res[[6]])
 	}
 
-    four.NM <- function(nrow, xin, data, covars){
-      res <- .C("four_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1), PACKAGE = "snapCGH")
- 	list(x = res[[2]],val = res[[5]])
+    four.NM <- function(nrow, xin, data, covars, var.fixed){
+      res <- .C("four_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), as.integer(var.fixed), result = double(1), PACKAGE = "snapCGH")
+ 	list(x = res[[2]],val = res[[6]])
 	}
 
-    five.NM <- function(nrow, xin, data, covars){
-      res <- .C("five_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), result = double(1),  PACKAGE = "snapCGH")
- 	list(x = res[[2]],val = res[[5]])	
+    five.NM <- function(nrow, xin, data, covars, var.fixed){
+      res <- .C("five_states_praxis", as.integer(nrow), as.double(xin), as.double(data), as.double(covars), as.integer(var.fixed), result = double(1), PACKAGE = "snapCGH")
+ 	list(x = res[[2]],val = res[[6]])	
 	}
 
     # Initialisation for one state
@@ -137,10 +137,10 @@ z5.init <- c(init.mean.five[,1],init.var.five,-0.7,-0.7,-0.7,-0.7,-3.6,-3.6,-3.6
     
 
     z1.pre <- one.NM(numobs,z1.init ,y)
-    z2.pre <- two.NM(numobs, z2.init, y, covars)
-    z3.pre <- three.NM(numobs,z3.init,y,covars)
-    z4.pre <- four.NM(numobs,z4.init,y,covars)
-    z5.pre <- five.NM(numobs,z5.init,y,covars)
+    z2.pre <- two.NM(numobs, z2.init, y, covars, var.fixed)
+    z3.pre <- three.NM(numobs,z3.init,y,covars, var.fixed)
+    z4.pre <- four.NM(numobs,z4.init,y,covars, var.fixed)
+    z5.pre <- five.NM(numobs,z5.init,y,covars, var.fixed)
     
     #z1.pre <- one.state(y,iterlim)
     #z2.pre <- two.states(y,covars,iterlim,var.fixed)
@@ -169,7 +169,6 @@ z5.init <- c(init.mean.five[,1],init.var.five,-0.7,-0.7,-0.7,-0.7,-3.6,-3.6,-3.6
     if (length(names(z5)) == 0) {
         z5$minus.logLikelihood <- NA
     }
-
         
     for (nl in 1:nlists) {
         if ((aic) && (nl == 1)) {
