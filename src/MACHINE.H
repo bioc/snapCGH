@@ -8,6 +8,7 @@ typedef struct
 {
   double *data;
   double *covars1;
+  int var;
   int nrow;
 }
 Exts;
