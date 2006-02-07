@@ -1,4 +1,4 @@
-runGLAD <- function(MA, smoothfunc="aws", base=FALSE, sigma = NULL, bandwidth=10, round=2, lambdabreak=8, lambdacluster=8, lambdaclusterGen=40, type="tricubic", param=c(d=6), alpha=0.001, method="centroid", nmax=8, verbose=FALSE, ...)
+runGLAD <- function(MA, smoothfunc="lawsglad", base=FALSE, sigma = NULL, bandwidth=10, round=2, lambdabreak=8, lambdacluster=8, lambdaclusterGen=40, type="tricubic", param=c(d=6), alpha=0.001, method="centroid", nmax=8, verbose=FALSE, ...)
 
 {
 
@@ -10,9 +10,16 @@ runGLAD <- function(MA, smoothfunc="aws", base=FALSE, sigma = NULL, bandwidth=10
   MA$M[,i] <- temp
   }
   
+ ### creating the rownames to be used in segList$num.states ####
+    rowtemp <- vector()
+    rowtemp[1:length(unique(MA$genes$Chr))] <- paste("Chrom",unique(MA$genes$Chr))
+  
     template = matrix(NA,nrow(MA$M),ncol(MA),dimnames=dimnames(MA))
-    segList <- list(M.predicted=template,state=template,M.observed=template, num.states=matrix(NA,nrow = length(unique(MA$genes$Chr)), ncol = ncol(MA), dimnames = dimnames(MA)))
+    segList <- list(M.predicted=template,state=template,M.observed=template,
+                    num.states=matrix(NA, length(unique(MA$genes$Chr)),
+                      ncol = ncol(log2ratios(MA)), dimnames = list(rowtemp, colnames(MA))))
     segList$M.observed <- log2ratios(MA)
+
     for(k in 1:ncol(log2ratios(MA))){
       
       cat("Analyzing sample: ", k, "\n")
@@ -26,7 +33,8 @@ runGLAD <- function(MA, smoothfunc="aws", base=FALSE, sigma = NULL, bandwidth=10
     segList$M.predicted[,k] <- out$profileValues$Smoothing
     segList$state[,k] <- out$profileValues$Level
       for(i in 1:length(unique(MA$genes$Chr))){
-        segList$num.states[i,k] <- length(unique(out$profileValues$Level[MA$genes$Chr == i]))
+#        segList$num.states[i,1] <- paste("Chrom", unique(MA$genes$Chr[i]))
+        segList$num.states[i,k] <- length(unique(out$profileValues$Level[MA$genes$Chr == unique(MA$genes$Chr[i])]))
       }
 }
     segList$genes <- MA$genes

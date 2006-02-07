@@ -2,10 +2,12 @@
 function(N,chrominfo=NULL,prb.short.tiled=0.5,prb.long.tiled=0.5,non.tiled.lower.res=0.9,non.tiled.upper.res=1.1,
                            length.clone.lower=0.05,length.clone.upper=0.2,tiled.lower.res=-0.05,tiled.upper.res=0,sd=NULL,output=FALSE,
                           prb.proportion.tiled=c(0.2,0.2,0.2,0.2,0.2),zerolengthnontiled=NULL,zerolengthtiled=NULL,
-                          nonzerolengthnontiled=NULL,nonzerolengthtiled=NULL){
+                          nonzerolengthnontiled=NULL,nonzerolengthtiled=NULL, seed=1){
 
 # Randomly select one of the 22 autosomal chromsomes to be our simulation template.
 
+set.seed(seed)
+  
 if (is.null(chrominfo)) 
 data(mod.chrominfo) else {
 mod.chrominfo <- chrominfo}
@@ -516,9 +518,15 @@ class.output <- matrix(nrow=length(actual.clones1),ncol=20)
 
         # Write acutal classes
         
-       if (class == 1) class.output[,t] <- actual.clones1 else {if (class == 2)
-             class.output[,t] <-actual.clones2 else {if (class == 3)
-                   class.output[,t] <- actual.clones3 else {if (class == 4)
+       if (class+1 == 1) class.output[,t] <- actual.clones1
+       else {
+         if (class+1 == 2)
+             class.output[,t] <-actual.clones2
+         else {
+           if (class+1 == 3)
+                   class.output[,t] <- actual.clones3
+           else {
+             if (class+1 == 4)
                          class.output[,t] <- actual.clones4 else {class.output[,t] <- actual.clones5}}}}
 
 

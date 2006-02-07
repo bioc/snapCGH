@@ -10,59 +10,6 @@
   }
 }
 
-#workhorse function:
-#Combining two levels with given medians in a given samples
-
-combine.func=function(diff,vecObs, vecPredNow, mnNow, mn1, mn2, pv.thres=0.00001, thresAbs=0)
-#vecObs: vector of observed log2ratios 
-#vecPredNow: current vector of predicted values (median of the corresponding
-#            segment
-#mnNow:  current vector of the segment values (medians)
-#mn1: median of the first segment to test for merge
-#mn2: median of the second segment to test for merge
-#pv.thres: combine two segments if p-value for wilcoxon rank sum test between
-#          the observed values falling into two segments is greater 
-#          than  pv.thres
-#OR
-#thresAbs: combine two segments is difference between their medians is less or 
-#          equal than thresAbs
-{
-#observed values in the first segment
-	vec1=vecObs[which(vecPredNow==mn1)]
-#observed values in the second segment
-	vec2=vecObs[which(vecPredNow==mn2)]
-	
-#if difference between segment medians does not exceed thresAbs, then set 
-#pv=1
-	if (diff<=thresAbs) {
-		pv=1
-	}
-#otherwise test for difference in mean based on observed values
-	else {
-		if((length(vec1) > 10 & length(vec2) > 10) | sum(length(vec1),length(vec2))>100){
-			pv=wilcox.test(vec1,vec2)$p.value
-		}
-		else{pv=wilcox.test(vec1,vec2,exact=T)$p.value  }	#/10^max(mn1,mn2)
-		if(length(vec1) <= 3 | length(vec2) <= 3){pv=0}		
-	}
-	index.merged<-numeric()
-#if p-value exceeds pv.thres
-	if (pv > pv.thres) 	{
-#combine observed values
-		vec=c(vec1,vec2)
-# Index values to be updated
-		index.merged=which((vecPredNow==mn1) | (vecPredNow==mn2))		
-#update predicted values by median of the observed values
-		vecPredNow[index.merged]=median(vec, na.rm=TRUE)
-#update segment medians  median of the observed values and remove one of the duplicates
-		mnNow[which((mnNow==mn1) | (mnNow==mn2))]=median(vec, na.rm=TRUE)
-		mnNow=unique(mnNow)
-	}
-	list(mnNow=mnNow, vecPredNow=vecPredNow, pv=pv)
-}
-
-
-
 ########################
 
 

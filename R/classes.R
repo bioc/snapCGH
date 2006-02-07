@@ -77,4 +77,23 @@ cbind.SegList <- function(..., deparse.level=1){
   }
 }
 
-
+#Taken from Limma
+#I can't get it to use the print.LargeDataObject method for a SegList
+#when a NAMESPACE is used.  Hopefully this will be sorted in the future.
+print.SegList <- function(x, ...) {
+	cat("An object of class \"",class(x),"\"\n",sep="")
+	for (what in names(x)) {
+		y <- x[[what]]
+		cat("$",what,"\n",sep="")
+		printHead(y)
+		cat("\n")
+	}
+	for (what in setdiff(slotNames(x),".Data")) {
+		y <- slot(x,what)
+		if(length(y) > 0) {
+			cat("@",what,"\n",sep="")
+			printHead(y)
+			cat("\n")
+		}
+	}
+}

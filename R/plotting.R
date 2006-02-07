@@ -1,8 +1,26 @@
+
 "plotSegmentedGenome" <-
-  function(segList, array=1, naut=22, Y=FALSE, X=FALSE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
-    ylim=c(-2, 2), ylb="Log2Ratio", chrom.to.plot=NA, xlim=c(0,NA))
+  function(..., array=1, naut=22, Y=FALSE, X=FALSE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
+    ylim=c(-2, 2), ylb="Log2Ratio", chrom.to.plot=NA, xlim=c(0,NA), colors = NULL)
   {
-    plotGenome(input=segList, array=array, naut=naut, Y=Y, X=X, status=status, values=values,
+## Probably want some sort of key to indicate which line represents which SegList
+## Do this later. MS 25-01-06
+    
+    objects <- list(...)
+    nobjects <- length(objects)
+
+    #### check they are SegLists ####
+    for (i in 1:nobjects){
+      if(class(objects[[i]]) != "SegList"){
+        stop("Objects must be of class SegList")}
+    }
+
+    ### assigning colours, if not specified plot everythign in blue for now #####
+    if(is.null(colors)){
+      colors = rep(c("blue"), nobjects)
+    }
+     
+    genomePlot(input=objects[[1]], array=array, naut=naut, Y=Y, X=X, status=status, values=values,
                chrominfo=chrominfo, ylim=ylim, ylb=ylb, chrom.to.plot=chrom.to.plot, xlim=xlim,
                pch=pch, col=col, cex=cex)
 
@@ -13,31 +31,35 @@
 
 ##If there is only one chromosome to be plotted.    
     if(!is.na(chrom.to.plot)) {
-      current <- segList[segList$genes$Chr == chrom.to.plot,]
-      for(j in 2:length(segList[segList$genes$Chr == chrom.to.plot,array])){
-        segments(y0 = current$M.predicted[(j-1),array],
-                 x0 = (current$genes$Position[(j-1)])/1000,
-                 y1 = current$M.predicted[(j),array],
-                 x1 = (current$genes$Position[(j)])/1000,
-                 col = "blue", lwd = 2)
+      for(k in 1:nobjects){
+        current <- objects[[k]][objects[[k]]$genes$Chr == chrom.to.plot,]
+        for(j in 2:length(objects[[k]][objects[[k]]$genes$Chr == chrom.to.plot,array])){
+          segments(y0 = current$M.predicted[(j-1),array],
+                   x0 = (current$genes$Position[(j-1)])/1000,
+                   y1 = current$M.predicted[(j),array],
+                   x1 = (current$genes$Position[(j)])/1000,
+                   col = colors[k], lwd = 2)
+        }
       }
     }
-##Show the entire genome.
+##Otherwise show the entire genome.
     else {
-      for(i in 1:nchr){
-        current <- segList[segList$genes$Chr == i,]
-        for(j in 2:length(segList[segList$genes$Chr == i,array])){
-          segments(y0 = current$M.predicted[(j-1),array],
-                   x0 = (current$genes$Position[(j-1)]+chrom.start[i])/1000,
-                   y1 = current$M.predicted[(j),array],
-                   x1 = (current$genes$Position[(j)]+chrom.start[i])/1000,
-                   col = "blue", lwd = 2) 
+      for(k in 1:nobjects){
+        for(i in 1:nchr){
+          current <- objects[[k]][objects[[k]]$genes$Chr == i,]
+          for(j in 2:length(objects[[k]][objects[[k]]$genes$Chr == i,array])){
+            segments(y0 = current$M.predicted[(j-1),array],
+                     x0 = (current$genes$Position[(j-1)]+chrom.start[i])/1000,
+                     y1 = current$M.predicted[(j),array],
+                     x1 = (current$genes$Position[(j)]+chrom.start[i])/1000,
+                     col = colors[k], lwd = 2) 
+          }
         }
       }
     }
   }
 
-"plotGenome" <-
+"genomePlot" <-
 function (input, array = 1, naut = 22, 
     Y = TRUE, X = TRUE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
     ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA)) 
@@ -76,7 +98,7 @@ function (input, array = 1, naut = 22,
   if (!is.na(chrom.to.plot)){
     status <-  NULL
     nchr <- chrom.to.plot 
-    data <- matrix(data[chrom==nchr,], nrow = nrow(as.matrix(data[chrom==nchr,])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
+    data <- matrix(data[chrom==nchr,], nrow = nrow(as.matrix(data[chrom==nchr,])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data[chrom==nchr,]))
     clone.genomepos <- kb[chrom == nchr]
     chrom <- chrom[chrom == nchr]
     chrominfo <- chrominfo[nchr, ]
@@ -84,14 +106,14 @@ function (input, array = 1, naut = 22,
     chrom.start <- 0
     par(cex = 0.6, pch = 18, lab = c(6, 6, 7), cex.axis = 1.5, xaxs = "i")
     } else {
-      data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= nchr,])),ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data)) 
+      data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= nchr,])),ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data[chrom==nchr,])) 
       kb <- kb[chrom <= nchr]
       chrom <- chrom[chrom <= nchr]
       chrominfo <- chrominfo[1:nchr, ]
       chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
       clone.genomepos <- vector()
       for (i in 1:nchr) {clone.genomepos[chrom == i] <- kb[chrom == i] + chrom.start[i]}
-      par(cex = 0.6, pch = 18, lab = c(1, 6, 7), cex.axis = 1.5, xaxs = "i")#########
+      par(cex = 0.6, pch = 18, lab = c(1, 6, 7), cex.axis = 1.5, xaxs = "i")
     }
 
   chrom.centr <- chrom.start + chrominfo$centr
@@ -100,13 +122,12 @@ function (input, array = 1, naut = 22,
   y <- data[, array]
   if (is.na(xlim[2])) {xlim[2] <- clone.genomepos[sum(clone.genomepos > 0)]/1000}
   
-   #Plotting functions
-  
+   #Plotting functions 
  
   if (!is.na(chrom.to.plot)){
-    plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", ylab = "" , col = "black", bg="white", mar = c(0,0,0,0))
+    plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", ylab = "" , col = "black", bg="white")
     mtext(chrom.to.plot, side = 1, line = 0.3, col = "red")}  else {
-      plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, col = "black", mar=c(0,0,0,0), bg="white")
+      plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, col = "black", bg="white")
       for (i in seq(1, naut, b = 2)) mtext(i, side = 1, at = chrom.mid[i]/1000, line = 0.3, col = "red")
       for (i in seq(2, naut, b = 2)) mtext(i, side = 3, at = chrom.mid[i]/1000, line = 0.3, col = "red")}
 
@@ -289,7 +310,7 @@ plotSegmentationSummary <-
             if (length(titles == 1))
                 out <- cbind(out, out)
             
-            plotGenome(input, samples = 1:length(titles),
+            genomePlot(input, samples = 1:length(titles),
                        yScale = c(0, mx), naut = 22,
                        X = X, Y = Y, ylb = ylb,
                        chrominfo = chrominfo[ 1:maxChrom, ],
@@ -512,7 +533,7 @@ function (input, response = as.factor(rep("All", ncol(input))),
 ##    label <- input$genes[input$genes[, 
 ##        colnames(input$genes) == "Chr"] == chrom.to.plot, 
 ##       colnames(input$genes) == identifier.to.plot]
-##    plotGenome(input, samples = samples, naut = naut, 
+##    genomePlot(input, samples = samples, naut = naut, 
 ##        Y = Y, X = X, status = status, values = values, pch = pch, col = col, cex = cex, chrominfo = chrominfo, chrom.to.plot = chrom.to.plot, 
 ##        Z = Z, xlower = xlower, xupper = xupper)
 ##    identify(input$genes[input$genes$Chr == chrom.to.plot, colnames(input$genes) == "Position"]/1000,

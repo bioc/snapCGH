@@ -1,6 +1,6 @@
 "fitBioHMM" <-
 function (MA, covariates, maxiter=100, 
-    criteria="AIC", delta=NA ,var.fixed=FALSE) 
+    criteria="AIC", delta=NA ,var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) 
 {
   if (is.null(MA$design)) 
         stop("MA$design component is null")
@@ -32,20 +32,16 @@ function (MA, covariates, maxiter=100,
       if (is.na(delta)) {
         delta <- c(1)
       }
-    }
-    
-##    states.list <- list(states)
-##    nstates.list <- list(nstates)
-##    nlists <- 1
-        
+    }  
+      
     for (i in 1:ncol(dat)) {
       cat("sample is ", i, "  Chromosomes: ")
       counter = 0  #counter to mark place in segList so we know where to put the values for the next chromosome
       for (j in 1:length(chrom.uniq)) {
-        cat(j, " ")
+        cat(chrom.uniq[j], " ")
         res <- try(fit.model(sample=i, chrom=chrom.uniq[j], 
                              dat=dat, datainfo=datainfo, covariates=covariates, iterlim = maxiter, 
-               aic = aic, bic = bic, delta=delta, var.fixed=var.fixed)) 
+               aic = aic, bic = bic, delta=delta, var.fixed=var.fixed, epsilon = epsilon, numiter = numiter))
         nstates[j,i] <- res$nstates.list
         foo = dat[datainfo$Chr == chrom.uniq[j],i]	
         segList$M.predicted[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list$mean)
@@ -58,6 +54,7 @@ function (MA, covariates, maxiter=100,
   segList$M.observed = MA$M
   segList$num.states = nstates
   colnames(segList$num.states) <- colnames(dat)
+  rownames(segList$num.states) <- paste("Chrom", unique(MA$genes$Chr))
   segList$genes <- datainfo
   new("SegList",segList)
   }

@@ -213,17 +213,19 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
     if (crit == TRUE) {
     datainfo = MA$genes
     dat = log2ratios(MA)
-    chrom.uniq <- unique(datainfo$Chr)
+    chrom.uniq <- unique(datainfo$Chrom)
     nstates <- matrix(NA, nrow = length(chrom.uniq), ncol = ncol(dat))
 
     #matrix template.  It saves me having to define a new empty matrix 6 times in next bit of code
     	template = matrix(NA,nrow(dat),ncol(dat),dimnames=dimnames(dat))
+
+
     #we use template here
     if (full.output == TRUE) {
-      segList <- list(M.predicted=template,dispersion=template,state=template,rpred=template,prob=template)
+      segList <- list(M.predicted=template,dispersion=template,state=template,smoothed=template,probability=template)
     }
     else {
-      segList <- list(M.predicted=template,dispersion=template,state=template)
+      segList <- list(M.predicted=template,state=template)
     }
     if (criteria == "BIC") {
         if (is.na(delta)) {
@@ -234,20 +236,19 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
         cat("sample is ", i, "  Chromosomes: ")
 		counter = 0  #counter to mark place in segList so we know where to put the values for the next chromosome
         for (j in 1:length(chrom.uniq)) {
-            cat(j, " ")
+            cat(chrom.uniq[j], " ")
             foo = dat[datainfo$Chrom == chrom.uniq[j],i]
-            if(length(dat[datainfo$Chrom == j,i]) > 5){
+            if(length(foo) > 5){
               res <- try(states.hmm.func(sample = i, chrom = chrom.uniq[j], 
                 dat = dat, datainfo = datainfo, vr = vr, maxiter = maxiter, 
                 aic = aic, bic = bic, delta = delta, eps = eps, nlists = 1))
                   nstates[j, i] <- res$nstates.list[[1]]
- 				segList$M.predicted[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$pred)
- 				segList$dispersion[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$disp)
+ 				segList$M.predicted[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$pred)			
                                 segList$state[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$state)
-                                if (full.output == TRUE) { #adding the additional output
-                                  
-                             #     segList$rpred[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,4])
-                          #        segList$prob[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[,5])
+                                if (full.output == TRUE) { #adding the additional output.
+                                  segList$dispersion[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$disp)
+                                  segList$smoothed[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$rpred)
+                                  segList$probability[(counter+1):(counter+length(foo)),i] = as.matrix(res$out.list[[1]]$prob)
                                 }
             		counter = counter + length(foo)
           }
@@ -255,7 +256,6 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
               cat("\nToo few observations.  See help file for how this is handled\n")
               nstates[j, i] <- 1
               segList$M.predicted[(counter+1):(counter+length(foo)),i] = rep(mean(foo), length(foo))
-              segList$dispersion[(counter+1):(counter+length(foo)),i] = rep(mad(foo), length(foo))
               segList$state[(counter+1):(counter+length(foo)),i] = rep(1, length(foo))
               counter = counter + length(foo)
             }
@@ -265,6 +265,7 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
                 segList$M.observed = MA$M
                 segList$num.states = nstates
                 colnames(segList$num.states) <- colnames(dat)
+                rownames(segList$num.states) <- paste("Chrom",unique(MA$genes$Chr))
 		segList$genes <- datainfo
     
                 ##Changing the names of the Chr and Position back.

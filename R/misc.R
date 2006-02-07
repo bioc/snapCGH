@@ -148,10 +148,10 @@ function (dat, thresAbs)
 
 log2ratios <- function(x) {
   if(!is.null(x$M.observed)){
-    matrix(x$M.observed, nrow = nrow(x$M.observed), ncol = ncol(x$M.observed), byrow = FALSE, dimnames = dimnames(x$M.observed))
+    matrix(as.matrix(x$M.observed), nrow = nrow(x$M.observed), ncol = ncol(x$M.observed), byrow = FALSE, dimnames = dimnames(x$M.observed))
   }
   else{
-    matrix(x$M, nrow = nrow(x$M), ncol = ncol(x$M), byrow = FALSE, dimnames = dimnames(x$M))
+    matrix(as.matrix(x$M), nrow = nrow(x$M), ncol = ncol(x$M), byrow = FALSE, dimnames = dimnames(x$M))
   }
 }
 

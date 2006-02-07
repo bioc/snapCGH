@@ -2,9 +2,6 @@
 "processCGH" <-
 function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.averaging = NULL, ID = "ID") 
 {
-    if (is.null(MA$design)) 
-        stop("MA object doesn't contain design component")
-
     ord <- order(MA$genes$Chr, MA$genes$Position) # re-ordering the clones by chromosome and position on a chromosome
     colnames(MA$genes)[which(colnames(MA$genes) == ID)] = "ID" #renaming the the specified column to "ID"
 
