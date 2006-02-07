@@ -8,7 +8,8 @@
   algorithm.
 }
 \usage{
-fitBioHMM(MA, covariates, maxiter=100, criteria="AIC", delta=NA ,var.fixed=FALSE)
+fitBioHMM(MA, covariates, maxiter=100, criteria="AIC", delta=NA
+,var.fixed=FALSE, epsilon = 1e-06, numiter = 30000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,12 +23,16 @@ fitBioHMM(MA, covariates, maxiter=100, criteria="AIC", delta=NA ,var.fixed=FALSE
   \item{maxiter}{ The maximum number of times the nlm algorithm is to be applied. }
   \item{criteria}{Options are AIC or BIC depending upon which we want to use to distinguish between the number of states}
   \item{delta}{ A variable to be assigned if the BIC is used. }
-  \item{var.fixed}{ Logical variable - TRUE if you want to tie the variance to be the same across all states. Defaults to FALSE}
+  \item{var.fixed}{ Logical variable - TRUE if you want to tie the
+    variance to be the same across all states. Defaults to FALSE}
+  \item{epsilon}{Stopping criterion for the optimization algorithm.}
+  \item{numiter}{Number of iterations to be used in the
+    optimization alogithm.}
 }
 \value{
   The model returns an object of class \code{\link[snapCGH:SegList]{SegList}}.
 }
 \references{ Marioni, J.C., Thorne, N.P., Tavar\'e, S., BioHMM: a heterogeneous Hidden Markov Model for segmenting array CGH data, submitted}
-\author{ John Marioni}
+\author{ John Marioni and Mike Smith}
 
 \keyword{ models}

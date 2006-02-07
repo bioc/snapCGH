@@ -6,14 +6,14 @@
   Basic plot of the log2 ratios for each array ordered along the genome.
 }
 \usage{
-plotSegmentedGenome(segList, array = 1, naut = 22, Y = FALSE, X
+plotSegmentedGenome(..., array = 1, naut = 22, Y = FALSE, X
                  = FALSE, status, values, pch, cex, col, chrominfo =
                  chrominfo.basepair, ylim = c(-2, 2), ylb = "Log2Ratio",
-                 chrom.to.plot = NA, xlim = c(0,NA))
+                 chrom.to.plot = NA, xlim = c(0,NA), colors = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{segList}{an object of class \code{\link[snapCGH:SegList]{SegList}}}
+  \item{...}{Objects of class \code{\link[snapCGH:SegList]{SegList}}}
   \item{array}{integer of the array (sample) to be plotted.}
   \item{naut}{number of autosomes in the organism}
   \item{Y}{TRUE if chromosome Y is to be plotted, FALSE otherwise}
@@ -31,8 +31,9 @@ plotSegmentedGenome(segList, array = 1, naut = 22, Y = FALSE, X
   \item{chrom.to.plot}{Specify which chromosome to plot}
   \item{ylb}{label for the Y-axis.}
   \item{xlim}{limits for the x-axis}
+  \item{colors}{vector of colors to plot segmented states of each \code{SegList} passed to the function.}
 }
-\Details{
+\details{
   The status vector is intended to specify the control status of each
   spot, for example "gene", "ratio control", "house keeping gene",
   "buffer" and so on. The vector is usually computed using the function
@@ -40,7 +41,7 @@ plotSegmentedGenome(segList, array = 1, naut = 22, Y = FALSE, X
   to highlight any subset of spots.
 }
 \seealso{
-  \code{\link{plotGenome}}
+  \code{\link{genomePlot}}
   \code{\link[snapCGH:SegList]{SegList}}
 }
 \author{Mike Smith}
@@ -49,6 +50,6 @@ plotSegmentedGenome(segList, array = 1, naut = 22, Y = FALSE, X
 %#reading the spot types file
 %spotTypes <- readSpotTypes("SpotTypes.txt")
 %MA$genes$Status <- controlStatus(spotTypes, MA)
-%plotGenome(MA)
+%genomePlot(MA)
 }
 \keyword{hplot}% at least one, from doc/KEYWORDS

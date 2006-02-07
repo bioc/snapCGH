@@ -45,7 +45,7 @@ plotSegmentationStates(segList, geList, array=1, chr = 1:length(unique(segList$g
 \seealso{
   \code{\link[snapCGH:SegList]{SegList}}
   \code{\link{runHomHMM}}
-  \code{\link{plotGenome}}
+  \code{\link{genomePlot}}
 }
 \examples{
 

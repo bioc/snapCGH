@@ -1,7 +1,5 @@
-\name{plotGenome}
-\alias{plotGenome}
-\alias{maxna}
-\alias{minna}
+\name{genomePlot}
+\alias{genomePlot}
 \alias{sample.names}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Plots the genome}
@@ -9,7 +7,7 @@
   Basic plot of the log2 ratios for each array ordered along the genome.
 }
 \usage{
-plotGenome(input, array = 1, naut = 22, Y = TRUE, X
+genomePlot(input, array = 1, naut = 22, Y = TRUE, X
                  = TRUE, status, values, pch, cex, col, chrominfo =
                  chrominfo.basepair, ylim = c(-2, 2), ylb = "Log2Ratio",
                  chrom.to.plot = NA, xlim = c(0,NA))
@@ -35,7 +33,7 @@ plotGenome(input, array = 1, naut = 22, Y = TRUE, X
   \item{ylb}{label for the Y-axis.}
   \item{xlim}{limits for the x-axis}
 }
-\Details{
+\details{
   The status vector is intended to specify the control status of each
   spot, for example "gene", "ratio control", "house keeping gene",
   "buffer" and so on. The vector is usually computed using the function
@@ -52,6 +50,6 @@ plotGenome(input, array = 1, naut = 22, Y = TRUE, X
 %#reading the spot types file
 %spotTypes <- readSpotTypes("SpotTypes.txt")
 %MA$genes$Status <- controlStatus(spotTypes, MA)
-%plotGenome(MA)
+%genomePlot(MA)
 }
 \keyword{hplot}% at least one, from doc/KEYWORDS

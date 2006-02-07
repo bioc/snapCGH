@@ -166,7 +166,7 @@ library.
 
 The library comes with a variety of plotting functions that provide
 visual representations of the data at various stages of the analysis
-process.  Firstly we will look at the \texttt{plotGenome}
+process.  Firstly we will look at the \texttt{genomePlot}
 function. This function takes either an \texttt{MAList} or a
 \texttt{SegList} object (in this example we've used an MAList) and
 plots the M-value for each gene against it's position on the genome.
@@ -175,7 +175,7 @@ This function utilizes the spot types data that was read in earlier to
 highlight specific genes of interest.
 
 <<label=11, include=FALSE>>=
-plotGenome(MA2, array = 1)                                               
+genomePlot(MA2, array = 1)                                               
 @ 
 
 

@@ -31,7 +31,7 @@ plotGainLoss(segList, resT = NULL, pheno = rep(1,
 \arguments{
   \item{segList}{Object of class \code{SegList}}
   \item{resT}{Data frame having the same structure as the result of
-    applying \code{\link{mt.maxT}} or \code{\link{mt.minP}} functions
+    applying \code{\link[aCGH:mt.maxT]{mt.maxT}} or \code{\link[aCGH:mt.maxT]{mt.minP}} functions
     from Bioconductor's \code{multtest} package for multiple testing.
     The result is a data frame including the following 4 components:
     'index', 'teststat', 'rawp' and 'adjp'.

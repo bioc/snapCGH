@@ -1,5 +1,6 @@
 \name{fit.model}
 \alias{fit.model}
+\alias{run.nelder}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Fitting a heterogneous HMM to the log2 ratios on a particular chromosome.}
 \description{
@@ -8,7 +9,9 @@
   same underlying copy number.
 }
 \usage{
-fit.model(sample, chrom, dat, datainfo = clones.info, covariates, iterlim = iterlim, aic = TRUE, bic = FALSE, delta = 1, nlists = 1,var.fixed=FALSE)
+fit.model(sample, chrom, dat, datainfo = clones.info, covariates,
+aic = TRUE, bic = FALSE, delta = 1, var.fixed=FALSE, epsilon = 1e-06,
+numiter = 30000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,19 +21,21 @@ fit.model(sample, chrom, dat, datainfo = clones.info, covariates, iterlim = iter
   \item{datainfo}{ A dataframe containing information about the clones on that chromosome (name, chromosome and location (in Mbs)) }
   \item{covariates}{ A matrix contianing the covariate information for the clones located on the chromosome to be segmented. It should have length one less
                      than the number of clones as covariate information is not used when segmenting the first clone on the chromosome. }
-  \item{iterlim}{ The maximum number of times the iterative procedure should be carried out }
   \item{aic}{Set to true if you want to use the aic. This is the
     default.  Only one of aic and bic should be set to true.}
   \item{bic}{Set to true if you want to use the bic.}
   \item{delta}{ A parameter to be set if you want to use the BIC }
-  \item{nlists}{ SUPERFLUOUS - TO BE REMOVED }
-  \item{var.fixed}{ Logical variable - TRUE if you want to tie the variance to be the same across all states. Defaults to FALSE }
+  \item{var.fixed}{ Logical variable - TRUE if you want to tie the
+    variance to be the same across all states. Defaults to FALSE }
+  \item{epsilon}{.}	
+  \item{numiter}{Number of iterations to be used in the
+    optimization alogithm.}
 }
 
 \value{
  The output is in the same format as that obtained when the nlm function is applied.
 }
-\author{John Marioni}
+\author{John Marioni and Mike Smith}
 
 \keyword{ models}
 

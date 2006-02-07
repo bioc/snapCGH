@@ -1,16 +1,14 @@
 \name{subsetting}
-\alias{[.RGList}
-\alias{[.MAList}
 \alias{[.SegList}
-\title{Subset RGList, MAList or SegList Objects}
+\title{Subset SegList Objects}
 \description{
-Extract a subset of an \code{RGList}, \code{MAList} or \code{SegList} object.
+Extract a subset of an \code{SegList} object.
 }
 \usage{
 object[i, j]
 }
 \arguments{
-  \item{object}{object of class \code{RGList}, \code{MAList} or \code{SegList}}
+  \item{object}{object of class \code{SegList}}
   \item{i,j}{elements to extract. \code{i} subsets the genes or spots while \code{j} subsets the arrays}
 }
 \details{

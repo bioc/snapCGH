@@ -1,6 +1,5 @@
 \name{computeSD}
 \alias{computeSD}
-\alias{}
 %- Also NEED an `\alias' for EACH other topic documented here.
 \title{Function to estimate experimental variability of a sample}
 \description{

@@ -7,7 +7,7 @@
   or lost) to each clone.  It requires that the library \code{GLAD} is loaded.
 }
 \usage{
-runGLAD(MA, smoothfunc="aws", base=FALSE, sigma, bandwidth=10,
+runGLAD(MA, smoothfunc="lawsglad", base=FALSE, sigma = NULL, bandwidth=10,
 round=2, lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
 type="tricubic", param=c(d=6), alpha=0.001, method="centroid",
 nmax=8, verbose=FALSE, ...)

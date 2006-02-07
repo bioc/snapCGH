@@ -14,7 +14,7 @@ sim.structure(N, chrominfo = NULL, prb.short.tiled = 0.5,
                  prb.proportion.tiled = c(0.2, 0.2, 0.2, 0.2, 0.2),
                  zerolengthnontiled = NULL, zerolengthtiled = NULL,
                  nonzerolengthnontiled = NULL, nonzerolengthtiled =
-                 NULL)
+                 NULL, seed = 1)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -36,6 +36,7 @@ sim.structure(N, chrominfo = NULL, prb.short.tiled = 0.5,
   \item{zerolengthtiled}{ The empirical distribution for regions of the genome which are tiled and contain no copy number gains or losses. Defaults to zero.length.distr.tiled }
   \item{nonzerolengthnontiled}{ The empirical distribution for regions of the genome which are non-tiled and contain no copy number gains or losses. Defaults to non.zero.length.distr.non.tiled }
   \item{nonzerolengthtiled}{ The empiricial distribution for regions of the genome which are tiled and contain copy number gains or losses. Defaults to non.zero.length.distr.tiled }
+  \item{seed}{Seed value allowing simulation to be reproduced if the same seed value is set.}
 }
 \details{
   For more details see the article by Marioni and Thorne published in Bioinformatics.
