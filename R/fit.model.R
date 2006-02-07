@@ -238,7 +238,7 @@ function (sample, chrom, dat, datainfo = clones.info, covariates,
             (z5$minus.logLikelihood + k5 * factor/2))
       
 #      cat("Lik: ",lik, "\n")
-#        likmin <- which.min(lik)
+        likmin <- which.min(lik)
 #      cat("Likmin:", likmin, "\n")
       
         switch(likmin, z <- z1,z <- z2, z <- z3, z <- z4, z <- z5)
@@ -282,6 +282,7 @@ function (sample, chrom, dat, datainfo = clones.info, covariates,
         out.all[, 4] <- obs.ord
         out.all <- as.data.frame(out.all)
         dimnames(out.all)[[2]] <- c("state", "mean", "var", "obs")
+        numstates <- length(unique(Vit.seg))
     }
        else {
          out.all <- matrix(NA, nrow = length(kb.ord), ncol = 4)
@@ -291,9 +292,9 @@ function (sample, chrom, dat, datainfo = clones.info, covariates,
          out.all[ind.nonna,4] <- obs.ord
          out.all <- as.data.frame(out.all)
          dimnames(out.all)[[2]] <- c("state", "mean", "var", "obs")
-         nstates = 1
+         numstates = 1
        }
-    list(out.list = out.all, nstates.list = length(unique(Vit.seg)))
+    list(out.list = out.all, nstates.list = numstates)
   }
 
 run.nelder <- function(nrow, xin, data, covars, var.fixed, epsilon, numiter,  nstates){

@@ -68,7 +68,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
                                         # The imputation step
 
     if (!is.null(method.of.averaging)){
-    MA.imputed <- imputeMissingValues(MA, chrominfo = chrominfo.basepair, maxChrom = chrom.remove.threshold, smooth = 0.1)
+    MA.imputed <- imputeMissingValues(MA, chrominfo = chrominfo.Mb, maxChrom = chrom.remove.threshold, smooth = 0.1)
     MA$M <- MA.imputed$M}
     MA
 
@@ -76,7 +76,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
   
 
 "imputeMissingValues" <- 
-function (MA, chrominfo = chrominfo.basepair, maxChrom = 23, 
+function (MA, chrominfo = chrominfo.Mb, maxChrom = 23, 
     smooth = 0.1) 
 {
     data.imp <- log2ratios <- log2ratios(MA)

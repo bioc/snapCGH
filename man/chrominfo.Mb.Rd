@@ -1,5 +1,5 @@
-\name{chrominfo.basepair}
-\alias{chrominfo.basepair}
+\name{chrominfo.Mb}
+\alias{chrominfo.Mb}
 \docType{data}
 \title{
   Basic Chromosomal Information for UCSC Human Genome Assembly July 2003

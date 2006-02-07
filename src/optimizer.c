@@ -3,24 +3,11 @@
 #include <math.h>
 #include <stdio.h>
 #include <R_ext/Applic.h>
+#include "header.h"
 
-typedef struct
-{
-  double *data;
-  double *covars1;
-  double *covars2;
-  double *covars3;
-  int ncovars;
-  int var;
-  int nrow;
-}
-Exts;  
+static double fr_two (int n, double par[8], void *ex){
 
-
-
-static double fr_two (int n, double *par, void *ex){
-
-  Exts *ext;
+  dataStore *ext;
   double *data, *covars1, *covars2, *covars3, temp;
   int varfixed, ncovars, nrow1, j, k, t, i;
   ext = ex;
@@ -39,7 +26,7 @@ static double fr_two (int n, double *par, void *ex){
   double denom, temp2, temp3;
 
   //initialize output
-    output = 1;
+    output = 0;
 
   mu[0] = par[0];
   mu[1] = par[1];
@@ -158,9 +145,9 @@ static double fr_two (int n, double *par, void *ex){
   return(-1*(output));
 }
 
-static double fr_three(int n, double *par, void *ex){
+static double fr_three(int n, double par[15], void *ex){
 
-  Exts *ext;
+  dataStore *ext;
   double *data, *covars1, *covars2, *covars3, temp;
   int varfixed, ncovars, nrow1, j, k, t, i, m;
   ext = ex;
@@ -179,7 +166,7 @@ static double fr_three(int n, double *par, void *ex){
   double denom, temp2, temp3;
 
   //initialize output
-    output = 1;
+    output = 0;
     
   mu[0] = par[0];
   mu[1] = par[1];
@@ -397,9 +384,9 @@ static double fr_three(int n, double *par, void *ex){
   return (-1*(output));
 }
 
-static double fr_four(int n, double *par, void *ex){
+static double fr_four(int n, double par[24], void *ex){
 
-  Exts *ext;
+  dataStore *ext;
   double *data, *covars1, *covars2, *covars3, temp;
   int varfixed, ncovars;
   ext = ex;
@@ -419,7 +406,7 @@ static double fr_four(int n, double *par, void *ex){
   double denom, temp2, temp3;
 
   //initialize output
-    output = 1;
+    output = 0;
     
   mu[0] = par[0];
   mu[1] = par[1];
@@ -650,9 +637,9 @@ static double fr_four(int n, double *par, void *ex){
 }
 
 
-static double fr_five(int n, double *par, void *ex){
+static double fr_five(int n, double par[35], void *ex){
 
-  Exts *ext;
+  dataStore *ext;
   double *data, *covars1, *covars2, *covars3, temp;
   int varfixed, nrow1, j, k, t, i, m, ncovars;
   ext = ex;
@@ -671,7 +658,7 @@ static double fr_five(int n, double *par, void *ex){
   double denom, temp2, temp3;
 
   //initialize output
-  output = 1;
+  output = 0;
     
   mu[0] = par[0];
   mu[1] = par[1];
@@ -980,41 +967,15 @@ static double fr_five(int n, double *par, void *ex){
 
   return (-1*(output));
 }
-/*
-void testFr2(int *nrow, double *xin, double *data, double *covars1, double *result){
-  Exts *ext;
-  ext = Calloc(1, Exts);
 
-  ext->data = data;
-  ext->covars1 = covars1;
-  ext->nrow = *nrow;
-  ext->ncovars = 1;
-
-  *result = fr_two(8, xin, ext);
-  free(ext);
-}
-
-void testFr3(int *nrow, double *xin, double *data, double *covars1, double *result){
-  Exts *ext;
-  ext = Calloc(1, Exts);
-
-  ext->data = data;
-  ext->covars1 = covars1;
-  ext->nrow = *nrow;
-  ext->ncovars = 1;
-
-  *result = fr_three(15, xin, ext);
-  free(ext);
-}
-*/
 void runNelderMead(int *nrow, double *xin, double *xout, double *Fmin, double *data, double *covars1, double *covars2, double *covars3, int *ncovars, int *var, double *epsilon, int *trace, int *numit, int *nstates){
 
-  Exts *ext;
+  dataStore *ext;
   int fail;
   int fncount;
   double abstol, intol, alpha, beta, gamma;
 
-  ext = Calloc(1, Exts);
+  ext = Calloc(1, dataStore);
 
   ext->data = data;
   ext->covars1 = covars1;
@@ -1051,12 +1012,12 @@ void runNelderMead(int *nrow, double *xin, double *xout, double *Fmin, double *d
 /*
 void two_states_nelder(int *nrow, double *xin, double *xout, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
  
-  Exts *ext;
+  dataStore *ext;
   int fail;
   int fncount;
   double abstol, intol, alpha, beta, gamma;
 
-  ext = Calloc(1, Exts);
+  ext = Calloc(1, dataStore);
 
   ext->data = data;
   ext->covars1 = covars;
@@ -1077,11 +1038,11 @@ void two_states_nelder(int *nrow, double *xin, double *xout, double *Fmin, doubl
 
 void three_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
  
-  Exts *ext;
+  dataStore *ext;
   int fail = 0, fncount;
   double abstol, reltol, alpha, beta, gamma;
   
-  ext = Calloc(1, Exts);
+  ext = Calloc(1, dataStore);
 
   ext->data = data;
   ext->covars1 = covars;
@@ -1102,11 +1063,11 @@ void three_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double
 
 void four_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
  
-  Exts *ext;
+  dataStore *ext;
   int fail = 0, fncount;
   double abstol, reltol, alpha, beta, gamma;
   
-  ext = Calloc(1, Exts);
+  ext = Calloc(1, dataStore);
 
   ext->data = data;
   ext->covars1 = covars;
@@ -1127,11 +1088,11 @@ void four_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double 
 
 void five_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
  
-  Exts *ext;
+  dataStore *ext;
   int fail = 0, fncount;
   double abstol, reltol, alpha, beta, gamma;
   
-  ext = Calloc(1, Exts);
+  ext = Calloc(1, dataStore);
 
   ext->data = data;
   ext->covars1 = covars;

@@ -10,7 +10,7 @@
 plotSegmentationSummary(input, geList, response = as.factor(rep("All",
                  ncol(input))), titles =
                  unique(response[!is.na(response)]), X = TRUE, Y =
-                 FALSE, maxChrom = 23, chrominfo = chrominfo.basepair,
+                 FALSE, maxChrom = 23, chrominfo = chrominfo.Mb,
                  num.plots.per.page = length(titles), factor = 2.5,
                  thresAbs = 100)
 }

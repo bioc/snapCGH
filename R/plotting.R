@@ -1,6 +1,6 @@
 
 "plotSegmentedGenome" <-
-  function(..., array=1, naut=22, Y=FALSE, X=FALSE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
+  function(..., array=1, naut=22, Y=FALSE, X=FALSE, status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
     ylim=c(-2, 2), ylb="Log2Ratio", chrom.to.plot=NA, xlim=c(0,NA), colors = NULL)
   {
 ## Probably want some sort of key to indicate which line represents which SegList
@@ -61,7 +61,7 @@
 
 "genomePlot" <-
 function (input, array = 1, naut = 22, 
-    Y = TRUE, X = TRUE, status, values, pch, cex, col, chrominfo = chrominfo.basepair, 
+    Y = TRUE, X = TRUE, status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
     ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA)) 
 {
   
@@ -113,7 +113,7 @@ function (input, array = 1, naut = 22,
       chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
       clone.genomepos <- vector()
       for (i in 1:nchr) {clone.genomepos[chrom == i] <- kb[chrom == i] + chrom.start[i]}
-      par(cex = 0.6, pch = 18, lab = c(1, 6, 7), cex.axis = 1.5, xaxs = "i")
+      par(xaxt = "n", tck = -0, cex = 0.6, pch = 18, lab = c(1, 6, 7), cex.axis = 1.5, xaxs = "i")
     }
 
   chrom.centr <- chrom.start + chrominfo$centr
@@ -196,7 +196,7 @@ plotSegmentationSummary <-
              response = as.factor(rep("All", ncol(input))),
              titles = unique(response[!is.na(response)]), X = TRUE,
              Y = FALSE, maxChrom = 23,
-             chrominfo = chrominfo.basepair,
+             chrominfo = chrominfo.Mb,
              num.plots.per.page = length(titles), factor = 2.5, thresAbs=100)
 {
 
@@ -388,7 +388,7 @@ plotSegmentationSummary <-
 
 "heatmapGenome" <-
 function (input, response = as.factor(rep("All", ncol(input))), 
-    chrominfo = chrominfo.basepair, cutoff = 1, lowCol = "blue", 
+    chrominfo = chrominfo.Mb, cutoff = 1, lowCol = "blue", 
    highCol = "yellow", midCol = "white", ncolors = 50, byclass = FALSE, 
     showaber = FALSE, amplif = 1, homdel = -0.75, samplenames = colnames(input), 
     vecchrom = 1:22, titles = "Image Plot", methodS = "ward", 
@@ -542,7 +542,7 @@ function (input, response = as.factor(rep("All", ncol(input))),
 
 "plotSegmentationStates" <-
 function (segList, geList, array=1, chr = 1:length(unique(segList$genes$Chr)), 
-    maxChrom = 22, chrominfo = chrominfo.basepair, 
+    maxChrom = 22, chrominfo = chrominfo.Mb, 
     yScale = c(-2, 2), samplenames = colnames(segList), 
     xlower = 0, xupper = chrominfo$length[chr[j]]/1000) 
 {

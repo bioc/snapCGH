@@ -13,7 +13,7 @@
 }
 \usage{
 heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
-                 chrominfo = chrominfo.basepair, cutoff = 1, lowCol =
+                 chrominfo = chrominfo.Mb, cutoff = 1, lowCol =
                  "blue", highCol = "yellow", midCol = "white", ncolors =
                  50, byclass = FALSE, showaber = FALSE, amplif = 1,
                  homdel = -0.75, samplenames = colnames(input),

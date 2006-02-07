@@ -6,7 +6,7 @@
   Imputing log2 ratios
 }
 \usage{
-imputeMissingValues(MA, chrominfo = chrominfo.basepair, maxChrom =
+imputeMissingValues(MA, chrominfo = chrominfo.Mb, maxChrom =
 23, smooth = 0.1)
 }
 %- maybe also 'usage' for other objects documented here.
