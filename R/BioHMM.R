@@ -1,5 +1,5 @@
 "fitBioHMM" <-
-function (MA, covariates, criteria="AIC", delta=NA ,var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) 
+function (MA, covariates = NULL, criteria="AIC", delta=NA ,var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) 
 {
   if (is.null(MA$design)) 
         stop("MA$design component is null")
@@ -11,8 +11,14 @@ function (MA, covariates, criteria="AIC", delta=NA ,var.fixed=FALSE, epsilon = 1
   #some clunky code so you can put the Criteria argument in characters and still perform the
   #boolean opperators on it below:
   crit = TRUE
-  if( criteria == "AIC") {aic = TRUE}
-  else if (criteria == "BIC") {bic = TRUE}
+  if( criteria == "AIC") {
+    aic = TRUE
+    bic = FALSE
+  }
+  else if (criteria == "BIC") {
+    bic = TRUE
+    aic = FALSE
+  }
   else crit = FALSE
 
   if ((crit == 1) || (crit == 2)) {

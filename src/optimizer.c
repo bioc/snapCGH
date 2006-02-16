@@ -8,34 +8,34 @@
 static double fr_two (int n, double par[8], void *ex){
 
   dataStore *ext;
-  double *data, *covars1, *covars2, *covars3, temp;
-  int varfixed, ncovars, nrow1, j, k, t, i;
+  double *data, *covars1, *covars2, *covars3;
+  int j, k, t, i;
   ext = ex;
 
-  nrow1 = ext->nrow;
+  unsigned int nrow1 = ext->nrow;
+  unsigned int ncovars = ext->ncovars;
+  unsigned int varfixed = ext->var;
   data = ext->data;
-  ncovars = ext->ncovars;
   covars1 = ext->covars1;
   covars2 = ext->covars2;
-  covars3 = ext->covars3;
-  varfixed = ext->var;
+  covars3 = ext->covars3; 
 
-  double prior, eta, zeta, omega, output, pr1, p1, p2, rate1;
+  double pr1, p1, p2, rate1;
   double S[2], mu[2], Sigma[2];
   double gammaA[2][2], gammaB[2][2], gammaC[2][2], alpha[2][nrow1], alphahat[2][nrow1], emis_prob[2][nrow1];
-  double denom, temp2, temp3;
+  double denom, temp, temp2, temp3;
 
   //initialize output
-    output = 0;
+  double output = 0;
 
   mu[0] = par[0];
   mu[1] = par[1];
   Sigma[0] = par[2];
   Sigma[1] = par[3];
-  prior = par[4];
-  eta = par[5];
-  zeta = par[6];
-  omega = par[7];
+  double prior = par[4];
+  double eta = par[5];
+  double zeta = par[6];
+  double omega = par[7];
   S[0] = exp(Sigma[0]);
 
   if(varfixed == 0){
@@ -77,7 +77,8 @@ static double fr_two (int n, double par[8], void *ex){
   gammaB[0][0] = p1; gammaB[0][1] = -p1; gammaB[1][0] = -p2; gammaB[1][1] = p2;
   
   for(j = 0; j < nrow1; j++){
-    for(k = 0; k < 2; k++){
+    //for(k = 0; k < 2; k++){
+    for(k = 2; k--;){
       if(S[k] > 0.001){
 	emis_prob[k][j] = dnorm(data[j], mu[k], S[k], 0);
       }
@@ -95,10 +96,10 @@ static double fr_two (int n, double par[8], void *ex){
   alpha[0][0] = pr1*(emis_prob[0][0]);
   alpha[1][0] = (1 - pr1)*emis_prob[1][0];
 
-  temp2 = (alpha[0][0]+alpha[1][0]);
+  temp2 = 1/(alpha[0][0]+alpha[1][0]);
 
-  alphahat[0][0] = alpha[0][0]/temp2;
-  alphahat[1][0] = alpha[1][0]/temp2;
+  alphahat[0][0] = alpha[0][0]*temp2;
+  alphahat[1][0] = alpha[1][0]*temp2;
 
   for(t = 1; t < nrow1; t++){
 
@@ -126,17 +127,19 @@ static double fr_two (int n, double par[8], void *ex){
       break;
     }
    
-    for(i = 0; i < 2; i++){
+    //for(i = 0; i < 2; i++){
+    for(i = 2; i--;){
       alpha[i][t] = (alphahat[0][t-1]*gammaC[0][i] + alphahat[1][t-1]*gammaC[1][i])*emis_prob[i][t];
-	}
+    }
 
-    temp3 = (alpha[0][t]+alpha[1][t]);
-    for(i = 0; i < 2; i++){
-      alphahat[i][t] = alpha[i][t]/temp3;
+    temp3 = 1/(alpha[0][t]+alpha[1][t]);
+
+    for(i = 2; i--;){
+      alphahat[i][t] = alpha[i][t]*temp3;
     }
   }
 
-  for(i=0; i < nrow1; i++){
+  for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i];
     output = output+(log(denom));
     // output *= denom;
@@ -148,25 +151,25 @@ static double fr_two (int n, double par[8], void *ex){
 static double fr_three(int n, double par[15], void *ex){
 
   dataStore *ext;
-  double *data, *covars1, *covars2, *covars3, temp;
-  int varfixed, ncovars, nrow1, j, k, t, i, m;
+  double *data, *covars1, *covars2, *covars3;
+  int j, k, t, i, m;
   ext = ex;
 
-  nrow1 = ext->nrow;
+  unsigned int nrow1 = ext->nrow;
   data = ext->data;
-  ncovars = ext->ncovars;
+  unsigned int ncovars = ext->ncovars;
   covars1 = ext->covars1;
   covars2 = ext->covars2;
   covars3 = ext->covars3;
-  varfixed = ext->var;
+  unsigned int varfixed = ext->var;
 
-  double prior1, prior2, eta, zeta, theta, beta, gamma, xi, omega, output, pr1, pr2, p1, p2, p3, p4, p5, p6, rate1;
+  double pr1, pr2, p1, p2, p3, p4, p5, p6, rate1;
   double S[3], mu[3], Sigma[3];
   double gammaA[3][3], gammaB[3][3], gammaC[3][3], alpha[3][nrow1], alphahat[3][nrow1], emis_prob[3][nrow1];
-  double denom, temp2, temp3;
+  double denom, temp, temp2, temp3;
 
   //initialize output
-    output = 0;
+  double output = 0;
     
   mu[0] = par[0];
   mu[1] = par[1];
@@ -174,15 +177,15 @@ static double fr_three(int n, double par[15], void *ex){
   Sigma[0] = par[3];
   Sigma[1] = par[4];
   Sigma[2] = par[5];
-  prior1 = par[6];
-  prior2 = par[7];
-  eta = par[8];
-  zeta = par[9];
-  theta = par[10];
-  beta = par[11];
-  gamma = par[12];
-  xi = par[13];
-  omega = par[14];
+  double prior1 = par[6];
+  double prior2 = par[7];
+  double eta = par[8];
+  double zeta = par[9];
+  double theta = par[10];
+  double beta = par[11];
+  double gamma = par[12];
+  double xi = par[13];
+  double omega = par[14];
   S[0] = exp(Sigma[0]);
   if(varfixed == 0){    
     S[1] = exp(Sigma[1]);
@@ -261,7 +264,7 @@ static double fr_three(int n, double par[15], void *ex){
   //  Rprintf("%f \t %f\n%f \t %f\n", gammaA[0][0],gammaA[0][1],gammaA[1][0],gammaA[1][1]);
 
   for(j = 0; j < nrow1; j++){
-    for(k = 0; k < 3; k++){
+    for(k = 3; k--;){
       if(S[k] > 0.001){
 	emis_prob[k][j] = dnorm(data[j], mu[k], S[k], 0);
       }
@@ -276,63 +279,15 @@ static double fr_three(int n, double par[15], void *ex){
     }
   }
 
-  if(S[0] > 0.001){
-    for(j = 0; j < nrow1; j++){
-      emis_prob[0][j] = dnorm(data[j], mu[0], S[0], 0);
-    }
-  }
-  else {
-    for(j = 0; j < nrow1; j++){
-      if(data[j] >= mu[0]*(0.999) && data[j] <= mu[0]*(1.001)){
-	emis_prob[0][j] = 1;
-      }
-      else {
-	emis_prob[0][j] = 0;
-      }
-    }
-  }
-
-  if(S[1] > 0.001){
-    for(j = 0; j < nrow1; j++){
-      emis_prob[1][j] = dnorm(data[j], mu[1], S[1], 0);
-    }
-  }
-  else {
-    for(j = 0; j < nrow1; j++){
-      if(data[j] >= mu[1]*(0.999) && data[j] <= mu[1]*(1.001)){
-	emis_prob[1][j] = 1;
-      }
-      else {
-	emis_prob[1][j] = 0;
-      }
-    }
-  }
-
-  if(S[2] > 0.001){
-    for(j = 0; j < nrow1; j++){
-      emis_prob[2][j] = dnorm(data[j], mu[2], S[2], 0);
-    }
-  }
-  else {
-    for(j = 0; j < nrow1; j++){
-      if(data[j] >= mu[2]*(0.999) && data[j] <= mu[2]*(1.001)){
-	emis_prob[2][j] = 1;
-      }
-      else {
-	emis_prob[2][j] = 0;
-      }
-    }
-  }
-
   alpha[0][0] = pr1*(emis_prob[0][0]);
   alpha[1][0] = pr2*(emis_prob[1][0]);
   alpha[2][0] = (1-pr1-pr2)*(emis_prob[2][0]);
 
-  temp2 = alpha[0][0]+alpha[1][0]+alpha[2][0];
+  temp2 = 1/(alpha[0][0]+alpha[1][0]+alpha[2][0]);
 
-  alphahat[0][0] = alpha[0][0]/temp2;
-  alphahat[1][0] = alpha[1][0]/temp2;
-  alphahat[2][0] = alpha[2][0]/temp2;
+  alphahat[0][0] = alpha[0][0]*temp2;
+  alphahat[1][0] = alpha[1][0]*temp2;
+  alphahat[2][0] = alpha[2][0]*temp2;
 
   for(t = 1; t < nrow1; t++){
 
@@ -368,14 +323,14 @@ static double fr_three(int n, double par[15], void *ex){
     alpha[1][t] = (alphahat[0][t-1]*gammaC[0][1] + alphahat[1][t-1]*gammaC[1][1] + alphahat[2][t-1]*gammaC[2][1])*emis_prob[1][t];
     alpha[2][t] = (alphahat[0][t-1]*gammaC[0][2] + alphahat[1][t-1]*gammaC[1][2] + alphahat[2][t-1]*gammaC[2][2])*emis_prob[2][t];
 
-    temp3 = (alpha[0][t]+alpha[1][t]+alpha[2][t]);
+    temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]);
 
-    alphahat[0][t] = alpha[0][t]/temp3;
-    alphahat[1][t] = alpha[1][t]/temp3;
-    alphahat[2][t] = alpha[2][t]/temp3;
+    alphahat[0][t] = alpha[0][t]*temp3;
+    alphahat[1][t] = alpha[1][t]*temp3;
+    alphahat[2][t] = alpha[2][t]*temp3;
   }
 
-  for(i=0; i < nrow1; i++){
+  for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i]+alpha[2][i];
      output = output+(log(denom));
      // output *= denom;
@@ -387,26 +342,26 @@ static double fr_three(int n, double par[15], void *ex){
 static double fr_four(int n, double par[24], void *ex){
 
   dataStore *ext;
-  double *data, *covars1, *covars2, *covars3, temp;
-  int varfixed, ncovars;
   ext = ex;
 
-  int nrow1, j, k, t, i, m;
-  nrow1 = ext->nrow;
+  double *data, *covars1, *covars2, *covars3;
+  int j, k, t, i, m;
+
+  int nrow1 = ext->nrow;
   data = ext->data;
-  ncovars = ext->ncovars;
+  int ncovars = ext->ncovars;
   covars1 = ext->covars1;
   covars2 = ext->covars2;
   covars3 = ext->covars3;
-  varfixed = ext->var;
+  int varfixed = ext->var;
 
-  double prior1, prior2, prior3, eta, zeta, nu, theta, beta, phi, gamma, delt, epsilon, lambda, rho, xi, omega, output, pr1, pr2, pr3, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, rate1;
+  double pr1, pr2, pr3, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, rate1;
   double S[4], mu[4], Sigma[4];
   double gammaA[4][4], gammaB[4][4], gammaC[4][4], alpha[4][nrow1], alphahat[4][nrow1], emis_prob[4][nrow1];
-  double denom, temp2, temp3;
+  double denom, temp, temp2, temp3;
 
   //initialize output
-    output = 0;
+  double output = 0;
     
   mu[0] = par[0];
   mu[1] = par[1];
@@ -416,22 +371,22 @@ static double fr_four(int n, double par[24], void *ex){
   Sigma[1] = par[5];
   Sigma[2] = par[6];
   Sigma[3] = par[7];
-  prior1 = par[8];
-  prior2 = par[9];
-  prior3 = par[10];
-  eta = par[11];
-  zeta = par[12];
-  nu = par[13];
-  theta = par[14];
-  beta = par[15];
-  phi = par[16];
-  gamma = par[17];
-  delt = par[18];
-  epsilon = par[19];
-  lambda = par[20];
-  rho = par[21];
-  xi = par[22];
-  omega = par[23];
+  double prior1 = par[8];
+  double prior2 = par[9];
+  double prior3 = par[10];
+  double eta = par[11];
+  double zeta = par[12];
+  double nu = par[13];
+  double theta = par[14];
+  double beta = par[15];
+  double phi = par[16];
+  double gamma = par[17];
+  double delt = par[18];
+  double epsilon = par[19];
+  double lambda = par[20];
+  double rho = par[21];
+  double xi = par[22];
+  double omega = par[23];
   S[0] = exp(Sigma[0]);
   if(varfixed == 0){
     S[1] = exp(Sigma[1]);
@@ -557,8 +512,8 @@ static double fr_four(int n, double par[24], void *ex){
   gammaA[0][0] = (1-p1-p2-p3); gammaA[0][1] = p1; gammaA[0][2] = p2; gammaA[0][3] = p3; gammaA[1][0] = p4; gammaA[1][1] = (1-p4-p5-p6); gammaA[1][2] = p5; gammaA[1][3] = p6; gammaA[2][0] = p7; gammaA[2][1] = p8; gammaA[2][2] = (1-p7-p8-p9); gammaA[2][3] = p9; gammaA[3][0] = p10; gammaA[3][1] = p11; gammaA[3][2] = p12; gammaA[3][3] = (1-p10-p11-p12);
   gammaB[0][0] = (p1+p2+p3); gammaB[0][1] = -p1; gammaB[0][2] = -p2; gammaB[0][3] = -p3; gammaB[1][0] = -p4; gammaB[1][1] = (p4+p5+p6); gammaB[1][2] = -p5; gammaB[1][3] = -p6; gammaB[2][0] = -p7; gammaB[2][1] = -p8; gammaB[2][2] = (p7+p8+p9); gammaB[2][3] = -p9; gammaB[3][0] = -p10; gammaB[3][1] = -p11; gammaB[3][2] = -p12; gammaB[3][3] = (p10+p11+p12);
 
-  for(j = 0; j < nrow1; j++){
-    for(k = 0; k < 4; k++){
+    for(j = 0; j < nrow1; j++){
+     for(k = 4; k--;){
       if(S[k] > 0.001){
 	emis_prob[k][j] = dnorm(data[j], mu[k], S[k], 0);
       }
@@ -578,12 +533,12 @@ static double fr_four(int n, double par[24], void *ex){
   alpha[2][0] = pr2*(emis_prob[2][0]);
   alpha[3][0] = (1-pr1-pr2-pr3)*(emis_prob[3][0]);
 
-  temp2 = (alpha[0][0]+alpha[1][0]+alpha[2][0]+alpha[3][0]);
+  temp2 = 1/(alpha[0][0]+alpha[1][0]+alpha[2][0]+alpha[3][0]);
 
-  alphahat[0][0] = alpha[0][0]/temp2;
-  alphahat[1][0] = alpha[1][0]/temp2;
-  alphahat[2][0] = alpha[2][0]/temp2;
-  alphahat[3][0] = alpha[3][0]/temp2;
+  alphahat[0][0] = alpha[0][0]*temp2;
+  alphahat[1][0] = alpha[1][0]*temp2;
+  alphahat[2][0] = alpha[2][0]*temp2;
+  alphahat[3][0] = alpha[3][0]*temp2;
 
   for(t = 1; t < nrow1; t++){  
 
@@ -619,16 +574,16 @@ static double fr_four(int n, double par[24], void *ex){
       alpha[2][t] = (alphahat[0][t-1]*gammaC[0][2] + alphahat[1][t-1]*gammaC[1][2] + alphahat[2][t-1]*gammaC[2][2] + alphahat[3][t-1]*gammaC[3][2])*emis_prob[2][t];
       alpha[3][t] = (alphahat[0][t-1]*gammaC[0][3] + alphahat[1][t-1]*gammaC[1][3] + alphahat[2][t-1]*gammaC[2][3] + alphahat[3][t-1]*gammaC[3][3])*emis_prob[3][t];
 
-      temp3 = alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t];
+      temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t]);
 
-      alphahat[0][t] = alpha[0][t]/temp3;
-      alphahat[1][t] = alpha[1][t]/temp3;
-      alphahat[2][t] = alpha[2][t]/temp3;
-      alphahat[3][t] = alpha[3][t]/temp3;
+      alphahat[0][t] = alpha[0][t]*temp3;
+      alphahat[1][t] = alpha[1][t]*temp3;
+      alphahat[2][t] = alpha[2][t]*temp3;
+      alphahat[3][t] = alpha[3][t]*temp3;
 
   }
 
-  for(i=0; i < nrow1; i++){
+  for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i]+alpha[2][i]+alpha[3][i];
      output = output+(log(denom));
      //output *= denom;
@@ -640,25 +595,25 @@ static double fr_four(int n, double par[24], void *ex){
 static double fr_five(int n, double par[35], void *ex){
 
   dataStore *ext;
-  double *data, *covars1, *covars2, *covars3, temp;
-  int varfixed, nrow1, j, k, t, i, m, ncovars;
+  double *data, *covars1, *covars2, *covars3;
+  int j, k, t, i, m;
   ext = ex;
 
-  nrow1 = ext->nrow;
+  int nrow1 = ext->nrow;
   data = ext->data;
-  ncovars = ext->ncovars;
+  int ncovars = ext->ncovars;
   covars1 = ext->covars1;
   covars2 = ext->covars2;
   covars3 = ext->covars3;
-  varfixed = ext->var;
+  int varfixed = ext->var;
 
-  double prior1, prior2, prior3, prior4, eta, zeta, nu, omikron, theta, beta, phi, kappa, gamma, delt, epsilon, tau, lambda, rho, xi, iota, chi, upsilon, psi, aux, omega, output, pr1, pr2, pr3, pr4, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, rate1;
+  double  pr1, pr2, pr3, pr4, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, rate1;
   double S[5], mu[5], Sigma[5];
   double gammaA[5][5], gammaB[5][5], gammaC[5][5], alpha[5][nrow1], alphahat[5][nrow1], emis_prob[5][nrow1];
-  double denom, temp2, temp3;
+  double denom, temp, temp2, temp3;
 
   //initialize output
-  output = 0;
+  double output = 0;
     
   mu[0] = par[0];
   mu[1] = par[1];
@@ -670,31 +625,31 @@ static double fr_five(int n, double par[35], void *ex){
   Sigma[2] = par[7];
   Sigma[3] = par[8];
   Sigma[4] = par[9];
-  prior1 = par[10];
-  prior2 = par[11];
-  prior3 = par[12];
-  prior4 = par[13];
-  eta = par[14];
-  zeta = par[15];
-  nu = par[16];
-  omikron = par[17];
-  theta = par[18];
-  beta = par[19];
-  phi = par[20];
-  kappa = par[21];
-  gamma = par[22];
-  delt = par[23];
-  epsilon = par[24];
-  tau = par[25];
-  lambda = par[26];
-  rho = par[27];
-  xi = par[28];
-  iota = par[29];
-  chi = par[30];
-  upsilon = par[31];
-  psi = par[32];
-  aux = par[33];
-  omega = par[34];
+  double prior1 = par[10];
+  double prior2 = par[11];
+  double prior3 = par[12];
+  double prior4 = par[13];
+  double eta = par[14];
+  double zeta = par[15];
+  double nu = par[16];
+  double omikron = par[17];
+  double theta = par[18];
+  double beta = par[19];
+  double phi = par[20];
+  double kappa = par[21];
+  double gamma = par[22];
+  double delt = par[23];
+  double epsilon = par[24];
+  double tau = par[25];
+  double lambda = par[26];
+  double rho = par[27];
+  double xi = par[28];
+  double iota = par[29];
+  double chi = par[30];
+  double upsilon = par[31];
+  double psi = par[32];
+  double aux = par[33];
+  double omega = par[34];
   S[0] = exp(Sigma[0]);
   if(varfixed == 0){
     S[1] = exp(Sigma[1]);
@@ -881,11 +836,20 @@ static double fr_five(int n, double par[35], void *ex){
     rate1 = exp(20);
       }
 
-  gammaA[0][0] = (1-p1-p2-p3-p4); gammaA[0][1] = p1; gammaA[0][2] = p2; gammaA[0][3] = p3; gammaA[0][4] = p4;  gammaA[1][0] = p5; gammaA[1][1] = (1-p5-p6-p7-p8); gammaA[1][2] = p6; gammaA[1][3] = p7; gammaA[1][4] = p8; gammaA[2][0] = p9; gammaA[2][1] = p10; gammaA[2][2] = (1-p9-p10-p11-p12); gammaA[2][3] = p11; gammaA[2][4] = p12; gammaA[3][0] = p13; gammaA[3][1] = p14; gammaA[3][2] = p15; gammaA[3][3] = (1-p13-p14-p15-p16); gammaA[3][4] = p16; gammaA[4][0] = p17; gammaA[4][1] = p18; gammaA[4][2] = p19; gammaA[4][3] = p20; gammaA[4][4] = (1-p17-p18-p19-p20);
-  gammaB[0][0] = (p1+p2+p3+p4); gammaB[0][1] = -p1; gammaB[0][2] = -p2; gammaB[0][3] = -p3; gammaB[0][4] = -p4;  gammaB[1][0] = -p5; gammaB[1][1] = (p5+p6+p7+p8); gammaB[1][2] = -p6; gammaB[1][3] = -p7; gammaB[1][4] = -p8; gammaB[2][0] = -p9; gammaB[2][1] = -p10; gammaB[2][2] = (p9+p10+p11+p12); gammaB[2][3] = -p11; gammaB[2][4] = -p12; gammaB[3][0] = -p13; gammaB[3][1] = -p14; gammaB[3][2] = -p15; gammaB[3][3] = (p13+p14+p15+p16); gammaB[3][4] = -p16; gammaB[4][0] = -p17; gammaB[4][1] = -p18; gammaB[4][2] = -p19; gammaB[4][3] = -p20; gammaB[4][4] = (p17+p18+p19+p20);
+  gammaA[0][0] = (1-p1-p2-p3-p4); gammaA[0][1] = p1; gammaA[0][2] = p2; gammaA[0][3] = p3; gammaA[0][4] = p4;  
+  gammaA[1][0] = p5; gammaA[1][1] = (1-p5-p6-p7-p8); gammaA[1][2] = p6; gammaA[1][3] = p7; gammaA[1][4] = p8; 
+  gammaA[2][0] = p9; gammaA[2][1] = p10; gammaA[2][2] = (1-p9-p10-p11-p12); gammaA[2][3] = p11; gammaA[2][4] = p12; 
+  gammaA[3][0] = p13; gammaA[3][1] = p14; gammaA[3][2] = p15; gammaA[3][3] = (1-p13-p14-p15-p16); gammaA[3][4] = p16; 
+  gammaA[4][0] = p17; gammaA[4][1] = p18; gammaA[4][2] = p19; gammaA[4][3] = p20; gammaA[4][4] = (1-p17-p18-p19-p20);
 
-  for(j = 0; j < nrow1; j++){
-    for(k = 0; k < 5; k++){
+  gammaB[0][0] = (p1+p2+p3+p4); gammaB[0][1] = -p1; gammaB[0][2] = -p2; gammaB[0][3] = -p3; gammaB[0][4] = -p4; 
+  gammaB[1][0] = -p5; gammaB[1][1] = (p5+p6+p7+p8); gammaB[1][2] = -p6; gammaB[1][3] = -p7; gammaB[1][4] = -p8; 
+  gammaB[2][0] = -p9; gammaB[2][1] = -p10; gammaB[2][2] = (p9+p10+p11+p12); gammaB[2][3] = -p11; gammaB[2][4] = -p12; 
+  gammaB[3][0] = -p13; gammaB[3][1] = -p14; gammaB[3][2] = -p15; gammaB[3][3] = (p13+p14+p15+p16); gammaB[3][4] = -p16; 
+  gammaB[4][0] = -p17; gammaB[4][1] = -p18; gammaB[4][2] = -p19; gammaB[4][3] = -p20; gammaB[4][4] = (p17+p18+p19+p20);
+
+   for(j = 0; j < nrow1; j++){
+    for(k = 5; k--;){
       if(S[k] > 0.001){
 	emis_prob[k][j] = dnorm(data[j], mu[k], S[k], 0);
       }
@@ -906,19 +870,19 @@ static double fr_five(int n, double par[35], void *ex){
   alpha[3][0] = pr4*(emis_prob[3][0]);
   alpha[4][0] = (1-pr1-pr2-pr3-pr4)*(emis_prob[4][0]);
 
-  temp2 = alpha[0][0]+alpha[1][0]+alpha[2][0]+alpha[3][0]+alpha[4][0];
+  temp2 = 1/(alpha[0][0]+alpha[1][0]+alpha[2][0]+alpha[3][0]+alpha[4][0]);
 
-  alphahat[0][0] = alpha[0][0]/temp2;
-  alphahat[1][0] = alpha[1][0]/temp2;
-  alphahat[2][0] = alpha[2][0]/temp2;
-  alphahat[3][0] = alpha[3][0]/temp2;
-  alphahat[4][0] = alpha[4][0]/temp2;
+  alphahat[0][0] = alpha[0][0]*temp2;
+  alphahat[1][0] = alpha[1][0]*temp2;
+  alphahat[2][0] = alpha[2][0]*temp2;
+  alphahat[3][0] = alpha[3][0]*temp2;
+  alphahat[4][0] = alpha[4][0]*temp2;
 
   for(t = 1; t < nrow1; t++){
   
     switch(ncovars){
     case 1:
-      temp = (exp(-(pow(covars1[t-1],rate1))));
+      temp = exp(-(pow(covars1[t-1],rate1)));
       for(j = 0; j < 5; j++){
 	for(m = 0; m < 5; m++){
 	  gammaC[j][m] = gammaA[j][m] + (temp*gammaB[j][m]);
@@ -949,17 +913,15 @@ static double fr_five(int n, double par[35], void *ex){
       alpha[3][t] = (alphahat[0][t-1]*gammaC[0][3] + alphahat[1][t-1]*gammaC[1][3] + alphahat[2][t-1]*gammaC[2][3] + alphahat[3][t-1]*gammaC[3][3] + alphahat[4][t-1]*gammaC[4][3])*emis_prob[3][t];
       alpha[4][t] = (alphahat[0][t-1]*gammaC[0][4] + alphahat[1][t-1]*gammaC[1][4] + alphahat[2][t-1]*gammaC[2][4] + alphahat[3][t-1]*gammaC[3][4] + alphahat[4][t-1]*gammaC[4][4])*emis_prob[4][t];
 
-      temp3 = alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t]+alpha[4][t];
+      temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t]+alpha[4][t]);
 
-      alphahat[0][t] = alpha[0][t]/ temp3;
-      alphahat[1][t] = alpha[1][t]/ temp3; 
-      alphahat[2][t] = alpha[2][t]/ temp3;
-      alphahat[3][t] = alpha[3][t]/ temp3;
-      alphahat[4][t] = alpha[4][t]/ temp3;
+      for(i = 5; i--;){
+	alphahat[i][t] = alpha[i][t]*temp3;
+      }
 
   }
 
-  for(i=0; i < nrow1; i++){
+  for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i]+alpha[2][i]+alpha[3][i]+alpha[4][i];
      output = output+(log(denom));
      // output *= denom;
@@ -973,7 +935,6 @@ void runNelderMead(int *nrow, double *xin, double *xout, double *Fmin, double *d
   dataStore *ext;
   int fail;
   int fncount;
-  double abstol, intol, alpha, beta, gamma;
 
   ext = Calloc(1, dataStore);
 
@@ -984,11 +945,11 @@ void runNelderMead(int *nrow, double *xin, double *xout, double *Fmin, double *d
   ext->nrow = *nrow;
   ext->ncovars = *ncovars;
   
-  abstol = -HUGE_VAL;
-  intol = *epsilon;
-  alpha = 1;
-  beta = 0.5;
-  gamma = 2;
+  double abstol = -HUGE_VAL;
+  double intol = *epsilon;
+  double alpha = 1;
+  double beta = 0.5;
+  double gamma = 2;
 
   switch(*nstates){
   case 2:
@@ -998,7 +959,7 @@ void runNelderMead(int *nrow, double *xin, double *xout, double *Fmin, double *d
     nmmin(15, xin, xout, Fmin, fr_three, &fail, abstol, intol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
     break;
   case 4:
-   nmmin(24, xin, xout, Fmin, fr_four, &fail, abstol, intol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
+    nmmin(24, xin, xout, Fmin, fr_four, &fail, abstol, intol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
     break;
   case 5:
     nmmin(35, xin, xout, Fmin, fr_five, &fail, abstol, intol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
@@ -1007,106 +968,6 @@ void runNelderMead(int *nrow, double *xin, double *xout, double *Fmin, double *d
     Rprintf("Number of states not between 2 and 5\n");
     break;
   }
-}
-
-/*
-void two_states_nelder(int *nrow, double *xin, double *xout, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
- 
-  dataStore *ext;
-  int fail;
-  int fncount;
-  double abstol, intol, alpha, beta, gamma;
-
-  ext = Calloc(1, dataStore);
-
-  ext->data = data;
-  ext->covars1 = covars;
-  ext->nrow = *nrow;
-  ext->ncovars = 1;
-  
-  abstol = -HUGE_VAL;
-  intol = *epsilon;
-  alpha = 1;
-  beta = 0.5;
-  gamma = 2;
-  nmmin(8, xin, xout, Fmin, fr_two, &fail, abstol, intol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
 
   free(ext);
 }
-
- Nelder-Mead optimisation function 
-
-void three_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
- 
-  dataStore *ext;
-  int fail = 0, fncount;
-  double abstol, reltol, alpha, beta, gamma;
-  
-  ext = Calloc(1, dataStore);
-
-  ext->data = data;
-  ext->covars1 = covars;
-  ext->nrow = *nrow;
-  ext->ncovars = 1;
-  
-  abstol = -HUGE_VAL;
-  reltol = *epsilon;
-  alpha = 1;
-  beta = 0.5;
-  gamma = 2;
-  
-  nmmin(15, xin, x, Fmin, fr_three, &fail, abstol, reltol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
-  
-  free(ext);
-}
-
-
-void four_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
- 
-  dataStore *ext;
-  int fail = 0, fncount;
-  double abstol, reltol, alpha, beta, gamma;
-  
-  ext = Calloc(1, dataStore);
-
-  ext->data = data;
-  ext->covars1 = covars;
-  ext->nrow = *nrow;
-  ext->ncovars = 1;
-
-  abstol = -HUGE_VAL;
-  reltol = *epsilon;
-  alpha = 1;
-  beta = 0.5;
-  gamma = 2;
-  
-  nmmin(24, xin, x, Fmin, fr_four, &fail, abstol, reltol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
-
-  free(ext);
-}
-
-
-void five_states_nelder(int *nrow, double *xin, double *x, double *Fmin, double *data, double *covars, int *var, double *epsilon, int *trace, int *numit){
- 
-  dataStore *ext;
-  int fail = 0, fncount;
-  double abstol, reltol, alpha, beta, gamma;
-  
-  ext = Calloc(1, dataStore);
-
-  ext->data = data;
-  ext->covars1 = covars;
-  ext->nrow = *nrow;
-  ext->ncovars = 1;
-  
-  abstol = -HUGE_VAL;
-  reltol = *epsilon;
-  alpha = 1;
-  beta = 0.5;
-  gamma = 2;
-  
-  nmmin(35, xin, x, Fmin, fr_five, &fail, abstol, reltol, ext, alpha, beta, gamma, *trace, &fncount, *numit);
-
-  free(ext);
-}
-*/

@@ -1,14 +1,22 @@
 "fit.model" <-
-function (sample, chrom, dat, datainfo = clones.info, covariates, 
-    aic = TRUE, bic = FALSE, delta = 1, 
+function (sample, chrom, dat, datainfo = clones.info, covariates = NULL, 
+          aic = TRUE, bic = FALSE, delta = 1, 
           var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) {
 
     obs <- dat[datainfo$Chr == chrom, sample]
     kb <- datainfo$Position[datainfo$Chr == chrom]
 
-    no.cov <- (ncol(covariates)-2)/ncol(dat)
-    cov <- covariates[covariates$Chr == chrom,(3 + ((sample-1)*no.cov)):(2 + no.cov*sample)] 
-    covars <- as.matrix(cov)
+   ##extracting distances from the $genes matrix
+    dists = kb[2:length(kb)] - kb[1:(length(kb)-1)]
+    covars <- as.matrix(dists)
+   
+    if(!is.null(covariates)){
+      no.cov <- ((ncol(covariates)-2)/ncol(dat))
+      cov <- covariates[covariates$Chr == chrom,(3 + ((sample-1)*no.cov)):(2 + no.cov*sample)]
+      covars <- as.matrix(cbind(covars, cov))
+    }
+     
+#   covars <- as.matrix(cbind(dists, cov))
     
     obs.ord <- obs[order(kb)]
     kb.ord <- kb[order(kb)]
@@ -296,6 +304,8 @@ function (sample, chrom, dat, datainfo = clones.info, covariates,
        }
     list(out.list = out.all, nstates.list = numstates)
   }
+
+
 
 run.nelder <- function(nrow, xin, data, covars, var.fixed, epsilon, numiter,  nstates){
   xout = double(length(xin))

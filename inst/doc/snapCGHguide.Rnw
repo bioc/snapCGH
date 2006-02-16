@@ -44,14 +44,16 @@ library(snapCGH)
 @
 
 \Rpackage{snapCGH} is designed to be used in conjunction with \Rpackage{limma} and
-so it will automatically load that library before proceeding.\\
+so it will automatically load that library before proceeding.  In addition to \Rpackage{limma}, 
+the following packages are also loaded: \Rpackage{GLAD}, \Rpackage{DNAcopy} and \Rpackage{aCGH}.
+Each of these impliments an alternative segmentation method that may be applied to the data.\\
 
 \section{Reading Data}
 
 We read in the samples and create the initial RG object using the
 following commands.
 
-<<2>>=
+<<2, results=hide>>=
 datadir <- system.file("testdata", package="snapCGH")
 targets <- readTargets("targets.txt", path=datadir)
 RG1 <- read.maimages(targets$FileName, path=datadir, source = "genepix")
@@ -60,15 +62,13 @@ RG1 <- read.maimages(targets$FileName, path=datadir, source = "genepix")
 %%The second of the above commands is very similar to the \texttt{read.maimages} function available in limma.
 %%The only difference is that addition of the \texttt{TestChan} parameter.  
 
-When aCGH experiments are carried out, the reference channel is dyed
-using Cy5 and the test channel is dyed using Cy3. 
 
 Information about the clones on the array (e.g. what part of the
 genome they represent) can be read in separately using the
 \Rfunction{read.clonesinfo} function. In order to do this it is necessary
 to create a clones info file. Such a file (which can be created using
 Excel and saved as a 'txt' file) must contain columns called Position
-and Chr which give the position along a chromosome (in kb) and the
+and Chr which give the position along a chromosome (in Mb) and the
 chromosome to which a clone belongs. It must be ordered in the same
 way as the clones are ordered in the genepix file. The information is
 added to the \Robject{RG\$genes} object. The second command adds information
@@ -79,19 +79,31 @@ and allows specific spots to be highlighted in many of the plotting
 functions.  The content of a spot types file is covered extensively
 within the \Rpackage{limma} manual.
 
-<<3>>=
+<<3, results=hide>>=
 RG1 <- read.clonesinfo("cloneinfo.txt", RG1, path=datadir)
 RG1$printer <- getLayout(RG1$genes)
 types <- readSpotTypes("SpotTypes.txt", path=datadir)
 RG1$genes$Status <- controlStatus(types, RG1)
-RG1$design <- c(1,1)
+
 @
 
-We now proceed to use some information provided by control spots to
-remove clones which we deem to be of a poor quality. The clone spots
-which we will use as our control are drosophila clones. We remove
-clones whose intensity is too low relative to the control spots. (The
-background correction is carried out within this function.)
+Commonly, when aCGH experiments are carried out the reference channel is dyed
+using Cy5 and the test channel is dyed using Cy3.  This is the opposite way to expression data.
+In order to take this into account we need to specify which channel is the reference
+within our \Rclass{RGList}.  To do this we create a design vector with each column 
+corresponding to an array in the experiment.  A value of 1 indicates that the Cy3 channel
+is the reference, whilst a value of -1 equates to Cy5 being the reference.
+
+<<3a>>=
+RG1$design <- c(-1,-1)
+@ 
+
+We now proceed to use the function \Rfunction{backgroundCorrect} to remove 
+the background intensity for each spot.  In this example we have chosen the 
+method 'minimum' which subtracts the background value from the forground.
+Any intensity which is zero or negative after the background subtraction is 
+set equal to half the minimum of the positive corrected intensities for that array.
+For other background correction methods please see the appropriate help file.
 
 <<<3a>>=
 RG2 <- backgroundCorrect(RG1, method="minimum")
@@ -113,15 +125,13 @@ MA <- normalizeWithinArrays(RG2, method="median")
 
 We are now ready to process the data with the purpose of segmenting
 the dataset into regions corresponding to sections of the genome where
-there are the same number of copy number gains or losses.
+there are the same number of copy number gains or losses.\\
 
 
 Firstly, we use the \Rfunction{processCGH} to 'tidy up' the MAList
-object. The \Rfunarg{unmapScreen} option removes those clones which are
-incompletely mapped and the \Rfunarg{dupRemove} option indicates whether clones
-with duplicate names should be averaged and removed from the dataset
-leaving only one occurence of each duplicated set (this option
-defaults to TRUE).
+object. The \Rfunarg{method.of.averaging} option defines how clones of the 
+same type should be averaged.  If this is specified the duplicates are removed 
+following the averaging leaving only one occurence of each clone set.
 
 <<6, results=hide>>=
 MA2 <- processCGH(MA,method.of.averaging=mean)
@@ -131,11 +141,11 @@ We are now ready to fit the segmentation method. For larger data sets
 this step can take a long time (several hours).  We fit the HMM using
 the following commands.  The other segmentation methods included in
 this library are \Rpackage{GLAD} and \Rpackage{DNAcopy}.  See manual pages for the functions
-\Rfunction{run.DNAcopy} and \Rfunction{run.GLAD} for details of how to use
+\Rfunction{runDNAcopy} and \Rfunction{runGLAD} for details of how to use
 them.
 
 <<7,results=hide>>=
-SegInfo <- runHomHMM(MA2, criteria = "AIC")
+SegInfo.Hom <- runHomHMM(MA2, criteria = "AIC")
 @
 
 We now deal with the fact that the HMM sometimes has a tendency to fit
@@ -146,18 +156,8 @@ information on their differences please see the appropriate page in
 the helpfiles.
 
 <<9>>=
-SegInfo.merged <- mergeStates(SegInfo, MergeType = 1)
+SegInfo.Hom.merged <- mergeStates(SegInfo.Hom, MergeType = 1)
 @ 
-
-After merging, the next step is to find any points of particular
-interest amongst the data.  For instance outliers, focal aberrations
-and transitions.  The function \Rfunction{find.genomic.events} performs
-this task and stores the information in an object of class
-\Rfunction{GEList}.
-
-<<10,results=hide>>=
-GenList <- findGenomicEvents(SegInfo.merged)
-@
 
 We are now ready to use any of the plotting functions available in the
 library.
@@ -166,11 +166,11 @@ library.
 
 The library comes with a variety of plotting functions that provide
 visual representations of the data at various stages of the analysis
-process.  Firstly we will look at the \texttt{genomePlot}
-function. This function takes either an \texttt{MAList} or a
-\texttt{SegList} object (in this example we've used an MAList) and
+process.  Firstly we will look at the \Rfunction{genomePlot}
+function. This function takes either an \Rclass{MAList} or a
+\Rclass{SegList} object (in this example we've used an \Rclass{MAList}) and
 plots the M-value for each gene against it's position on the genome.
-The \texttt{array} argument indicates which array is plotted.
+The \Rfunarg{array} argument indicates which array is plotted.
 This function utilizes the spot types data that was read in earlier to
 highlight specific genes of interest.
 
@@ -178,35 +178,27 @@ highlight specific genes of interest.
 genomePlot(MA2, array = 1)                                               
 @ 
 
-
-\begin{figure}[!h]
+\begin{figure}
 \begin{center}
-<<label=11a,fig=TRUE,echo=FALSE>>=
+<<label=11a, fig=TRUE,echo=FALSE>>=
 <<11>>
 @ 
 \end{center}
 \end{figure}
 
-
 \pagebreak
 
-Using the \texttt{labelled.genome.plot} function it is possible to
+It is also possible to
 look at specific chromosomes, rather than the entire genome as in the
-previous function.  Which particular chromosome is to be plotted is
+previous example.  Which particular chromosome is to be plotted is
 specified using the \texttt{chrom.to.plot} argument.
 
 
-Here we cluster the samples.  Again this function will except an
-object of class \texttt{MAList} or \texttt{SegList}.  We have
-specified which chromosomes to cluster using the \texttt{vecchrom}
-argument as well as defining the colours that represent areas of
-amplification or deletion.
-
-<<label=12,include=FALSE>>=
-heatmapGenome(MA2)
+<<label = 12, include=FALSE>>=
+genomePlot(MA2, array = 1, chrom.to.plot = 8)
 @ 
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \begin{center}
 <<label=12a,fig=TRUE,echo=FALSE>>=
 <<12>>
@@ -214,21 +206,17 @@ heatmapGenome(MA2)
 \end{center}
 \end{figure}
 
-\pagebreak
-
-The \texttt{plotSegmentationStates} function provides a visual
-representation of the observed M-values for a particular chromosome
-alongside the predicted values produced by the segementation
-algorithm.  It requires both a \texttt{SegList} and a \texttt{GenList}
-object.  The \texttt{sample.ind} argument specifies which array(s) we
-would like to be plotted, whilst the desired chromosome(s) are passed
-via the \texttt{chr} parameter.
+Here we cluster the samples.  Again this function will except an
+object of class \texttt{MAList} or \texttt{SegList}.  It is possible
+to specify which chromosomes to cluster using the \texttt{vecchrom}
+argument as well as defining the colours that represent areas of
+amplification or deletion.  Please see the help file for more details.
 
 <<label=13,include=FALSE>>=
-plotSegmentationStates(SegInfo.merged, GenList, array = 1, chr = 8)
+heatmapGenome(MA2)
 @ 
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \begin{center}
 <<label=13a,fig=TRUE,echo=FALSE>>=
 <<13>>
@@ -236,7 +224,48 @@ plotSegmentationStates(SegInfo.merged, GenList, array = 1, chr = 8)
 \end{center}
 \end{figure}
 
+\pagebreak
 
+The \texttt{plotSegmentedGenome} function provides a visual
+representation of the observed M-values overlayed with the predicted 
+states produced by the segementation
+algorithm.  It requires a \Rclass{SegList} as input.
+
+
+<<label=14,include=FALSE>>=
+plotSegmentedGenome(SegInfo.Hom.merged, array = 1)
+@ 
+
+\begin{figure}[!ht]
+\begin{center}
+<<label=14a,fig=TRUE,echo=FALSE>>=
+<<14>>
+@ 
+\end{center}
+\end{figure}
+
+Using the argument \Rfunarg{chrom.to.plot} it is possible to specify individual
+chromosomes to plot.  Additionally the function can accept more than one
+\Robject{SegList} allowing visual comparison between segmentation methods.\\
+
+The following example applies the DNAcopy algorithm to the data, merges it
+and then plots both that segmentation method and the homogeneous HMM on the
+same axis.
+
+<<label=15, results=hide>>=
+Seg.DNAcopy <- runDNAcopy(MA2)
+SegInfo.DNAcopy.merged <- mergeStates(Seg.DNAcopy)
+plotSegmentedGenome(SegInfo.Hom.merged, SegInfo.DNAcopy.merged, array = 1,
+                    chrom.to.plot = 1, colors = c("blue", "green"))
+@ 
+
+\begin{figure}[!ht]
+\begin{center}
+<<label=16a,fig=TRUE,results = hide, echo=FALSE>>=
+<<15>>
+@ 
+\end{center}
+\end{figure}
 
 
 \end{document}

@@ -9,7 +9,7 @@
 \usage{
 fractionAltered(input, thres = 0.25, factor = 2.5, 
          samplenames = colnames(input$M), 
-         chrominfo = chrominfo.basepair)
+         chrominfo = chrominfo.Mb)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,7 +28,7 @@ fractionAltered(input, thres = 0.25, factor = 2.5,
     \code{aCGHList} object}
 %  \item{acghList}{this object should be input}
   \item{chrominfo}{A chromosomal information associated with the mapping of the
-          data. Default is \code{chrominfo.basepair}}
+          data. Default is \code{chrominfo.Mb}}
   }
 %\details{
 %  ~~ If necessary, more details than the __description__  above ~~

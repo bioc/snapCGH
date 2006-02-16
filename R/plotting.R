@@ -8,14 +8,14 @@
     
     objects <- list(...)
     nobjects <- length(objects)
-
+  
     #### check they are SegLists ####
     for (i in 1:nobjects){
       if(class(objects[[i]]) != "SegList"){
         stop("Objects must be of class SegList")}
     }
 
-    ### assigning colours, if not specified plot everythign in blue for now #####
+    ### assigning colours, if not specified plot everything in blue for now #####
     if(is.null(colors)){
       colors = rep(c("blue"), nobjects)
     }
@@ -31,15 +31,35 @@
 
 ##If there is only one chromosome to be plotted.    
     if(!is.na(chrom.to.plot)) {
+#      legend(x = (chrominfo$length[chrom.to.plot])/4, y = 1.5, legend = objects, fill = colors)
       for(k in 1:nobjects){
         current <- objects[[k]][objects[[k]]$genes$Chr == chrom.to.plot,]
+
+        ##Find where all the breakpoints are
+        breakpoints <- findBreakPoints(current$state[,array])
+        ##Now find which are just one clone in a state
+        dup.breaks <- breakpoints[duplicated(breakpoints)]
+
+        #Set the to a thin dashed line for single clone states
+        out <- rep(1,length(current$M.predicted[,array])-1)
+        out[dup.breaks - 1] <- 3
+        out[dup.breaks] <- 3
+        width <- rep(2,length(current$M.predicted[,array])-1)
+        width[dup.breaks - 1] <- 0.5
+        width[dup.breaks] <- 0.5
+                            
+
         for(j in 2:length(objects[[k]][objects[[k]]$genes$Chr == chrom.to.plot,array])){
           segments(y0 = current$M.predicted[(j-1),array],
-                   x0 = (current$genes$Position[(j-1)])/1000,
+                   x0 = (current$genes$Position[(j-1)]),
                    y1 = current$M.predicted[(j),array],
-                   x1 = (current$genes$Position[(j)])/1000,
-                   col = colors[k], lwd = 2)
+                   x1 = (current$genes$Position[(j)]),
+                   col = colors[k], lwd = width[j-1], lty = out[j-1])
         }
+
+        #Plot a red marker on any single clones in a state.
+        points(current$genes$Position[dup.breaks],current$M.observed[dup.breaks,array],
+               col="red",pch=16,cex=2)
       }
     }
 ##Otherwise show the entire genome.
@@ -49,9 +69,9 @@
           current <- objects[[k]][objects[[k]]$genes$Chr == i,]
           for(j in 2:length(objects[[k]][objects[[k]]$genes$Chr == i,array])){
             segments(y0 = current$M.predicted[(j-1),array],
-                     x0 = (current$genes$Position[(j-1)]+chrom.start[i])/1000,
+                     x0 = (current$genes$Position[(j-1)]+chrom.start[i]),
                      y1 = current$M.predicted[(j),array],
-                     x1 = (current$genes$Position[(j)]+chrom.start[i])/1000,
+                     x1 = (current$genes$Position[(j)]+chrom.start[i]),
                      col = colors[k], lwd = 2) 
           }
         }
@@ -61,9 +81,25 @@
 
 "genomePlot" <-
 function (input, array = 1, naut = 22, 
-    Y = TRUE, X = TRUE, status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
+    Y = FALSE, X = FALSE, status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
     ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA)) 
 {
+
+  ##MALists haven't been adjust with respect to which channel is the test.
+  ##This is done here, but isn't neccessary for SegLists
+  if(class(input) == "MAList"){
+    if (is.null(input$design)) 
+        stop("MA$design component is null")
+    for(i in 1:length(input$design)){
+      temp <- input$design[i]* input$M[,i]
+      input$M[,i] <- temp
+    }
+  }
+  else if(class(input) == "SegList"){} 
+  else{
+    stop("Class must be either MAList or SegList")
+  }
+   
   
   data <- log2ratios(input)
   datainfo <- input$genes
@@ -74,7 +110,7 @@ function (input, array = 1, naut = 22,
   name <- (colnames(data))[array]
 
   data <- matrix(data[ord, ], nrow = nrow(as.matrix(data[ord,])),ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
-  ind.unmap <- which(chrom < 1 | is.na(chrom) | is.na(kb) | (chrom > (naut + 2)))
+  ind.unmap <- which(chrom < 1 | is.na(chrom) | is.na(kb) | (as.numeric(chrom) > (naut + 2)))
   
   if (missing(status)) status <- input$genes$Status
   
@@ -104,9 +140,9 @@ function (input, array = 1, naut = 22,
     chrominfo <- chrominfo[nchr, ]
     chrominfo <- chrominfo[1:nchr, ]
     chrom.start <- 0
-    par(cex = 0.6, pch = 18, lab = c(6, 6, 7), cex.axis = 1.5, xaxs = "i")
+    par(xaxt = "s", cex = 0.6, pch = 18, lab = c(6, 6, 7), cex.axis = 1.5, xaxs = "i")
     } else {
-      data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= nchr,])),ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data[chrom==nchr,])) 
+      data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= nchr,])),ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data[chrom <= nchr,])) 
       kb <- kb[chrom <= nchr]
       chrom <- chrom[chrom <= nchr]
       chrominfo <- chrominfo[1:nchr, ]
@@ -118,9 +154,9 @@ function (input, array = 1, naut = 22,
 
   chrom.centr <- chrom.start + chrominfo$centr
   chrom.mid <- chrom.start + chrominfo$length/2
-  x <- clone.genomepos/1000
+  x <- clone.genomepos
   y <- data[, array]
-  if (is.na(xlim[2])) {xlim[2] <- clone.genomepos[sum(clone.genomepos > 0)]/1000}
+  if (is.na(xlim[2])) {xlim[2] <- clone.genomepos[sum(clone.genomepos > 0)]}
   
    #Plotting functions 
  
@@ -128,18 +164,18 @@ function (input, array = 1, naut = 22,
     plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", ylab = "" , col = "black", bg="white")
     mtext(chrom.to.plot, side = 1, line = 0.3, col = "red")}  else {
       plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, col = "black", bg="white")
-      for (i in seq(1, naut, b = 2)) mtext(i, side = 1, at = chrom.mid[i]/1000, line = 0.3, col = "red")
-      for (i in seq(2, naut, b = 2)) mtext(i, side = 3, at = chrom.mid[i]/1000, line = 0.3, col = "red")}
+      for (i in seq(1, naut, b = 2)) mtext(i, side = 1, at = chrom.mid[i], line = 0.3, col = "red")
+      for (i in seq(2, naut, b = 2)) mtext(i, side = 3, at = chrom.mid[i], line = 0.3, col = "red")}
 
   title(main = paste(array, " ", name), ylab = ylb, xlab = "", cex.lab = 1.5)    
-  if (X & is.na(chrom.to.plot)){ mtext("X", side = 1, at = chrom.mid[naut + 1]/1000, line = 0.3, col = "red")}
-  if (Y & is.na(chrom.to.plot)){ mtext("Y", side = 3, at = chrom.mid[naut + 2]/1000, line = 0.3, col = "red")}
+  if (X & is.na(chrom.to.plot)){ mtext("X", side = 1, at = chrom.mid[naut + 1], line = 0.3, col = "red")}
+  if (Y & is.na(chrom.to.plot)){ mtext("Y", side = 3, at = chrom.mid[naut + 2], line = 0.3, col = "red")}
 
 
   
-  abline(v = c(chrom.start/1000, (chrom.start[nchr] + chrominfo$length[nchr])/1000), lty = 1)
+  abline(v = c(chrom.start, (chrom.start[nchr] + chrominfo$length[nchr])), lty = 1)
   abline(h = seq(min(ylim), max(ylim), b = 0.5), lty = 3)
-  abline(v = (chrominfo$centromere + chrom.start)/1000, lty = 3, col = "red")
+  abline(v = (chrominfo$centromere + chrom.start), lty = 3, col = "red")
 
                                         #Code stolen from limma to use the spottype functionality
   if(is.null(status) || all(is.na(status))) {
@@ -392,9 +428,24 @@ function (input, response = as.factor(rep("All", ncol(input))),
    highCol = "yellow", midCol = "white", ncolors = 50, byclass = FALSE, 
     showaber = FALSE, amplif = 1, homdel = -0.75, samplenames = colnames(input), 
     vecchrom = 1:22, titles = "Image Plot", methodS = "ward", 
-    #imp = TRUE, 
     categoricalPheno = TRUE, CENTROMERE = FALSE) 
 {
+
+  ##MALists haven't been adjust with respect to which channel is the test.
+  ##This is done here, but isn't neccessary for SegLists
+  if(class(input) == "MAList"){
+    if (is.null(input$design)) 
+        stop("MA$design component is null")
+    for(i in 1:length(input$design)){
+      temp <- input$design[i]* input$M[,i]
+      input$M[,i] <- temp
+    }
+  }
+  else if(class(input) == "SegList"){} 
+  else{
+    stop("Class must be either MAList or SegList")
+  }
+    
     if(ncol(input) == 1) {
       stop("You need at least 2 samples to use this function")
     }

@@ -1,6 +1,5 @@
 \name{plotGainLoss}
 \alias{plotGainLoss}
-%- \alias{threshold}
 \alias{changeProp.func}
 \alias{changeProp.overall.func}
 \alias{table.bac.func}
@@ -21,7 +20,7 @@
 \usage{
 plotGainLoss(segList, resT = NULL, pheno = rep(1,
                  ncol(log2ratios(segList))), chrominfo =
-                 chrominfo.basepair, X = TRUE, Y = FALSE, rsp.uniq =
+                 chrominfo.Mb, X = TRUE, Y = FALSE, rsp.uniq =
                  unique(pheno), all = length(rsp.uniq) == 1 &&
                  is.null(resT), titles = if (all) "All Samples" else
                  rsp.uniq, cutplot = 0, thres = 0.25, factor = 2.5, ylm
@@ -39,7 +38,7 @@ plotGainLoss(segList, resT = NULL, pheno = rep(1,
   \item{pheno}{phenotype to compare.}
   \item{chrominfo}{
     Chromosomal information. Defaults to
-    \code{\link{chrominfo.basepair}}
+    \code{\link{chrominfo.Mb}}
   }
   \item{X}{Include X chromosome? Defaults to yes.}
   \item{Y}{Include Y chromosome? Defaults to no.}
@@ -61,8 +60,7 @@ plotGainLoss(segList, resT = NULL, pheno = rep(1,
   \item{thres}{\code{thres} is either a vector providing unique
     threshold for each sample or a vector of the same length as number
     of samples (columns in \code{data}) providing sample-specific
-    threshold. If \code{aCGH.obj} has non-null sd.samples, then \code{thres} is automatically replaced by \code{factor} times madGenome of \code{aCGH} object. Clone is considered to be gained if it is above the
-    threshold and lost if it below negative threshold. Used for plotting
+    threshold. Used for plotting
     the gain/loss frequency data as well as for clone screening and for
     significance analysis when \code{threshold} is TRUE.Defaults to 0.25
   }

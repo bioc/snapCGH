@@ -8,7 +8,7 @@
 \arguments{
 	\item{MA}{An object of class \code{\link[limma:malist]{MAList}}}
 	\item{filterFunc}{A user specified function that accepts an MAList 
-	and returns the indices of the cloens to be removed.}
+	and returns the indices of the clones to be removed.}
 	\item{...}{Additional arguments to be passed to the filter function.}
 }
 \details{

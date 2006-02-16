@@ -1,4 +1,4 @@
-fractionAltered <- function(input, thres=0.25, factor=2.5, samplenames = colnames(input$M), chrominfo=chrominfo.basepair) {
+fractionAltered <- function(input, thres=0.25, factor=2.5, samplenames = colnames(input$M), chrominfo=chrominfo.Mb) {
 
 #        #check if sd.samples are non-empty:
 	#if (!is.null(sd.samples(aCGH.obj)) && (factor > 0)) {
@@ -37,7 +37,7 @@ fractionAltered <- function(input, thres=0.25, factor=2.5, samplenames = colname
 
 "plotGainLoss" <-
 function (segList, resT = NULL, pheno = rep(1, ncol(log2ratios(segList))), 
-    chrominfo = chrominfo.basepair, X = TRUE, Y = FALSE, 
+    chrominfo = chrominfo.Mb, X = TRUE, Y = FALSE, 
     rsp.uniq = unique(pheno), all = length(rsp.uniq) == 1 && 
         is.null(resT), titles = if (all) "All Samples" else rsp.uniq, 
     cutplot = 0, thres = 0.25, factor = 2.5, ylm = c(-1, 1), 

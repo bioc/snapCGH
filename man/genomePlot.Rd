@@ -7,8 +7,8 @@
   Basic plot of the log2 ratios for each array ordered along the genome.
 }
 \usage{
-genomePlot(input, array = 1, naut = 22, Y = TRUE, X
-                 = TRUE, status, values, pch, cex, col, chrominfo =
+genomePlot(input, array = 1, naut = 22, Y = FALSE, X
+                 = FALSE, status, values, pch, cex, col, chrominfo =
                  chrominfo.Mb, ylim = c(-2, 2), ylb = "Log2Ratio",
                  chrom.to.plot = NA, xlim = c(0,NA))
 }
