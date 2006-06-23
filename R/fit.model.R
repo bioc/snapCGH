@@ -7,7 +7,8 @@ function (sample, chrom, dat, datainfo = clones.info, covariates = NULL,
     kb <- datainfo$Position[datainfo$Chr == chrom]
 
    ##extracting distances from the $genes matrix
-    dists = kb[2:length(kb)] - kb[1:(length(kb)-1)]
+    dists.pre = kb[2:length(kb)] - kb[1:(length(kb)-1)]
+    dists = dists.pre/(max(dists.pre))
     covars <- as.matrix(dists)
    
     if(!is.null(covariates)){
@@ -78,7 +79,7 @@ function (sample, chrom, dat, datainfo = clones.info, covariates = NULL,
 
     ######## Initialisation for two states ########
 
-      temp2 <- pam(data,2)
+      temp2 <- clara(data,2)
 
     init.mean.two <- temp2$medoids
 
@@ -99,7 +100,7 @@ function (sample, chrom, dat, datainfo = clones.info, covariates = NULL,
 
     ########## Initialisation for three states ########
 
-      temp3 <- pam(data,3)
+      temp3 <- clara(data,3)
       
     init.mean.three <- vector(length = 3)
     init.mean.three <- temp3$medoids
@@ -121,7 +122,7 @@ function (sample, chrom, dat, datainfo = clones.info, covariates = NULL,
 
     ######## Initialisation for four states #########
 
-      temp4 <- pam(data,4)
+      temp4 <- clara(data,4)
       
     init.mean.four <- vector()
     init.mean.four <- temp4$medoids
@@ -143,7 +144,7 @@ function (sample, chrom, dat, datainfo = clones.info, covariates = NULL,
     
     ########## Initialisation for five states #############
 
-      temp5 <- pam(data, 5)
+      temp5 <- clara(data, 5)
       
     init.mean.five <- vector()
     init.mean.five <- temp5$medoids
