@@ -4,19 +4,11 @@ setClass("SegList",
 representation("list")
 )
 
-setClass("GEList",
-representation("list")
-)
-
 setIs("SegList", "LargeDataObject")
-setIs("GEList", "LargeDataObject")
 
 dim.SegList <- function(x) if(is.null(x[[1]])) c(0,0) else dim(as.matrix(x[[1]]))
 length.SegList <- function(x) prod(dim(x))
 dimnames.SegList <- function(x) dimnames(x[[1]])
-
-##Do dim.GEList later
-
 
 #allows the subsetting of the SegList object.  
 assign("[.SegList",

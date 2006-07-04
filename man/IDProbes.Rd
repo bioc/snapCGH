@@ -1,20 +1,21 @@
-\name{plotSegmentedGenome}
-\alias{plotSegmentedGenome}
+\name{IDProbes}
+\alias{IDProbes}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Plots the genome}
+\title{Interactive version of genomePlot}
 \description{
-  Basic plot of the log2 ratios for each array ordered along the genome.
+  Interactive version of \code{\link{genomePlot}}.  Allows the user to
+  click near a probe and the name of that probe will be displayed next
+  to it.
 }
 \usage{
-plotSegmentedGenome(..., array = 1, naut = 22, Y = FALSE, X
+IDProbes(input, array = 1, naut = 22, Y = FALSE, X
                  = FALSE, status, values, pch, cex, col, chrominfo =
                  chrominfo.Mb, ylim = c(-2, 2), ylb = "Log2Ratio",
-                 chrom.to.plot = NA, xlim = c(0,NA), colors = NULL,
-mark.regions = FALSE, main = NA)
+                 chrom.to.plot = 1, xlim = c(0,NA))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{...}{Objects of class \code{\link[snapCGH:SegList]{SegList}}}
+  \item{input}{an object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
   \item{array}{integer of the array (sample) to be plotted.}
   \item{naut}{number of autosomes in the organism}
   \item{Y}{TRUE if chromosome Y is to be plotted, FALSE otherwise}
@@ -32,30 +33,12 @@ mark.regions = FALSE, main = NA)
   \item{chrom.to.plot}{Specify which chromosome to plot}
   \item{ylb}{label for the Y-axis.}
   \item{xlim}{limits for the x-axis}
-  \item{colors}{vector of colors to plot segmented states of each
-    \code{SegList} passed to the function.}
-  \item{mark.regions}{Boolean.  If true will utilise data stored in
-    \$regions. This is currently undocumented and not recommened for the
-    time being.}
-  \item{main}{Specify the title of the plot}
 }
-\details{
-  The status vector is intended to specify the control status of each
-  spot, for example "gene", "ratio control", "house keeping gene",
-  "buffer" and so on. The vector is usually computed using the function
-  controlStatus and a spot-types file. However the function may be used
-  to highlight any subset of spots.
-}
+
 \seealso{
   \code{\link{genomePlot}}
-  \code{\link[snapCGH:SegList]{SegList}}
-}
-\author{Mike Smith}
-\examples{
+  }
 
-%#reading the spot types file
-%spotTypes <- readSpotTypes("SpotTypes.txt")
-%MA$genes$Status <- controlStatus(spotTypes, MA)
-%genomePlot(MA)
-}
-\keyword{hplot}% at least one, from doc/KEYWORDS
+\author{Mike Smith}
+
+\keyword{hplot}

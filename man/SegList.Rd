@@ -33,11 +33,7 @@ Optional:\cr
 so functions such as \code{\link[limma]{dim}}, \code{\link[base]{nrow}} and \code{\link[base]{ncol}} are also defined.  \code{SegList}
 inherits the \code{\link[methods]{show}} method from the Limma class \code{\link[limma]{LargeDataObject}}.  This
 means that the \code{SegList} will print in a relatively compact way.
-
-Other functions which operate on \code{SegList} objects include:
-\code{\link{plotSegmentationStates}}
 }
-
 \author{Mike Smith}
 
 \keyword{classes}

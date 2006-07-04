@@ -10,7 +10,7 @@
 genomePlot(input, array = 1, naut = 22, Y = FALSE, X
                  = FALSE, status, values, pch, cex, col, chrominfo =
                  chrominfo.Mb, ylim = c(-2, 2), ylb = "Log2Ratio",
-                 chrom.to.plot = NA, xlim = c(0,NA))
+                 chrom.to.plot = NA, xlim = c(0,NA), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,6 +32,7 @@ genomePlot(input, array = 1, naut = 22, Y = FALSE, X
   \item{chrom.to.plot}{Specify which chromosome to plot}
   \item{ylb}{label for the Y-axis.}
   \item{xlim}{limits for the x-axis}
+  \item{...}{Any other parameters}
 }
 \details{
   The status vector is intended to specify the control status of each

@@ -1,88 +1,115 @@
-
-"plotSegmentedGenome" <-
-  function(..., array=1, naut=22, Y=FALSE, X=FALSE, status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
-    ylim=c(-2, 2), ylb="Log2Ratio", chrom.to.plot=NA, xlim=c(0,NA), colors = NULL)
-  {
-## Probably want some sort of key to indicate which line represents which SegList
-## Do this later. MS 25-01-06
-    
-    objects <- list(...)
-    nobjects <- length(objects)
-  
-    #### check they are SegLists ####
-    for (i in 1:nobjects){
-      if(class(objects[[i]]) != "SegList"){
-        stop("Objects must be of class SegList")}
-    }
-
-    ### assigning colours, if not specified plot everything in blue for now #####
-    if(is.null(colors)){
-      colors = rep(c("blue"), nobjects)
-    }
-     
-    genomePlot(input=objects[[1]], array=array, naut=naut, Y=Y, X=X, status=status, values=values,
-               chrominfo=chrominfo, ylim=ylim, ylb=ylb, chrom.to.plot=chrom.to.plot, xlim=xlim,
-               pch=pch, col=col, cex=cex)
-
-    nchr <- naut
-    if (X) nchr <- nchr + 1
-    if (Y) nchr <- nchr + 1
-    chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
-
-##If there is only one chromosome to be plotted.    
-    if(!is.na(chrom.to.plot)) {
-#      legend(x = (chrominfo$length[chrom.to.plot])/4, y = 1.5, legend = objects, fill = colors)
-      for(k in 1:nobjects){
-        current <- objects[[k]][objects[[k]]$genes$Chr == chrom.to.plot,]
-
-        ##Find where all the breakpoints are
-        breakpoints <- findBreakPoints(current$state[,array])
-        ##Now find which are just one clone in a state
-        dup.breaks <- breakpoints[duplicated(breakpoints)]
-
-        #Set the to a thin dashed line for single clone states
-        out <- rep(1,length(current$M.predicted[,array])-1)
-        out[dup.breaks - 1] <- 3
-        out[dup.breaks] <- 3
-        width <- rep(2,length(current$M.predicted[,array])-1)
-        width[dup.breaks - 1] <- 0.5
-        width[dup.breaks] <- 0.5
-                            
-
-        for(j in 2:length(objects[[k]][objects[[k]]$genes$Chr == chrom.to.plot,array])){
-          segments(y0 = current$M.predicted[(j-1),array],
-                   x0 = (current$genes$Position[(j-1)]),
-                   y1 = current$M.predicted[(j),array],
-                   x1 = (current$genes$Position[(j)]),
-                   col = colors[k], lwd = width[j-1], lty = out[j-1])
-        }
-
-        #Plot a red marker on any single clones in a state.
-        points(current$genes$Position[dup.breaks],current$M.observed[dup.breaks,array],
-               col="red",pch=16,cex=2)
-      }
-    }
-##Otherwise show the entire genome.
-    else {
-      for(k in 1:nobjects){
-        for(i in 1:nchr){
-          current <- objects[[k]][objects[[k]]$genes$Chr == i,]
-          for(j in 2:length(objects[[k]][objects[[k]]$genes$Chr == i,array])){
-            segments(y0 = current$M.predicted[(j-1),array],
-                     x0 = (current$genes$Position[(j-1)]+chrom.start[i]),
-                     y1 = current$M.predicted[(j),array],
-                     x1 = (current$genes$Position[(j)]+chrom.start[i]),
-                     col = colors[k], lwd = 2) 
-          }
-        }
-      }
+plotSegmentedGenome <- function (..., array = 1, naut = 22, Y = FALSE, X = FALSE, status, 
+    values, pch, cex, col, chrominfo = chrominfo.Mb, ylim = c(-2, 
+        2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim = c(0, 
+        NA), colors = NULL, mark.regions = FALSE, main = NA) 
+{  
+  objects <- list(...)
+  nobjects <- length(objects)
+  for (i in 1:nobjects) {
+    if (class(objects[[i]]) != "SegList") {
+      stop("Objects must be of class SegList")
     }
   }
+  if (is.null(colors)) {
+    colors = rep(c("blue"), nobjects)
+  }
+  genomePlot(input = objects[[1]], array = array, naut = naut, 
+             Y = Y, X = X, status = status, values = values, chrominfo = chrominfo, 
+             ylim = ylim, ylb = ylb, chrom.to.plot = chrom.to.plot, 
+             xlim = xlim, pch = pch, col = col, cex = cex, main = main)
+  nchr <- naut
+  if (X) 
+    nchr <- nchr + 1
+  if (Y) 
+    nchr <- nchr + 1
+  chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
+  if (!is.na(chrom.to.plot)) {
+    for (k in 1:nobjects) {
+      current <- objects[[k]][objects[[k]]$genes$Chr == 
+                              chrom.to.plot, ]
+      breakpoints <- findBreakPoints(current, array)
+      dup.breaks <- breakpoints[duplicated(breakpoints)]
+      out <- rep(1, length(current$M.predicted[, array]) - 
+                 1)
+      out[dup.breaks - 1] <- 3
+      out[dup.breaks] <- 3
+      width <- rep(2, length(current$M.predicted[, array]) - 
+                   1)
+      width[dup.breaks - 1] <- 0.5
+      width[dup.breaks] <- 0.5
+      for (j in 2:length(objects[[k]][objects[[k]]$genes$Chr == 
+                                      chrom.to.plot, array])) {
+        segments(y0 = current$M.predicted[(j - 1), array], 
+                 x0 = (current$genes$Position[(j - 1)]),
+                 y1 = current$M.predicted[(j), array],
+                 x1 = (current$genes$Position[(j)]), 
+                 col = colors[k], lwd = width[j - 1], lty = out[j - 
+                                                        1])
+      }
+      points(current$genes$Position[dup.breaks], current$M.observed[dup.breaks, 
+                                                                    array], col = colors[k], pch = 16, cex = 1)
+    }
+  }
+  else {
+    for (k in 1:nobjects) {
+      for (i in 1:nchr) {
+        current <- objects[[k]]
+        breakpoints <- findBreakPoints(current, array)
+        breakpoints <- breakpoints[which(current$genes$Chr[breakpoints] == i)]
+        
+        segments(y0 = current$M.predicted[breakpoints[-length(breakpoints)], array],
+                 x0 = (current$genes$Position[breakpoints[-length(breakpoints)]] + chrom.start[i]),
+                 y1 = current$M.predicted[breakpoints[-1], array],
+                 x1 = (current$genes$Position[breakpoints[-1]] + chrom.start[i]),
+                 col = colors[k], lwd = 2)
+      }
+    }
+    if(mark.regions == TRUE) {
+      for(k in 1:nobjects) {
+        if(!is.null(objects[[k]]$regions))
+          regions <- objects[[k]]$regions
+        else
+          break
+        for(i in 1:nchr) {
+          current <- objects[[k]]
+          breakpoints <- findBreakPoints(current, array)
+          breakpoints <- breakpoints[which(current$genes$Chr[breakpoints] == i)]
+          br.start <- breakpoints[(1:(length(breakpoints)/2)) * 2 -1]
+          br.end <- breakpoints[(1:(length(breakpoints)/2)) * 2]
+          
+          current.regions <- regions[[array]][regions[[array]]$chr == i,]
+          current.regions <- current.regions[!is.na(current.regions$color),]
+          new.start <- new.end <- new.color <- NULL
+          
+          for(b in 1:length(br.start))
+            for(r in 1:nrow(current.regions))
+              {
+                overlap <- intersect(current.regions$region.start[r]:current.regions$region.end[r], br.start[b]:br.end[b])
+                if(length(overlap) > 0)
+                  {
+                    new.start <- c(new.start, min(overlap))
+                    new.end <- c(new.end, max(overlap))
+                    new.color <- c(new.color, current.regions$color[r])
+                  }
+              }
+          
+          if(!is.null(new.start))
+            segments(y0 = current$M.predicted[new.start, array],
+                     x0 = (current$genes$Position[new.start] + chrom.start[i]),
+                     y1 = current$M.predicted[new.end, array],
+                     x1 = (current$genes$Position[new.end] + chrom.start[i]),
+                     col = new.color, lwd = 2)
+        }
+      }
+    }   
+  }
+}
+
 
 "genomePlot" <-
 function (input, array = 1, naut = 22, 
     Y = FALSE, X = FALSE, status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
-    ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA)) 
+    ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA), ...) 
 {
 
   ##MALists haven't been adjust with respect to which channel is the test.
@@ -226,197 +253,6 @@ function (input, array = 1, naut = 22,
   } 
 }
 
-
-plotSegmentationSummary <-
-    function(input, geList,
-             response = as.factor(rep("All", ncol(input))),
-             titles = unique(response[!is.na(response)]), X = TRUE,
-             Y = FALSE, maxChrom = 23,
-             chrominfo = chrominfo.Mb,
-             num.plots.per.page = length(titles), factor = 2.5, thresAbs=100)
-{
-
-    ind.samp <- which(!is.na(response))
-    resp.na <- response[ind.samp]
-    response.uniq <- sort(unique(resp.na))
-
-    df.not.na <-
-        data.frame(response = response,
-                   numtrans =
-                   apply(geList$num.transitions, 2, sum, na.rm = TRUE),
-                   numtrans.binary =
-                   apply(geList$num.transitions.binary, 2, sum, na.rm = TRUE),
-                   numaber =
-                   apply(geList$num.aberrations, 2, sum, na.rm = TRUE),
-                   numaber.binary =
-                   apply(geList$num.aberrations.binary, 2, sum, na.rm = TRUE),
-                   numamplif =
-                   apply(as.matrix(geList$num.amplifications[ 1:maxChrom, ]), 2, sum,
-                         na.rm = TRUE),
-                   numamplif.binary =
-                   apply(as.matrix(geList$num.amplifications.binary[ 1:maxChrom, ]),
-                         2, sum, na.rm = TRUE),
-                   numoutlier =
-                   apply(geList$num.outliers, 2, sum, na.rm = TRUE),
-                   num.outliers.binary =
-                   apply(geList$num.outliers.binary, 2, sum, na.rm = TRUE),
-                   numchromgain =
-                   apply(as.matrix(geList$whole.chrom.gain.loss[ 1:maxChrom, ]), 2,
-                         length.num.func, 1),
-###                   apply(ge$whole.chrom.gain[ 1:maxChrom, ], 2, sum,
-###                         na.rm = TRUE),
-                   numchromloss =
-                   apply(as.matrix(geList$whole.chrom.gain.loss[ 1:maxChrom, ]), 2,
-                         length.num.func, -1),
-###                   apply(ge$whole.chrom.loss[ 1:maxChrom, ], 2, sum,
-###                         na.rm = TRUE)
-                   sizeamplicon =
-                   apply(as.matrix(geList$size.amplicons[ 1:maxChrom, ]), 2, sum,
-                         na.rm = TRUE),
-                   numamplicon =
-                   apply(as.matrix(geList$num.amplicons[ 1:maxChrom, ]), 2, sum,
-                         na.rm = TRUE)
-                   )[ which(!is.na(response)), ]
-    attach(df.not.na)
-    numchromchange <- numchromgain + numchromloss
-
-    deletions <- threshold(log2ratios(input), thresAbs = thresAbs)
-    
-    boxplot.this <-
-        function(events, title, sig = 6)
-        {
-
-            p.value <-
-                if (length(response.uniq) > 1)	
-                    signif(kruskal.test(events ~ resp.na)$p.value,
-                           sig)
-                else
-                    ""
-            boxplot(events ~ resp.na, notch = TRUE, names = titles,
-                    varwidth = TRUE, main = paste(title, p.value), cex.main=0.8)
-            
-        }
-
-#############################################
-    ##Plot1:
-    par(mfrow = c(2, 2))
-
-    boxplot.this(numtrans, "Number of Transitions")
-    boxplot.this(numtrans.binary,
-                 "Number of Chrom containing Transitions")
-    boxplot.this(numaber, "Number of Aberrations")
-    boxplot.this(numchromchange, "Number of Whole Chrom Changes")
-
-#############################################
-    ##Plot2:
-    
-    boxplot.this(numamplif, "Number of Amplifications")
-    boxplot.this(numamplif.binary,
-                 "Number of Chrom containing Amplifications")
-    boxplot.this(numamplicon, "Number of Amplicons")
-    boxplot.this(sizeamplicon, "Amount of Genome Amplified")
-
-#############################################
-    ##Plot3:
-
-    out <- as.data.frame(fractionAltered(input, factor=factor,
-        chrominfo=chrominfo))[ which(!is.na(response)), ]
-    boxplot.this(out$gainP, "Fraction of Genome Gained")
-    boxplot.this(out$lossP, "Fraction of Genome Lost")
-    boxplot.this(out$gainP+out$lossP, "Fraction of Genome Altered")
-
-#############################################
-
-    plot.freq.this <-
-        function(matr, i, ylb)
-        {
-            
-            par(mfrow = c(num.plots.per.page, 1))
-
-            out <-
-                sapply(1:length(response.uniq),
-                       function(j)
-                       apply(as.matrix(matr[,which(resp.na == response.uniq[j])]),
-                             1,
-                             prop.num.func,
-                             i
-                             )
-                       )
-            mx <- max(c(out), na.rm = TRUE)
-            if (length(titles == 1))
-                out <- cbind(out, out)
-            
-            genomePlot(input, samples = 1:length(titles),
-                       yScale = c(0, mx), naut = 22,
-                       X = X, Y = Y, ylb = ylb,
-                       chrominfo = chrominfo[ 1:maxChrom, ],
-                       samplenames = titles
-                       )
-            
-        }
-    
-    ##Plot3: trans start
-    plot.freq.this(geList$transitions$trans.matrix, 1,
-                  "Proportion of Transition Starts")
-
-    ##Plot4: trans end
-    plot.freq.this(geList$transitions$trans.matrix, 2,
-                  "Proportion of Transition Ends")
-
-    ##Plot5: amplification
-    plot.freq.this(geList$amplifications$amplif, 1,
-                  "Proportion of Amplifications")
-    mtext("Amplifications", side = 3, outer = TRUE)
-
-    ##Plot6: aberration
-    plot.freq.this(geList$aberrations$aber, 1,
-                   "Proportion of Aberrations")
-    mtext("Aberrations", side = 3, outer = TRUE)
-
-    ##Plot8: homozygous deletions
-    plot.freq.this(deletions, -1,
-                  "Proportion of Homozygous Deletions")
-    mtext("Homozygous Deletions", side = 3, outer = TRUE)
-
-    ##Plot7: whole chromosomal gain/loss:
-
-    par(mfrow = c(num.plots.per.page, 2), lab = c(5,6,7))
-    
-    matr <- as.matrix(geList$whole.chrom.gain.loss[ 1:22, ])
-    out.gain <- matrix(NA, nrow = nrow(matr), ncol = length(titles))
-    out.loss <- matrix(NA, nrow = nrow(matr), ncol = length(titles))
-    for (j in 1:length(response.uniq))
-    {
-        
-        ind <- which(response == response.uniq[j])
-        out.gain[ ,j ] <-
-            apply(as.matrix(matr[ ,ind ]), 1, length.num.func, 1) / ncol(matr)
-        out.loss[ ,j ] <-
-            apply(as.matrix(matr[ ,ind ]), 1, length.num.func, -1) / ncol(matr)
-        
-    }
-    mx.gain <- max(c(out.gain), na.rm = TRUE)
-    mx.loss <- max(c(out.loss), na.rm = TRUE)
-    mx <- max(mx.gain, mx.loss)
-    for (j in 1:length(titles))
-    {
-        
-        plot(1:22, out.gain[,j], pch = 20,
-             main = as.character(titles[j]),
-             xlab = "chromosome",
-             ylab = "Proportion of whole chromosomes gains",
-             ylim = c(0, mx), xlim = c(0,23))
-        plot(1:22, out.loss[,j], pch = 20,
-             main = as.character(titles[j]),
-             xlab = "chromosome",
-             ylab = "Proportion of whole chromosomes losses",
-             ylim = c(0, mx), xlim = c(0,23))
-        
-    }
-
-    detach(df.not.na)
-}
-
 #I can't get the dendrogram section of this to work.
 #The matrix transpose screws it completely as the dist function
 #returns a single value and the plotting function doesn't accept the
@@ -440,8 +276,11 @@ function (input, response = as.factor(rep("All", ncol(input))),
       temp <- input$design[i]* input$M[,i]
       input$M[,i] <- temp
     }
+	data <- input$M
   }
-  else if(class(input) == "SegList"){} 
+  else if(class(input) == "SegList"){
+	data <- input$M.predicted
+	} 
   else{
     stop("Class must be either MAList or SegList")
   }
@@ -474,7 +313,7 @@ function (input, response = as.factor(rep("All", ncol(input))),
  #   if (imp) 
  #       data <- log2ratios.imputed(input)
  #   else data <- log2ratios(input)
-    data <- log2ratios(input)
+ #   data <- log2ratios(input)
     indUse <- vector()
     chromb <- 0
     for (i in 1:length(vecchrom)) indUse <- c(indUse, which(datainfo$Chr == 
@@ -590,87 +429,4 @@ function (input, response = as.factor(rep("All", ncol(input))),
 ##    identify(input$genes[input$genes$Chr == chrom.to.plot, colnames(input$genes) == "Position"]/1000,
 ##             log2ratios(input)[input$genes$Chr == chrom.to.plot, samples], labels = label)
 ##}
-
-"plotSegmentationStates" <-
-function (segList, geList, array=1, chr = 1:length(unique(segList$genes$Chr)), 
-    maxChrom = 22, chrominfo = chrominfo.Mb, 
-    yScale = c(-2, 2), samplenames = colnames(segList), 
-    xlower = 0, xupper = chrominfo$length[chr[j]]/1000) 
-{
-    if (length(array) > 1) 
-        stop("plotHmmStates currently prints only 1 sample at a\ntime\n")
-
-    aber <- geList$aberrations$aber
-    amplif <- geList$amplifications$amplif
-    trans <- geList$transitions$trans.matr
-    outliers <- geList$outliers$outlier
-    pred <- geList$outliers$pred.out
-    chrom.rat <- chrominfo$length/max(chrominfo$length)
-    chrom.start <- c(0, cumsum(chrominfo$length))[1:maxChrom]
-    chrom.mid <- chrom.start + chrominfo$length[1:maxChrom]/2
-    chrom <- segList$genes$Chr
-    par(lab = c(15, 6, 7), pch = 18, cex = 1, lwd = 1, mfrow = c(2, 
-        1))
-    for (j in 1:length(chr)) {
-        ind.nonna <- which(!is.na(segList$M.observed[chrom == chr[j], 
-            array]))
-        kb <- segList$genes$Position[chrom == chr[j]][ind.nonna]/1000
-        obs <- segList$M.observed[chrom == chr[j], array][ind.nonna]
-        states <- segList$state[chrom == chr[j], array][ind.nonna]
-        nstates <- length(unique(states))
-        abernow <- aber[chrom == chr[j], array][ind.nonna]
-        outliersnow <- outliers[chrom == chr[j], array][ind.nonna]
-        amplifnow <- amplif[chrom == chr[j], array][ind.nonna]
-        transnow <- trans[chrom == chr[j], array][ind.nonna]
-        prednow <- obs
-        predicted <- pred[chrom == chr[j], array][ind.nonna]
-        prednow[outliersnow == 0 & abernow == 0] <- predicted[outliersnow == 
-            0 & abernow == 0]
-        y.min <- min(yScale[1], min(obs))
-        y.max <- max(yScale[2], max(obs))
-        plot(kb, obs, xlab = "", ylab = "", ylim = c(y.min, y.max), 
-            type = "l", col = "blue", xlim = c(xlower, xupper))
-        points(kb, obs, col = "black")
-        title(main = paste("Sample", array, samplenames[array], 
-            "- Chr", chr[j], "Number of states", nstates), xlab = "kb (in 1000's)", 
-            ylab = "data (observed)")
-        abline(h = seq(-2, 2, b = 0.5), lty = 3)
-        abline(v = chrominfo$centromere[chr[j]]/1000, lty = 2, 
-            col = "red", lwd = 3)
-        if (nstates > 1) {
-            abline(v = kb[transnow == 1], col = "blue", lwd = 2)
-            abline(v = kb[transnow == 2], col = "green", lty = 2, 
-                lwd = 0.5)
-        }
-        if (length(outliersnow[outliersnow == 1]) > 0) 
-            points(kb[outliersnow == 1], obs[outliersnow == 1], 
-                col = "yellow")
-        if (length(abernow[abernow == 1]) > 0) 
-            points(kb[abernow == 1], obs[abernow == 1], col = "orange")
-        if (length(amplifnow[amplifnow == 1]) > 0) 
-            points(kb[amplifnow == 1], obs[amplifnow == 1], col = "red")
-        plot(kb, prednow, xlab = "", ylab = "", ylim = c(y.min, 
-            y.max), type = "l", col = "blue", xlim = c(xlower, 
-            xupper))
-        points(kb, prednow, col = "black")
-        title(xlab = "kb (in 1000's)", ylab = "data (smoothed)")
-        abline(h = seq(-2, 2, b = 0.5), lty = 3)
-        abline(v = chrominfo$centromere[chr[j]]/1000, lty = 2, 
-            col = "red", lwd = 3)-
-        if (nstates > 1) {
-            abline(v = kb[transnow == 1], col = "blue", lwd = 2)
-            abline(v = kb[transnow == 2], col = "green", lty = 2, 
-                lwd = 0.5)
-        }
-        if (length(outliersnow[outliersnow == 1]) > 0) 
-            points(kb[outliersnow == 1], obs[outliersnow == 1], 
-                col = "yellow")
-        if (length(abernow[abernow == 1]) > 0) 
-            points(kb[abernow == 1], obs[abernow == 1], col = "orange")
-        if (length(amplifnow[amplifnow == 1]) > 0) 
-            points(kb[amplifnow == 1], obs[amplifnow == 1], col = "red")
-
-      }
-    
-}
 

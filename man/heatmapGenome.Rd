@@ -56,7 +56,7 @@ heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
 }
 \details{
   This functions is a more flexible version of the
-  \code{\link{heatmap}}. It can cluster within levels of categorical
+  \code{\link[stats:heatmap]{heatmap}}. It can cluster within levels of categorical
   phenotype as well as all of the samples while displaying phenotype
   levels in different colors. It also uses any combination of
   chromosomes that is requested and clusters samples based on these
@@ -70,7 +70,7 @@ heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
 % }
 %\references{ ~put references to the literature/web site here ~ }
 \seealso{
-  \code{\link{heatmap}}
+  \code{\link[stats:heatmap]{heatmap}}
 }
 \examples{
 }

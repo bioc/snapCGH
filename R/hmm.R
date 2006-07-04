@@ -206,8 +206,14 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
   #some clunky code so you can put the Criteria argument in characters and still perform the
   #boolean opperators on it below:
   crit = TRUE
-  if( criteria == "AIC") {aic = TRUE}
-  else if (criteria == "BIC") {bic = TRUE}
+  if( criteria == "AIC") {
+	aic = TRUE
+	bic = FALSE
+	}
+  else if (criteria == "BIC") {
+	bic = TRUE
+	aic = FALSE
+	}
   else crit = FALSE
   
     if (crit == TRUE) {

@@ -6,7 +6,7 @@
 \documentclass[11pt,a4paper]{article}
 
 \title{Sample of aCGH analysis}
-\author{ML Smith}
+\author{ML Smith, JC Marioni, NP Thorne, T Hardcastle}
 
 %\settocname{Table of Contents}
 
@@ -62,16 +62,26 @@ RG1 <- read.maimages(targets$FileName, path=datadir, source = "genepix")
 %%The second of the above commands is very similar to the \texttt{read.maimages} function available in limma.
 %%The only difference is that addition of the \texttt{TestChan} parameter.  
 
+Positional information about the clones on the array (e.g. which chromosome and the position 
+on the chromosome a clone if from) can be incoroporated using the \Rfunction{readPositionalInfo}
+function.  This function accepts either an \Robject{RGList} or \Robject{MAList} along with an 
+argument specifying which array platform the data was produced on.  Currently the only supported
+platforms are Agilent, Bluefuse and Nimblegen, but this should expand in the near future.
 
-Information about the clones on the array (e.g. what part of the
-genome they represent) can be read in separately using the
+If your platform isn't supported or \Rfunction{readPostitionalInfo} returns an error 
+(e.g. if the a new version of the array output data is incompatible with the current
+function) 
+then the positional information  can be read in separately using the
 \Rfunction{read.clonesinfo} function. In order to do this it is necessary
 to create a clones info file. Such a file (which can be created using
 Excel and saved as a 'txt' file) must contain columns called Position
 and Chr which give the position along a chromosome (in Mb) and the
-chromosome to which a clone belongs. It must be ordered in the same
-way as the clones are ordered in the genepix file. The information is
-added to the \Robject{RG\$genes} object. The second command adds information
+chromosome to which a clone belongs. The X and Y chromosomes can be labelled either
+as X an Y or 23 and 24.  Both instances are handles by \Rfunction{read.clonesinfo}.
+The clones info file must be ordered in the same
+way as the clones are ordered in the array output data. 
+
+The second command adds information
 about the structure of the slide (blocks/rows/columns) to the \Robject{RG}
 object.  Finally we read in a spot types file.  This file contains
 information about the control status of particular spots on the array
@@ -248,14 +258,14 @@ Using the argument \Rfunarg{chrom.to.plot} it is possible to specify individual
 chromosomes to plot.  Additionally the function can accept more than one
 \Robject{SegList} allowing visual comparison between segmentation methods.\\
 
-The following example applies the DNAcopy algorithm to the data, merges it
+The following example applies the GLAD algorithm to the data, merges it
 and then plots both that segmentation method and the homogeneous HMM on the
 same axis.
 
 <<label=15, results=hide>>=
-Seg.DNAcopy <- runDNAcopy(MA2)
-SegInfo.DNAcopy.merged <- mergeStates(Seg.DNAcopy)
-plotSegmentedGenome(SegInfo.Hom.merged, SegInfo.DNAcopy.merged, array = 1,
+Seg.GLAD <- runGLAD(MA2)
+SegInfo.GLAD.merged <- mergeStates(Seg.GLAD)
+plotSegmentedGenome(SegInfo.Hom.merged, SegInfo.GLAD.merged, array = 1,
                     chrom.to.plot = 1, colors = c("blue", "green"))
 @ 
 
