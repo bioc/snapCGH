@@ -1,6 +1,5 @@
 \name{runHomHMM}
 \alias{runHomHMM}
-\alias{mu1.func}
 \alias{states.hmm.func}
 %- Also NEED an `\alias' for EACH other topic documented here.
 \title{A function to fit unsupervised Hidden Markov model}
