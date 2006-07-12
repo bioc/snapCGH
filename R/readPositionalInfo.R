@@ -10,7 +10,7 @@
         "bluefuse", "nimblegen"))
    
     switch(source,
-           agilent = {
+           agilent = { ##Needs to be re-written with apply
              split <- strsplit(input$genes$SystematicName, split = ":")
              chr <- start <- end <- vector(length = length(split))
              for(i in 1:length(split)){

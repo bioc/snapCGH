@@ -1,5 +1,6 @@
 \name{cbind}
 \alias{cbind.SegList}
+\alias{rbind.SegList}
 \title{Combine SegList Objects}
 \description{
 Combine a series of \code{SegList} objects. 
@@ -17,13 +18,15 @@ Combine a series of \code{SegList} objects.
 For \code{cbind}, the matrices of expression data from the individual objects are cbinded.
 The data.frames of target information, if they exist, are rbinded.
 The combined data object will preserve any additional components or attributes found in the first object to be combined.
-There is no \code{rbind}
+It is not recommend to use the is \code{rbind}
 function for the \code{\link[snapCGH:SegList]{SegList}} object.  This is
   because it would require \code{SegLists} with mutually exclusive
   chromosomes or would result in combining multiple different segmentations
   for the same chromosome, which is pointless.  If \code{rbind} is
   required perform it on an \code{\link[limma:malist]{MAList}} and then
-    segment it.
+  segment it.
+  It is currently only included as an internal function called within
+  other library functions.
 }
 \value{
 An \code{\link[snapCGH:SegList]{SegList}} object holding data from all the arrays and all genes from the individual objects.

@@ -10,7 +10,7 @@ runDNAcopy <- function(MA, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scal
   MA$M[,i] <- temp
   }
 
-  cna <- CNA(log2ratios(MA), MA$genes$Chr, MA$genes$Position, sampleid = colnames(MA$M))
+  cna <- CNA(log2ratios(MA), MA$genes$Chr, MA$genes$Position, sampleid = colnames(MA$M.predicted))
   cna <- smooth.CNA(cna, smooth.region=smooth.region, outlier.SD.scale = outlier.SD.scale, smooth.SD.scale = smooth.SD.scale, trim=trim) 
   dna <- segment(cna, alpha = alpha, p.method = p.method, kmax = kmax, nmin = nmin, window.size = window.size, overlap = overlap,
                  trim = trim, undo.splits = undo.splits, undo.prune = undo.prune, undo.SD = undo.SD)

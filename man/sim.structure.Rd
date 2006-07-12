@@ -1,12 +1,13 @@
-\name{sim.structure}
-\alias{sim.structure}
+\name{simulateData}
+\alias{simulateData}
+\alias{generate.data}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{A function for simulating aCGH data and the corresponding clone layout}
 \description{
   This simulation scheme operates in two stages. Initially, we simulate the layout of clones before using a modified version of the scheme developed by Willenbrock et al., 2005 to generate the $\mbox{log}_2$ ratios. For each simulated clone layout we generate 20 sets of simulated $\mbox{log}_2$ ratios from one of five templates. Additionally, we also take account of the cellularity of the test sample in our simulation.
 }
 \usage{
-sim.structure(N, chrominfo = NULL, prb.short.tiled = 0.5,
+simulateData(nArrays = 20, chrominfo = NULL, prb.short.tiled = 0.5,
                  prb.long.tiled = 0.5, non.tiled.lower.res = 0.9,
                  non.tiled.upper.res = 1.1, length.clone.lower = 0.05,
                  length.clone.upper = 0.2, tiled.lower.res = -0.05,
@@ -19,7 +20,7 @@ sim.structure(N, chrominfo = NULL, prb.short.tiled = 0.5,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{N}{ The number of chromosomes with unique clone layouts we want to simulate }
+  \item{nArrays}{ The number of arrays we want to simulate }
   \item{chrominfo}{ The information about chromosome length/centromere location to be used. Defaults to the information provided in aCGH package of Jane Fridlyand and Peter Dimitrov. }
   \item{prb.short.tiled}{ The probability of a tiled region on the short arm of the simulated chromosome (defaults to 0.5).}
   \item{prb.long.tiled}{ The probability of a tiled region on the long arm of the simulated chromosome (defaults to 0.5).}

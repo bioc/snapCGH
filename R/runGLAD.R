@@ -6,15 +6,15 @@ runGLAD <- function(MA, smoothfunc="lawsglad", base=FALSE, sigma = NULL, bandwid
         stop("MA$design component is null")
 
   for(i in 1:length(MA$design)){
-  temp <- MA$design[i]* MA$M[,i]
-  MA$M[,i] <- temp
+    temp <- MA$design[i]* MA$M.observed[,i]
+    MA$M.observed[,i] <- temp
   }
   
  ### creating the rownames to be used in segList$num.states ####
     rowtemp <- vector()
     rowtemp[1:length(unique(MA$genes$Chr))] <- paste("Chrom",unique(MA$genes$Chr))
   
-    template = matrix(NA,nrow(MA$M),ncol(MA),dimnames=dimnames(MA))
+    template = matrix(NA,nrow(MA),ncol(MA),dimnames=dimnames(MA))
     segList <- list(M.predicted=template,state=template,M.observed=template,
                     num.states=matrix(NA, length(unique(MA$genes$Chr)),
                       ncol = ncol(log2ratios(MA)), dimnames = list(rowtemp, colnames(MA))))

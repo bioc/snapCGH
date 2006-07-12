@@ -15,8 +15,10 @@ zoomGenome <- function(..., array = 1, colors = NULL, chrominfo = chrominfo.Mb){
     dist[i+1] <- sum(chrominfo$length[1:i])
   }
 
+  close.screen(all.screens = TRUE)
   split.screen(c(2,1))
   screen(1)
+  par(mar = c(2, 4, 4, 2))
   plotSegmentedGenome(..., array = array, chrominfo = chrominfo, colors = colors)
   
   doIt = TRUE
@@ -102,6 +104,7 @@ zoomGenome <- function(..., array = 1, colors = NULL, chrominfo = chrominfo.Mb){
     screen(2)
     plotSegmentedGenome(..., array = array, chrominfo = chrominfo, colors = colors, chrom.to.plot = i)
     screen(1)
+    par(mar = c(2, 4, 4, 2))
     plotSegmentedGenome(..., array = array, chrominfo = chrominfo, colors = colors)
   }
 }
@@ -109,8 +112,9 @@ zoomGenome <- function(..., array = 1, colors = NULL, chrominfo = chrominfo.Mb){
 zoomChromosome <- function(..., array = 1, chrom.to.plot, colors = NULL, chrominfo = chrominfo.Mb, ylim = c(-2,2)){
 
   objects <- list(...)
-
+  close.screen(all.screens = TRUE)
   split.screen(c(2,1))
+  par(mar = c(2, 4, 4, 2))
   screen(1)
 
   if(class(objects[[1]]) == "MAList"){
@@ -123,6 +127,7 @@ zoomChromosome <- function(..., array = 1, chrom.to.plot, colors = NULL, chromin
         screen(2)
         genomePlot(objects[[1]], array = array, xlim = c(min(loc$x), max(loc$x)), chrom.to.plot = chrom.to.plot, chrominfo = chrominfo, ylim = ylim)
         screen(1)
+        par(mar = c(2, 4, 4, 2))
         genomePlot(objects[[1]], array = array, chrom.to.plot = chrom.to.plot, chrominfo = chrominfo, ylim = ylim)
       }
     }
@@ -136,7 +141,10 @@ zoomChromosome <- function(..., array = 1, chrom.to.plot, colors = NULL, chromin
       screen(2)
       plotSegmentedGenome(..., array = array, xlim = c(min(loc$x), max(loc$x)), chrom.to.plot = chrom.to.plot, chrominfo = chrominfo, colors = colors, ylim = ylim)
       screen(1)
+      par(mar = c(2, 4, 4, 2))
       plotSegmentedGenome(..., array = array, chrom.to.plot = chrom.to.plot, chrominfo = chrominfo, colors = colors, ylim = ylim)
+      rect(xleft = 0, xright = min(loc$x), ybottom = (min(ylim)-2), ytop = (max(ylim)+2), density = 10)
+      rect(xleft = max(loc$x), xright = max(objects[[1]]$genes$Position), ybottom = (min(ylim)-2), ytop = (max(ylim)+2), density = 10)
     }
   }
 }

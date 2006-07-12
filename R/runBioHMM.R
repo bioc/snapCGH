@@ -1,5 +1,5 @@
 "runBioHMM" <-
-function (MA, covariates = NULL, criteria="AIC", delta=NA ,var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) 
+function (MA, useCloneDists = TRUE, covariates = NULL, criteria="AIC", delta=NA, var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) 
 {
   if (is.null(MA$design)) 
         stop("MA$design component is null")
@@ -44,7 +44,7 @@ function (MA, covariates = NULL, criteria="AIC", delta=NA ,var.fixed=FALSE, epsi
       for (j in 1:length(chrom.uniq)) {
         cat(chrom.uniq[j], " ")
         res <- try(fit.model(sample=i, chrom=chrom.uniq[j], 
-                             dat=dat, datainfo=datainfo, covariates=covariates, 
+                             dat=dat, datainfo=datainfo, useCloneDists = useCloneDists, covariates=covariates, 
                aic = aic, bic = bic, delta=delta, var.fixed=var.fixed, epsilon = epsilon, numiter = numiter))
         nstates[j,i] <- res$nstates.list
         foo = dat[datainfo$Chr == chrom.uniq[j],i]	

@@ -1,18 +1,18 @@
 \name{processCGH}
 \alias{processCGH}
-\title{Process data in aCGH object}
+\title{Process data in an MAList}
 \description{
   This function takes object of class \code{MAList} and it re-orderes
   and filters clones based on their mapping information and proportion missing. It also average duplicated clones and imputes missing values for clones
   that are still NA after the filetering step.
 }
 \usage{
-processCGH(MA, chrom.remove.threshold = 22, chrom.below.threshold
+processCGH(input, chrom.remove.threshold = 22, chrom.below.threshold
                  = 1, method.of.averaging = NULL, ID = "ID")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{MA}{Object of class \code{\link[limma]{MAList}}}
+  \item{input}{Object of class \code{\link[limma]{MAList}} or \code{\link[limma]{RGList}}}
   \item{chrom.remove.threshold}{Chromosomes are ordered and numbered as
     usual, except for X and Y chromosome, which in for Homo sapiens
     genome have numbers 23 and 24 repsectivelly, in for Mus musculus 20
@@ -30,7 +30,7 @@ processCGH(MA, chrom.remove.threshold = 22, chrom.below.threshold
                  value for ID should be \code{"CloneName"}}
 	       }
 \value{
-  Object of class \code{\link[limma]{MAList}}
+  Object of class \code{\link[snapCGH]{SegList}}
 }
 \author{Jane Fridlyand, Peter Dimitrov, John Marioni and Mike Smith}
 \seealso{

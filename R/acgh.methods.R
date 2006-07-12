@@ -1,8 +1,19 @@
 
 "processCGH" <-
-function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.averaging = NULL, ID = "ID") 
+function (input, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.averaging = NULL, ID = "ID") 
 {
+
+  if(class(input) == "RGList")
+    MA = MA.RG(input)
+  else if(class(input) == "MAList")
+    MA = input
+  else
+    stop("Input must be of class RGList or MAList")
+  
     ord <- order(MA$genes$Chr, MA$genes$Position) # re-ordering the clones by chromosome and position on a chromosome
+  if(length(which(colnames(MA$genes) == ID)) == 0){
+    stop("Specified ID column in $genes does not exist. Please check the ID argument")
+  }
     colnames(MA$genes)[which(colnames(MA$genes) == ID)] = "ID" #renaming the the specified column to "ID"
 
 #Code to stop the Status attributes being lost when the MAList is reordered.
@@ -47,17 +58,17 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
                 }
               }
             }
-            dupl <- duplicated(MA$genes$ID)
-            MA$genes <- MA$genes[!dupl, ]
-            MA$M <- MA$M[!dupl, ,drop = FALSE]
-            if(!is.null(MA$weights)){
+          dupl <- duplicated(MA$genes$ID)
+          MA$genes <- MA$genes[!dupl, ]
+          MA$M.observed <- MA$M[!dupl, ,drop = FALSE]
+          if(!is.null(MA$weights)){
               MA$weights <- MA$weights[!dupl,,drop = FALSE]
             }
-          }
         }
-        MA$printer <- NULL
-        MA$A <- NULL
-
+      }
+  MA$printer <- NULL
+  MA$A <- NULL
+  MA$M <- NULL
 	MA$genes$ID <- factor(MA$genes$ID)
     	rownames(MA$genes) <- c(1:length(MA$genes$ID))
     	if(!is.null(MA$genes$Status)){
@@ -68,10 +79,11 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
                                         # The imputation step
 
     if (!is.null(method.of.averaging)){
-    MA.imputed <- imputeMissingValues(MA, chrominfo = chrominfo.Mb, maxChrom = chrom.remove.threshold, smooth = 0.1)
-    MA$M <- MA.imputed$M}
-    MA
-
+      MA.imputed <- imputeMissingValues(MA, chrominfo = chrominfo.Mb, maxChrom = chrom.remove.threshold, smooth = 0.1)
+      MA$M.observed <- MA.imputed$M.observed
+    }
+    class(MA) = "SegList"
+  MA
   }
   
 
@@ -79,7 +91,7 @@ function (MA, chrom.remove.threshold = 22, chrom.below.threshold = 1, method.of.
 function (MA, chrominfo = chrominfo.Mb, maxChrom = 23, 
     smooth = 0.1) 
 {
-    data.imp <- log2ratios <- log2ratios(MA)
+    data.imp <- log2ratios <- MA$M.observed
     clones.info <- MA$genes
     uniq.chrom <- unique(clones.info$Chr)
     for (j in uniq.chrom[uniq.chrom <= maxChrom]) {

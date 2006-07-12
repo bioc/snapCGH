@@ -14,7 +14,7 @@ function(input){
     
     holder[[i]] <- new("MAList", holder[[i]])
 	colnames(holder[[i]]$genes) <- c("Position", "Chr")
-    holder[[i]]$genes <- as.data.frame(holder[[1]]$genes)
+    holder[[i]]$genes <- as.data.frame(holder[[i]]$genes)
   }
   holder
 }

@@ -9,7 +9,7 @@
   same underlying copy number.
 }
 \usage{
-fit.model(sample, chrom, dat, datainfo = clones.info, covariates,
+fit.model(sample, chrom, dat, datainfo = clones.info, useCloneDists = TRUE, covariates,
 aic = TRUE, bic = FALSE, delta = 1, var.fixed=FALSE, epsilon = 1e-06,
 numiter = 30000)
 }
@@ -18,7 +18,11 @@ numiter = 30000)
   \item{sample}{ If there are multiple samples, the number of the sample to be segmented }
   \item{chrom}{ The chromosome on which the segmentation is to be carried out on }
   \item{dat}{ The log2 ratios obtained from the clones located on that chromosome }
-  \item{datainfo}{ A dataframe containing information about the clones on that chromosome (name, chromosome and location (in Mbs)) }
+  \item{datainfo}{ A dataframe containing information about the clones
+    on that chromosome (name, chromosome and location (in Mbs)) }
+  \item{useCloneDists}{Boolean stating whether the distance between
+    clones should be incorportated into the HMM.  If false then the HMM
+    become homogeneous.}
   \item{covariates}{ A matrix contianing the covariate information for the clones located on the chromosome to be segmented. It should have length one less
                      than the number of clones as covariate information is not used when segmenting the first clone on the chromosome. }
   \item{aic}{Set to true if you want to use the aic. This is the

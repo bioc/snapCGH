@@ -14,11 +14,6 @@ function (file, RG, path = NULL, sep="\t", quote="\"")
     RG
 }
 
-"mu1.func" <- 
-function (p) 
-{
-    matrix(p, nrow = 1)
-}
 
 log2ratios <- function(x) {
   if(!is.null(x$M.observed)){

@@ -1,5 +1,5 @@
 "fit.model" <-
-function (sample, chrom, dat, datainfo = clones.info, covariates = NULL, 
+function (sample, chrom, dat, datainfo = clones.info, useCloneDists = TRUE, covariates = NULL, 
           aic = TRUE, bic = FALSE, delta = 1, 
           var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) {
 
@@ -7,8 +7,13 @@ function (sample, chrom, dat, datainfo = clones.info, covariates = NULL,
     kb <- datainfo$Position[datainfo$Chr == chrom]
 
    ##extracting distances from the $genes matrix
-    dists.pre = kb[2:length(kb)] - kb[1:(length(kb)-1)]
-    dists = dists.pre/(max(dists.pre))
+    if(useCloneDists){
+      dists.pre = kb[2:length(kb)] - kb[1:(length(kb)-1)]
+      dists = dists.pre/(max(dists.pre))
+    }
+    else {
+      dists <- rep(1, length(kb))
+    }
     covars <- as.matrix(dists)
    
     if(!is.null(covariates)){

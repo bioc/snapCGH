@@ -53,7 +53,7 @@ function(object, i, j, ...) {
 
 
 cbind.SegList <- function(..., deparse.level=1){
-  object <- list(...)
+  objects <- list(...)
   nobjects <- length(objects)
   out <- objects[[1]]
   if (nobjects > 1) {
@@ -67,6 +67,28 @@ cbind.SegList <- function(..., deparse.level=1){
     }
     out
   }
+}
+
+rbind.SegList <- function(..., deparse.level=1){
+  objects <- list(...)
+  nobjects <- length(objects)
+  out <- objects[[1]]
+  if(nobjects > 1){
+    for(i in 2:nobjects){
+      out$M.predicted <- rbind(out$M.predicted, objects[[i]]$M.predicted)
+      out$dispersion <- rbind(out$dispersion, objects[[i]]$dispersion)
+      out$variance <- rbind(out$variance, objects[[i]]$variance)
+      out$M.observed <- rbind(out$M.observed, objects[[i]]$M.observed)
+      out$state <- rbind(out$state, objects[[i]]$state)
+      out$num.states <- rbind(out$num.states, objects[[i]]$num.states)
+      out$genes <- rbind(out$genes, objects[[i]]$genes)
+    }
+    out
+  }
+}
+
+dimnames.SegList <- function(segList){
+  dimnames(segList$M.observed)
 }
 
 #Taken from Limma

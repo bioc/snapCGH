@@ -8,12 +8,15 @@
   algorithm.
 }
 \usage{
-runBioHMM(MA, covariates, criteria="AIC", delta=NA
+runBioHMM(MA, useCloneDists = TRUE, covariates, criteria="AIC", delta=NA
 ,var.fixed=FALSE, epsilon = 1e-06, numiter = 30000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{MA}{An object of class \code{\link[limma:malist]{MAList}}}
+  \item{useCloneDists}{Boolean stating whether the distance between
+    clones should be incorportated into the HMM.  If false then the HMM
+    becomes homogeneous.}
   \item{covariates}{ This is a dataframe containing information about covariate factors. The first two columns should be Chrom (giving the 
                      chromosome on which a clone is located) and Mb (giving the position of the chromosome along a particular chromosome in Megabases).
                      The order should be the same as that described above with the following crucial difference. No covariate information about the first
