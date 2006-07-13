@@ -1,37 +1,3 @@
-#mod.findBreakPoints <- function(states) 
-#{
-#    bpoints <- vector()
-#    for (i in 2:length(states)) {
-#        if (states[i] != states[i - 1]) 
-#            bpoints <- c(bpoints, i)
-#    }
-#    bpoints
-#}
-
-#mod1.findBreakPoints <- function(states) 
-#{
-#    bpoints <- vector()
-#    for (i in 2:length(states)) {
-#        if (states[i] != states[i - 1]) 
-#            bpoints <- c(bpoints,i-1, i, i+1)
-#    }
-#    bpoints <- bpoints[bpoints <= length(states)]
-#    bpoints <- unique(bpoints)
-#    bpoints
-#}
-
-#mod2.findBreakPoints <- function(states) 
-#{
-#    bpoints <- vector()
-#    for (i in 2:length(states)) {
-#        if (states[i] != states[i - 1]) 
-#            bpoints <- c(bpoints,i-2,i-1, i, i+1,i+2)
-#    }
-#    bpoints <- bpoints[bpoints <= length(states)]
-#    bpoints <- unique(bpoints)
-#    bpoints
-#}
-
 compareBreakPoints <- function(states, offset){
   bpoints <- vector()
   for(i in 2:length(states)){
@@ -64,10 +30,6 @@ compareSegmentations <- function(TrueSeg,offset = 0,...){
 
       inter <- vector()
       inter <- rep(0,length(temp))
-#      BP.func <- switch(offset,
-#                        mod.findBreakPoints(temp),
-#                        mod1.findBreakPoints(temp),
-#                        mod2.findBreakPoints(temp))
       BP.func <- compareBreakPoints(temp, offset)
       inter[BP.func] <- 1    
       TrueOutVec <- c(TrueOutVec,inter)
@@ -88,10 +50,6 @@ compareSegmentations <- function(TrueSeg,offset = 0,...){
         
         inter <- vector()
         inter <- rep(0,length(temp))
-#        BP.func <- switch(offset,
-#                        mod.findBreakPoints(temp),
-#                        mod1.findBreakPoints(temp),
-#                        mod2.findBreakPoints(temp))
         BP.func <- compareBreakPoints(temp, offset)
         inter[BP.func] <- 1    
         SegBP[[i]] <- c(SegBP[[i]],inter)
@@ -108,6 +66,8 @@ compareSegmentations <- function(TrueSeg,offset = 0,...){
   FDR = matrix(ncol = nsamps, nrow = nobj)
 
   colnames(TPR) <- colnames(FDR) <- colnames(TrueSeg)
+  #fudge line so we can rename the rows later
+  rownames(TPR) <- rownames(FDR) <- rep("row", nobj)
 
   Len <- nrow(TrueSeg$genes)
   
@@ -124,9 +84,9 @@ compareSegmentations <- function(TrueSeg,offset = 0,...){
       
       TPR[i,j] <- sum(inter3.TPR)/denom.TPR
       FDR[i,j] <- sum(inter3.FDR)/denom.FDR
-  }
-  
-  print("TPR and FDR calculated")
+    }
+    rownames(FDR)[i] <- rownames(TPR)[i] <- objects[[i]]$method
+    print("TPR and FDR calculated")
 
   }
 

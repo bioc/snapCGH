@@ -292,6 +292,7 @@ simulated.data <- list()
 
 	# Data matrix
     datamatrix <- matrix(NA,nrow=sum(class.matrix[[1]][,2]),ncol=nArrays)
+    colnames(datamatrix) <- rep("Sample", nArrays)
     samples<-list()
 
     actual.clones1 <- unlist(apply(class.matrix[[1]],1,function(x){rep(x[1],x[2])}))
@@ -319,6 +320,7 @@ simulated.data <- list()
 		
         # Get log2 ratios given a copy number change in the 1-p proportion of tumor cells
       datamatrix[,t]<-log2((data*p+2*(1-p))/2)
+      colnames(datamatrix)[t] <- paste("Sample", t)
 
       if (is.null(sd)) sdev <- runif(1,0.1,0.2) else {sdev <- sd}
 
@@ -347,7 +349,7 @@ simulated.data <- list()
 
   SegList <- list()
   SegList$M.observed <- as.matrix(simulated.data[[1]]$datamatrix)
-  SegList$M.predicted <- matrix(NA, ncol = nArrays, nrow = nrow(simulated.data[[1]]$datamatrix))
+  SegList$M.predicted <- matrix(NA, ncol = nArrays, nrow = nrow(simulated.data[[1]]$datamatrix), dimnames = dimnames(simulated.data[[1]]$datamatrix))
   for(j in 1:nArrays){
     p = simulated.data[[1]]$samples[[j]]$p
     SegList$M.predicted[,j] <- log2((simulated.data[[1]]$samples[[j]]$log2ratios*p + 2*(1-p))/2)

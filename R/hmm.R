@@ -268,12 +268,12 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
         }
         cat("\n")
     }
-                segList$M.observed = MA$M
-                segList$num.states = nstates
-                colnames(segList$num.states) <- colnames(dat)
-                rownames(segList$num.states) <- paste("Chrom",unique(MA$genes$Chr))
-		segList$genes <- datainfo
-    
+    segList$M.observed = MA$M
+    segList$num.states = nstates
+    colnames(segList$num.states) <- colnames(dat)
+    rownames(segList$num.states) <- paste("Chrom",unique(MA$genes$Chr))
+    segList$genes <- datainfo
+    segList$method <- "HomHMM"
                 ##Changing the names of the Chr and Position back.
 
     colnames(segList$genes)[colnames(segList$genes) == "kb"] = "Position"

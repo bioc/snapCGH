@@ -7,18 +7,18 @@
   that are still NA after the filetering step.
 }
 \usage{
-processCGH(input, chrom.remove.threshold = 22, chrom.below.threshold
+processCGH(input, maxChromThreshold = 22, minChromThreshold
                  = 1, method.of.averaging = NULL, ID = "ID")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{input}{Object of class \code{\link[limma]{MAList}} or \code{\link[limma]{RGList}}}
-  \item{chrom.remove.threshold}{Chromosomes are ordered and numbered as
+  \item{maxChromThreshold}{Chromosomes are ordered and numbered as
     usual, except for X and Y chromosome, which in for Homo sapiens
     genome have numbers 23 and 24 repsectivelly, in for Mus musculus 20
     and 21, etc. Remove chromosomes from segmentation analysis which are
                  greater than this value.}
-  \item{chrom.below.threshold}{Chromosomes are ordered and numbered as
+  \item{minChromThreshold}{Chromosomes are ordered and numbered as
     usual, except for X and Y chromosome, which in for Homo sapiens
     genome have numbers 23 and 24 repsectivelly, in for Mus musculus 20
     and 21, etc. Remove chromosomes from segmentation analysis which re

@@ -51,7 +51,7 @@ runPicard <- function(MA, maxSeg, maxk = 200, criteria = "BIC"){
     }
   }
   seg.info$genes <- MA$genes
-  
+  seg.info$method <- "Picard"
   #Re-attaching DNAcopy to the search path
   library(DNAcopy, verbose = FALSE, warn.conflicts = FALSE)
   

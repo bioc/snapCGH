@@ -28,16 +28,15 @@ runGLAD <- function(MA, smoothfunc="lawsglad", base=FALSE, sigma = NULL, bandwid
       class(profileCGH) <- "profileCGH"
       
     out <- glad(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, lambdabreak=lambdabreak, lambdacluster=lambdacluster, lambdaclusterGen=lambdaclusterGen, type=type, param=param, alpha=alpha, method=method, nmax=nmax, verbose=verbose)
-    
-#    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
+
     segList$M.predicted[,k] <- out$profileValues$Smoothing
     segList$state[,k] <- out$profileValues$Level
       for(i in 1:length(unique(MA$genes$Chr))){
-#        segList$num.states[i,1] <- paste("Chrom", unique(MA$genes$Chr[i]))
-        segList$num.states[i,k] <- length(unique(out$profileValues$Level[MA$genes$Chr == unique(MA$genes$Chr[i])]))
-      }
-}
-    segList$genes <- MA$genes
-    new("SegList", segList)
 
+        segList$num.states[i,k] <- length(unique(out$profileValues$Level[MA$genes$Chr == i]))
+      }
+    }
+  segList$method <- "GLAD"
+  segList$genes <- MA$genes
+  new("SegList", segList)
 }

@@ -55,12 +55,13 @@ function (MA, useCloneDists = TRUE, covariates = NULL, criteria="AIC", delta=NA,
       }
       cat("\n")
     }
-  segList$M.observed = MA$M
-  segList$num.states = nstates
-  colnames(segList$num.states) <- colnames(dat)
-  rownames(segList$num.states) <- paste("Chrom", unique(MA$genes$Chr))
-  segList$genes <- datainfo
-  new("SegList",segList)
+    segList$M.observed = MA$M
+    segList$num.states = nstates
+    colnames(segList$num.states) <- colnames(dat)
+    rownames(segList$num.states) <- paste("Chrom", unique(MA$genes$Chr))
+    segList$method <- "BioHMM"
+    segList$genes <- datainfo
+    new("SegList",segList)
   }
   else {
     cat("You must enter AIC or BIC for the criteria argument\n")
