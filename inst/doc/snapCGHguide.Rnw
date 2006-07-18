@@ -339,7 +339,7 @@ zoomGenome(SegInfo.Hom.merged, array = 1)
 
 \begin{figure}[!ht]
 \centering
-\scalebox{1.0}[0.9]{\includegraphics{zoomGenome.pdf}}
+\scalebox{1.0}[0.9]{\includegraphics{zoomGenome.jpg}}
 \end{figure}
 
 \pagebreak
@@ -358,7 +358,7 @@ zoomChromosome(SegInfo.Hom.merged, array = 1, chrom.to.plot = 8)
 
 \begin{figure}[!ht]
 \centering
-\includegraphics{zoomChromosome.pdf}
+\includegraphics{zoomChromosome.jpg}
 \end{figure}
 
 \section*{Simulating Data}
