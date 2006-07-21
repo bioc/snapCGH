@@ -6,7 +6,7 @@
 \documentclass[11pt,a4paper]{article}
 
 \title{snapCGH: Segmentation,\\ Normalization and Processing of aCGH Data\\ Users' Guide}
-\author{ML Smith, JC Marioni, NP Thorne, TJ Hardcastle}
+\author{ML Smith, JC Marioni, TJ Hardcastle,  NP Thorne}
 
 %\settocname{Table of Contents}
 
