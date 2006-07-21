@@ -117,7 +117,7 @@ zoomChromosome <- function(..., array = 1, chrom.to.plot, colors = NULL, chromin
   par(mar = c(2, 4, 4, 2))
   screen(1)
 
-  if(class(objects[[1]]) == "MAList"){
+  if(is.null(objects[[1]]$M.predicted)){
       genomePlot(objects[[1]], chrom.to.plot = chrom.to.plot, array = array, chrominfo = chrominfo, ylim = ylim)
       doIt = TRUE
       while(doIt){
@@ -129,6 +129,8 @@ zoomChromosome <- function(..., array = 1, chrom.to.plot, colors = NULL, chromin
         screen(1)
         par(mar = c(2, 4, 4, 2))
         genomePlot(objects[[1]], array = array, chrom.to.plot = chrom.to.plot, chrominfo = chrominfo, ylim = ylim)
+        rect(xleft = 0, xright = min(loc$x), ybottom = (min(ylim)-2), ytop = (max(ylim)+2), density = 10)
+        rect(xleft = max(loc$x), xright = max(objects[[1]]$genes$Position), ybottom = (min(ylim)-2), ytop = (max(ylim)+2), density = 10)
       }
     }
   else{

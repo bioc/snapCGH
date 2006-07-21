@@ -1,4 +1,4 @@
-runPicard <- function(MA, maxSeg, maxk = 200, criteria = "BIC"){
+runPicard <- function(input, maxSeg, maxk = 200, criteria = "BIC"){
 
   #Because both DNAcopy and tilingArray have methods called "segment"
   #I have to detach DNAcopy from the search path in order to run
@@ -7,33 +7,35 @@ runPicard <- function(MA, maxSeg, maxk = 200, criteria = "BIC"){
     detach("package:DNAcopy")
   }
   
-  chrom.uniq <- unique(MA$genes$Chr)
+  chrom.uniq <- unique(input$genes$Chr)
 
-  if (is.null(MA$design)) 
-    stop("MA$design component is null")
+  if(class(input) == "MAList"){
+    if (is.null(input$design)) 
+      stop("MA$design component is null")
 
-  for(i in 1:length(MA$design)){
-    temp <- MA$design[i]* MA$M[,i]
-    MA$M[,i] <- temp
+    for(i in 1:length(input$design)){
+      temp <- input$design[i]* input$M[,i]
+      input$M[,i] <- temp
+    }
   }
   
-  template <- matrix(NA, nrow(log2ratios(MA)), ncol(log2ratios(MA)), dimnames = dimnames(log2ratios(MA)))
+  template <- matrix(NA, nrow(log2ratios(input)), ncol(log2ratios(input)), dimnames = dimnames(log2ratios(input)))
 
    ### creating the rownames to be used in segList$num.states ####
   rowtemp <- vector()
-  rowtemp[1:length(unique(MA$genes$Chr))] <- paste("Chrom",unique(MA$genes$Chr))
+  rowtemp[1:length(unique(input$genes$Chr))] <- paste("Chrom",unique(input$genes$Chr))
   
   seg.info <- list(M.predicted = template, state = template, M.observed = template,
-                   num.states = matrix(NA, length(unique(MA$genes$Chr)), ncol(log2ratios(MA)), dimnames = list(rowtemp, colnames(MA))))
+                   num.states = matrix(NA, length(unique(input$genes$Chr)), ncol(log2ratios(input)), dimnames = list(rowtemp, colnames(input))))
 
-  seg.info$M.observed = MA$M
+  seg.info$M.observed = input$M
   
-  for(i in 1:ncol(MA)){
+  for(i in 1:ncol(input)){
     counter = 0
 
     for(j in chrom.uniq){
 
-      log2ratios <- MA$M[MA$genes$Chr == j, i]
+      log2ratios <- input$M[input$genes$Chr == j, i]
       seg <- segment(log2ratios, maxk = length(log2ratios), maxseg = min(length(log2ratios), maxSeg))
       selected <- which.max(logLik(seg, penalty = criteria))
 
@@ -50,7 +52,7 @@ runPicard <- function(MA, maxSeg, maxk = 200, criteria = "BIC"){
       seg.info$num.states[j,i] <- (length(est)-1)
     }
   }
-  seg.info$genes <- MA$genes
+  seg.info$genes <- input$genes
   seg.info$method <- "Picard"
   #Re-attaching DNAcopy to the search path
   library(DNAcopy, verbose = FALSE, warn.conflicts = FALSE)

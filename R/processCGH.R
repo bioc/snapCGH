@@ -3,12 +3,23 @@
 function (input, maxChromThreshold = 22, minChromThreshold = 1, method.of.averaging = NULL, ID = "ID") 
 {
 
-  if(class(input) == "RGList")
+  if(is.null(input$design)){
+    stop("$design component is null")
+  }
+     
+  if(class(input) == "RGList"){
     MA = MA.RG(input)
+    MA$design = RG$design
+  }
   else if(class(input) == "MAList")
     MA = input
   else
     stop("Input must be of class RGList or MAList")
+  
+  for(i in 1:length(MA$design)){
+    temp <- MA$design[i]* MA$M[,i]
+    MA$M[,i] <- temp
+  }
 
   ord <- order(MA$genes$Chr, MA$genes$Position) # re-ordering the clones by chromosome and position on a chromosome
   if(length(which(colnames(MA$genes) == ID)) == 0){

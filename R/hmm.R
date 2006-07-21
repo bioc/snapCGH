@@ -185,20 +185,21 @@
 ##}
 
 "runHomHMM" <- 
-function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.output = FALSE, eps = 0.01) 
+function (input, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.output = FALSE, eps = 0.01) 
 {
+  if(class(input) == "MAList"){
+    if (is.null(input$design)) 
+      stop("MA$design component is null")
 
-  if (is.null(MA$design)) 
-        stop("MA$design component is null")
-
-  for(i in 1:length(MA$design)){
-  temp <- MA$design[i]* MA$M[,i]
-  MA$M[,i] <- temp
+    for(i in 1:length(input$design)){
+      temp <- input$design[i]* input$M[,i]
+      input$M[,i] <- temp
+    }
   }
 ##Changing the names of the Chr and Position columns so that the aCGH code can access them.
 
-  colnames(MA$genes)[colnames(MA$genes) == "Position"] = "kb"
-  colnames(MA$genes)[colnames(MA$genes) == "Chr"] = "Chrom"
+  colnames(input$genes)[colnames(input$genes) == "Position"] = "kb"
+  colnames(input$genes)[colnames(input$genes) == "Chr"] = "Chrom"
 
   #colnames(MA$genes)[[6]] <- "kb"
   #colnames(MA$genes)[[7]] <- "Chrom"
@@ -217,8 +218,8 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
   else crit = FALSE
   
     if (crit == TRUE) {
-    datainfo = MA$genes
-    dat = log2ratios(MA)
+    datainfo = input$genes
+    dat = log2ratios(input)
     chrom.uniq <- unique(datainfo$Chrom)
     nstates <- matrix(NA, nrow = length(chrom.uniq), ncol = ncol(dat))
 
@@ -268,10 +269,10 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
         }
         cat("\n")
     }
-    segList$M.observed = MA$M
+    segList$M.observed = input$M
     segList$num.states = nstates
     colnames(segList$num.states) <- colnames(dat)
-    rownames(segList$num.states) <- paste("Chrom",unique(MA$genes$Chr))
+    rownames(segList$num.states) <- paste("Chrom",unique(input$genes$Chr))
     segList$genes <- datainfo
     segList$method <- "HomHMM"
                 ##Changing the names of the Chr and Position back.
@@ -281,11 +282,10 @@ function (MA, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.outpu
 #                colnames(segList$genes)[[6]] <- "Position"
 #                colnames(segList$genes)[[7]] <- "Chr"
 
-		new("SegList",segList)
+    new("SegList",segList)
   }
-        else {
-          cat("You must enter AIC or BIC for the criteria argument\n")
-        }
-          
+    else {
+      cat("You must enter AIC or BIC for the criteria argument\n")
+    }          
 }
 

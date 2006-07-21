@@ -34,7 +34,7 @@
 If you have used \Rpackage{snapCGH} in your work please cite the package
 using the following:\\
 
-Smith, M.L., Marioni, J.C., Thorne, N.P., Hardcastle, T.J.\\ 
+Smith, M.L., Marioni, J.C., Hardcastle, T.J., Thorne, N.P.\\ 
 \indent snapCGH: Segmentation, Normalization and Processing of aCGH Data Users' Guide,\\
 \indent Bioconductor, 2006\\
 
@@ -217,7 +217,7 @@ This function utilizes the spot types data that was read in earlier to
 highlight specific genes of interest.
 
 <<label=plotting1, include=FALSE>>=
-genomePlot(MA, array = 1)                                               
+genomePlot(MA2, array = 1)                                               
 @ 
 
 \begin{figure}[!ht]

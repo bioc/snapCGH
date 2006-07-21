@@ -1,13 +1,16 @@
 "runBioHMM" <-
-function (MA, useCloneDists = TRUE, covariates = NULL, criteria="AIC", delta=NA, var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) 
+function (input, useCloneDists = TRUE, covariates = NULL, criteria="AIC", delta=NA, var.fixed=FALSE, epsilon = 1.0e-6, numiter = 30000) 
 {
-  if (is.null(MA$design)) 
-        stop("MA$design component is null")
+  if(class(input) == "MAList"){
+    if (is.null(input$design)) 
+      stop("MA$design component is null")
 
-  for(i in 1:length(MA$design)){
-  temp <- MA$design[i]* MA$M[,i]
-  MA$M[,i] <- temp
+    for(i in 1:length(input$design)){
+      temp <- input$design[i]* input$M[,i]
+      input$M[,i] <- temp
+    }
   }
+  
   #some clunky code so you can put the Criteria argument in characters and still perform the
   #boolean opperators on it below:
   crit = TRUE
@@ -22,8 +25,8 @@ function (MA, useCloneDists = TRUE, covariates = NULL, criteria="AIC", delta=NA,
   else crit = FALSE
 
   if ((crit == 1) || (crit == 2)) {
-    datainfo = MA$genes
-    dat = log2ratios(MA)   
+    datainfo = input$genes
+    dat = log2ratios(input)   
     chrom.uniq <- unique(datainfo$Chr)
     nstates <- matrix(NA, nrow = length(chrom.uniq), ncol = ncol(dat))
 
@@ -55,10 +58,10 @@ function (MA, useCloneDists = TRUE, covariates = NULL, criteria="AIC", delta=NA,
       }
       cat("\n")
     }
-    segList$M.observed = MA$M
+    segList$M.observed = input$M
     segList$num.states = nstates
     colnames(segList$num.states) <- colnames(dat)
-    rownames(segList$num.states) <- paste("Chrom", unique(MA$genes$Chr))
+    rownames(segList$num.states) <- paste("Chrom", unique(input$genes$Chr))
     segList$method <- "BioHMM"
     segList$genes <- datainfo
     new("SegList",segList)
