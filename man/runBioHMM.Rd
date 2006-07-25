@@ -8,12 +8,12 @@
   algorithm.
 }
 \usage{
-runBioHMM(MA, useCloneDists = TRUE, covariates, criteria="AIC", delta=NA
+runBioHMM(input, useCloneDists = TRUE, covariates, criteria="AIC", delta=NA
 ,var.fixed=FALSE, epsilon = 1e-06, numiter = 30000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{MA}{An object of class \code{\link[limma:malist]{MAList}}}
+  \item{input}{An object of class \code{\link[limma:malist]{MAList}}or \code{\link[snapCGH:SegList]{SegList}}}
   \item{useCloneDists}{Boolean stating whether the distance between
     clones should be incorportated into the HMM.  If false then the HMM
     becomes homogeneous.}

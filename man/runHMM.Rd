@@ -4,16 +4,17 @@
 %- Also NEED an `\alias' for EACH other topic documented here.
 \title{A function to fit unsupervised Hidden Markov model}
 \description{
-  This function fits an unsupervised Hidden Markov model to a given \code{\link[limma]{MAList}}
+  This function fits an unsupervised Hidden Markov model to a given
+  \code{\link[limma]{MAList} or \code{\link[snapCGH:SegList]{SegList}}}
 }
 \usage{
-runHomHMM(MA, vr = 0.01,
+runHomHMM(input, vr = 0.01,
                 maxiter = 100, criteria = "AIC", delta = NA,
                 full.output = FALSE, eps = 0.01)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{MA}{an object of class \code{\link[limma]{MAList}}}
+  \item{input}{an object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
   \item{vr}{Gets passed to the function
     \code{\link[pkg:repeated]{hidden}} as the \code{pshape} arguement.}
   \item{maxiter}{Gets passed to the function

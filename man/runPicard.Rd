@@ -7,10 +7,10 @@
   object.  This function requires the library \code{DNAcopy} to be loaded.
 }
 \usage{
-  runPicard(MA, maxSeg, maxk = 200, criteria = "BIC")
+  runPicard(input, maxSeg, maxk = 200, criteria = "BIC")
 }
 \arguments{
-  \item{MA}{An object of class \code{\link[limma]{MAList}}}
+  \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
   \item{maxSeg}{integer of length 1, maximum number of segments (= 1 +
     maximum number of change points)}
   \item{maxk}{integer of length 1, maximum length of a single segment}

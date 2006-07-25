@@ -7,12 +7,12 @@
   the library \code{DNAcopy} to be loaded.
 }
 \usage{
-runDNAcopy(MA, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, trim=0.025, alpha = 0.01, p.method = c("hybrid", 
+runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, trim=0.025, alpha = 0.01, p.method = c("hybrid", 
     "perm"), kmax = 25, nmin = 200, window.size = NULL, overlap = 0.25, undo.splits = c("none", "prune", "sdundo"), 
     undo.prune = 0.05, undo.SD = 3)
 }
 \arguments{
-  \item{MA}{An object of class \code{\link[limma]{MAList}}}
+  \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
   \item{smooth.region}{number of points to consider on the left and the
     right of a point to detect it as an outlier.}
   \item{outlier.SD.scale}{the number of SDs away from the nearest point
