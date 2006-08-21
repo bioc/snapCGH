@@ -239,7 +239,7 @@ specified using the \Rfunarg{chrom.to.plot} argument.
 
 
 <<label = plotting3, include=FALSE>>=
-genomePlot(MA, array = 1, chrom.to.plot = 8)
+genomePlot(MA2, array = 1, chrom.to.plot = 8)
 @ 
 
 \begin{figure}[!ht]

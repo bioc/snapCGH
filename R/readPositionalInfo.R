@@ -7,7 +7,7 @@
       file <- input$targets[1]
 
     source <- match.arg(source, c("agilent", 
-        "bluefuse", "nimblegen"))
+                                  "bluefuse", "nimblegen"))
    
     switch(source,
            agilent = { ##Needs to be re-written with apply
@@ -54,17 +54,20 @@
              }
            },
            nimblegen = {
-             chr <- as.vector(unlist(input$genes$SEQ_ID))
-             chrnum <- sapply(chr, function(z){strsplit(z, "chr")[[1]][2]})
+             chr <- tolower(as.vector(unlist(input$genes$SEQ_ID)))
+             chrnum <- sapply(chr, function(z){strsplit(z, tolower("chr"))[[1]][2]})
              indx <- which(chrnum == "X")
              indy <- which(chrnum == "Y")
-             chr[indx] = 23
-             chr[indy] = 24
-             input$genes$Chr <- as.numeric(chr)
-             names(input)[5] <- "Position"
-             input$Position <- as.numeric(input$Position)/1000000
-           }
-             )
+             chrnum[indx] = 23
+             chrnum[indy] = 24
+             chr <- chrnum
+             names(input$genes)[which(toupper(names(input$genes)) == toupper("POSITION"))] <- "Position"
+             start <- end <- input$genes$Position
+             if (all(input$genes$Position >= 1)) 
+               input$genes$Position <- as.numeric(input$genes$Position)/1000000
+           },
+           stop("Source argument not recognised"),
+           )
     input$genes <- data.frame(input$genes, Chr = as.numeric(chr), Start = (as.numeric(start)/1000000), End = (as.numeric(end)/1000000))
     input
   }

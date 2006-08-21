@@ -65,6 +65,11 @@ function (input, maxChromThreshold = 22, minChromThreshold = 1, method.of.averag
     segList$M.observed <- MA$M[!dupl, ,drop = FALSE]
     segList$genes <- MA$genes[!dupl, ]
   }
+  else{
+    segList <- list()
+    segList$M.observed <- MA$M
+    segList$genes <- MA$genes
+  }
   rownames(segList$genes) <- c(1:length(segList$genes$ID))
   if(!is.null(segList$genes$Status)){
     attr(segList$genes$Status, "values") <- valStore
