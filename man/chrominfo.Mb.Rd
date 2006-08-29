@@ -16,9 +16,9 @@ chrominfo.basepair
   A data frame with 24 observations on the following 3 variables.
   \describe{
     \item{chrom}{Chromosomal index, X is coded as 23 and Y as 24.}
-    \item{length}{Length of each chromosome in basepairs.}
+    \item{length}{Length of each chromosome in megabases.}
     \item{centromere}{
-      Location of the centromere on the chromosome (bp).
+      Location of the centromere on the chromosome (Mb).
     }
   }
 }
