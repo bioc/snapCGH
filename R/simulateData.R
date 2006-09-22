@@ -1,7 +1,22 @@
 "simulateData" <-
-function(nArrays = 20, chrominfo=NULL,prb.short.tiled=0.5,prb.long.tiled=0.5,non.tiled.lower.res=0.9,non.tiled.upper.res=1.1, length.clone.lower=0.05,length.clone.upper=0.2,tiled.lower.res=-0.05,tiled.upper.res=0,sd=NULL,output=FALSE,
-                          prb.proportion.tiled=c(0.2,0.2,0.2,0.2,0.2),zerolengthnontiled=NULL,zerolengthtiled=NULL,
-                          nonzerolengthnontiled=NULL,nonzerolengthtiled=NULL, seed=1){
+function(nArrays = 20,
+         chrominfo = NULL,
+         prb.short.tiled = 0.5,
+         prb.long.tiled = 0.5,
+         non.tiled.lower.res = 0.9,
+         non.tiled.upper.res = 1.1,
+         length.clone.lower = 0.05,
+         length.clone.upper = 0.2,
+         tiled.lower.res = -0.05,
+         tiled.upper.res = 0,
+         sd = NULL,
+         output = FALSE,
+         prb.proportion.tiled = c(0.2, 0.2, 0.2, 0.2, 0.2),
+         zerolengthnontiled = NULL,
+         zerolengthtiled = NULL,
+         nonzerolengthnontiled = NULL,
+         nonzerolengthtiled = NULL,
+         seed = 1){
   
 # Randomly select one of the 22 autosomal chromsomes to be our simulation template.
   
@@ -389,7 +404,17 @@ simulated.data <- list()
 
 # Function for generating the points on the short arm.
 
-generate.data <- function(mid.point,tiled,length.tiled,end.pos,start.tiled,length.chrom) {
+"generate.data" <-
+function(mid.point,
+         tiled,
+         length.tiled,
+         end.pos,
+         start.tiled,
+         length.chrom,
+         zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+         non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+         zero.length.distr.tiled = zero.length.distr.tiled,
+         non.zero.length.distr.tiled = non.zero.length.distr.tiled) {
   data<-numeric()
   if (tiled == 0){
     j <- 0

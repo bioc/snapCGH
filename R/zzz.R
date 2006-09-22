@@ -1,5 +1,5 @@
 .First.lib <-
-    function(libname, pkgname, where)
+    function(libname, pkgname)
     library.dynam("snapCGH", pkgname, libname)
 
 .Last.lib <-

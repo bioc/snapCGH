@@ -144,8 +144,8 @@ function (input, array = 1, naut = 22,
   if (length(ind.unmap) > 0) {
         chrom <- chrom[-ind.unmap]
         kb <- kb[-ind.unmap]
-        data <- matrix(data[-ind.unmap,])
-#code dealing with the spot types functionality
+        data <- as.matrix(data[-ind.unmap,])
+        ## code dealing with the spot types functionality
         valStore <- attr(status,"values")
         colStore <- attr(status,"col")
         status <- status[ord]
