@@ -450,10 +450,10 @@ function(mid.point,
          end.pos,
          start.tiled,
          length.chrom,
-         zero.length.distr.non.tiled = zero.length.distr.non.tiled,
-         non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
-         zero.length.distr.tiled = zero.length.distr.tiled,
-         non.zero.length.distr.tiled = non.zero.length.distr.tiled) {
+         zero.length.distr.non.tiled. = zero.length.distr.non.tiled,
+         non.zero.length.distr.non.tiled. = non.zero.length.distr.non.tiled,
+         zero.length.distr.tiled. = zero.length.distr.tiled,
+         non.zero.length.distr.tiled. = non.zero.length.distr.tiled) {
   data<-numeric()
   if (tiled == 0){
     j <- 0
@@ -462,9 +462,9 @@ function(mid.point,
 	{
  	  state <- sample(c(0,1,2,3,4,5),1,prob=c(0.04,0.15,0.5,0.15,0.10,0.06))
  	  if (state==2){ l <-
-  max(1,floor(sample(zero.length.distr.non.tiled,1))*length(mid.point))}
+  max(1,floor(sample(zero.length.distr.non.tiled. , 1))*length(mid.point))}
  	  else {l <-
-  max(1,floor(sample(non.zero.length.distr.non.tiled,1)*length(mid.point)))
+  max(1,floor(sample(non.zero.length.distr.non.tiled. , 1)*length(mid.point)))
   }
  	  if (j+l > length(mid.point)) { l <- length(mid.point) -
   j }
@@ -479,9 +479,9 @@ function(mid.point,
           {
             state <- sample(c(0,1,2,3,4,5),1,prob=c(0.04,0.15,0.5,0.15,0.10,0.06))
       	    if (state==2){ l <-
-                          max(floor(sample(zero.length.distr.non.tiled,1)*(length(mid.point[mid.point < start.tiled]))),1)} else
+                          max(floor(sample(zero.length.distr.non.tiled. , 1)*(length(mid.point[mid.point < start.tiled]))),1)} else
             {l <-
-  max(1,floor(sample(non.zero.length.distr.non.tiled,1)*(length(mid.point[mid.point
+  max(1,floor(sample(non.zero.length.distr.non.tiled. , 1)*(length(mid.point[mid.point
   < start.tiled]))))}
             if (j+l > (length(mid.point[mid.point <
   start.tiled]))) { l <- length(mid.point[mid.point <
@@ -494,10 +494,10 @@ function(mid.point,
             {
             state <- sample(c(0,1,2,3,4,5),1,prob=c(0.04,0.15,0.5,0.15,0.10,0.06))
       	    if (state==2){ l <-
-                          max(1,floor(sample(zero.length.distr.tiled,1)*(length(mid.point[mid.point
+                          max(1,floor(sample(zero.length.distr.tiled. , 1)*(length(mid.point[mid.point
   > start.tiled & mid.point < (start.tiled + length.tiled)]))))} else
             {l <-
-  max(1,floor(sample(non.zero.length.distr.tiled,1)*(length(mid.point[mid.point >
+  max(1,floor(sample(non.zero.length.distr.tiled. , 1)*(length(mid.point[mid.point >
   start.tiled & mid.point < (start.tiled +
   length.tiled)]))))}
             if (j+l > (length(mid.point[mid.point < (start.tiled +
@@ -511,10 +511,10 @@ function(mid.point,
             {
              state <- sample(c(0,1,2,3,4,5),1,prob=c(0.04,0.15,0.5,0.15,0.10,0.06))
       	    if (state==2){ l <-
-                          max(1,floor(sample(zero.length.distr.non.tiled,1)*(length(mid.point[mid.point
+                          max(1,floor(sample(zero.length.distr.non.tiled. , 1)*(length(mid.point[mid.point
   >  (start.tiled + length.tiled)]))))} else
             {l <-
-  max(1,floor(sample(non.zero.length.distr.non.tiled,1)*(length(mid.point[mid.point
+  max(1,floor(sample(non.zero.length.distr.non.tiled. , 1)*(length(mid.point[mid.point
   > (start.tiled + length.tiled)]))))}
             if (j+l > (length(mid.point))) { l <-
   length(mid.point) - j}
@@ -526,9 +526,9 @@ function(mid.point,
           if (j >= length(mid.point)) {break}
           {
             state <- sample(c(0,1,2,3,4,5),1,prob=c(0.04,0.15,0.5,0.15,0.10,0.06))
-            if (state==2){ l <- max(1,floor(sample(zero.length.distr.tiled,1)*length(mid.point)))}
+            if (state==2){ l <- max(1,floor(sample(zero.length.distr.tiled. , 1)*length(mid.point)))}
  	        else {l <-
-  max(1,floor(sample(non.zero.length.distr.tiled,1)*length(mid.point)))
+  max(1,floor(sample(non.zero.length.distr.tiled. , 1)*length(mid.point)))
   }
  	        if (j+l > length(mid.point)) { l <-
   length(mid.point) - j}
