@@ -258,19 +258,58 @@ simulated.data <- list()
   combined.one <- combined.two <- combined.three <- combined.four <- combined.five <- list()
 
   for (i in 1:22){
-    out.short.one <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i])
-    out.short.two <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i])
-    out.short.three <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i])
-    out.short.four <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i])
-    out.short.five <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i])
+    out.short.one <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i],
+                                   zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                   non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                   zero.length.distr.tiled = zero.length.distr.tiled,
+                                   non.zero.length.distr.tiled = non.zero.length.distr.tiled)
+    out.short.two <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i],
+                                   zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                   non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                   zero.length.distr.tiled = zero.length.distr.tiled,
+                                   non.zero.length.distr.tiled = non.zero.length.distr.tiled)
+    out.short.three <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i],
+                                     zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                     non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                     zero.length.distr.tiled = zero.length.distr.tiled,
+                                     non.zero.length.distr.tiled = non.zero.length.distr.tiled)
+    out.short.four <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i],
+                                    zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                    non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                    zero.length.distr.tiled = zero.length.distr.tiled,
+                                    non.zero.length.distr.tiled = non.zero.length.distr.tiled)
+    out.short.five <- generate.data(mid.point.short[[i]],short.tiled[i],length.short.tiled[i],end.pos.short[[i]],start.short.tiled[i], length.chrom.short[i],
+                                    zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                    non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                    zero.length.distr.tiled = zero.length.distr.tiled,
+                                    non.zero.length.distr.tiled = non.zero.length.distr.tiled)
     
 # (ii) the long arm
     
-    out.long.one <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i])					   
-    out.long.two <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i])						          
-    out.long.three <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i])							   
-    out.long.four <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i])							   
-    out.long.five <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i])
+    out.long.one <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i],zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+         non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+         zero.length.distr.tiled = zero.length.distr.tiled,
+         non.zero.length.distr.tiled = non.zero.length.distr.tiled)					   
+    out.long.two <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i],
+                                  zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                  non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                  zero.length.distr.tiled = zero.length.distr.tiled,
+                                  non.zero.length.distr.tiled = non.zero.length.distr.tiled)						          
+    out.long.three <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i],
+                                    zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                    non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                    zero.length.distr.tiled = zero.length.distr.tiled,
+                                    non.zero.length.distr.tiled = non.zero.length.distr.tiled)							   
+    out.long.four <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i],
+                                   zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                   non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                   zero.length.distr.tiled = zero.length.distr.tiled,
+                                   non.zero.length.distr.tiled = non.zero.length.distr.tiled)							   
+    out.long.five <- generate.data(mid.point.long[[i]],long.tiled[i],length.long.tiled[i],end.pos.long[[i]],start.long.tiled[i], length.chrom.long[i],
+                                   zero.length.distr.non.tiled = zero.length.distr.non.tiled,
+                                   non.zero.length.distr.non.tiled = non.zero.length.distr.non.tiled,
+                                   zero.length.distr.tiled = zero.length.distr.tiled,
+                                   non.zero.length.distr.tiled = non.zero.length.distr.tiled)
 							   
 # Combining the data on the short and long arm
 
