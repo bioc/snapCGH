@@ -269,7 +269,7 @@ function (input, vr = 0.01, maxiter = 100, criteria = "AIC", delta = NA, full.ou
         }
         cat("\n")
     }
-    segList$M.observed = input$M
+    segList$M.observed = log2ratios(input)
     segList$num.states = nstates
     colnames(segList$num.states) <- colnames(dat)
     rownames(segList$num.states) <- paste("Chrom",unique(input$genes$Chr))
