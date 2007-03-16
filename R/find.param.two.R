@@ -10,8 +10,8 @@ function(output.optim,var.fixed)
     if (output.optim$x[7] < 150) p2 <- exp(output.optim$x[7])/(1 + exp(output.optim$x[7])) else p2 <- 1
     object$prior <- c(pr1,1-pr1)
     if (output.optim$x[8] < 50) object$rate1 <- exp(output.optim$x[8]) else object$rate1 <- exp(50)
-    object$LH.trans <- matrix(c(1 - p1, p1, p2, 1- p2),ncol=2,b=T)
-    object$RH.trans <- matrix(c(p1, -p1, -p2, p2),ncol=2,b=T)
+    object$LH.trans <- matrix(c(1 - p1, p1, p2, 1- p2),ncol=2,b=TRUE)
+    object$RH.trans <- matrix(c(p1, -p1, -p2, p2),ncol=2,b=TRUE)
     object$minus.logLikelihood <- output.optim$val
     # object$convergence <- output.optim$code
     object

@@ -38,8 +38,8 @@ function(output.optim,var.fixed)
     
     object$prior <- c(pr1,pr2,pr3,pr4,1-pr1-pr2-pr3-pr4)
     if (output.optim[[1]][35] < 50) object$rate1 <- exp(output.optim[[1]][35]) else object$rate1 <- exp(50)
-    object$LH.trans <- matrix(c(1-p1-p2-p3-p4, p1, p2, p3, p4, p5, 1-p5-p6-p7-p8, p6, p7, p8, p9, p10, 1-p9-p10-p11-p12, p11, p12, p13, p14, p15, 1-p13-p14-p15-p16, p16, p17, p18, p19, p20, 1 - p17-p18-p19-p20),ncol=5,b=T)
-    object$RH.trans <- matrix(c(p1+p2+p3+p4, -p1, -p2, -p3, -p4, -p5, p5+p6+p7+p8, -p6, -p7, -p8,-p9, -p10, p9+p10+p11+p12,-p11,-p12,-p13,-p14, -p15,p13+p14+p15+p16,-p16,-p17,-p18,-p19,-p20,p17+p18+p19+p20),ncol=5,b=T)
+    object$LH.trans <- matrix(c(1-p1-p2-p3-p4, p1, p2, p3, p4, p5, 1-p5-p6-p7-p8, p6, p7, p8, p9, p10, 1-p9-p10-p11-p12, p11, p12, p13, p14, p15, 1-p13-p14-p15-p16, p16, p17, p18, p19, p20, 1 - p17-p18-p19-p20),ncol=5,b=TRUE)
+    object$RH.trans <- matrix(c(p1+p2+p3+p4, -p1, -p2, -p3, -p4, -p5, p5+p6+p7+p8, -p6, -p7, -p8,-p9, -p10, p9+p10+p11+p12,-p11,-p12,-p13,-p14, -p15,p13+p14+p15+p16,-p16,-p17,-p18,-p19,-p20,p17+p18+p19+p20),ncol=5,b=TRUE)
     object$minus.logLikelihood <- output.optim$val
     # object$convergence <- output.optim$code
     object

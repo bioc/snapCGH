@@ -3,12 +3,12 @@
   K <- 5
   n <- length(y)
 
-  psi <- matrix(nrow=K,ncol=n,b=T)
-  phi <- matrix(nrow=K,ncol=n,b=T)
+  psi <- matrix(nrow=K,ncol=n,b=TRUE)
+  phi <- matrix(nrow=K,ncol=n,b=TRUE)
   q.star <- vector()
 
   for (i in 1:K){
-    phi[i,1] <- max(-100000,log(BFGS.output$prior[i]),na.rm=T) + log(dnorm(y[1],BFGS.output$mu[i], BFGS.output$sigma[i], log = FALSE))
+    phi[i,1] <- max(-100000,log(BFGS.output$prior[i]),na.rm=TRUE) + log(dnorm(y[1],BFGS.output$mu[i], BFGS.output$sigma[i], log = FALSE))
   }
 
   for (i in 1:K){
@@ -17,7 +17,7 @@
 
   for (t in 2:n) {
     for (k in 1:K){
-      phi[k,t] <- max(phi[1,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][1,k]),na.rm=T), phi[2,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][2,k]),na.rm=T),phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=T),phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=T),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=T)) + log(dnorm(y[t],BFGS.output$mu[k], BFGS.output$sigma[k], log = FALSE))
+      phi[k,t] <- max(phi[1,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][1,k]),na.rm=TRUE), phi[2,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][2,k]),na.rm=TRUE),phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=TRUE),phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=TRUE),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=TRUE)) + log(dnorm(y[t],BFGS.output$mu[k], BFGS.output$sigma[k], log = FALSE))
     }
   }
   
@@ -25,10 +25,10 @@
 
 for (t in 2:n) {
   for (k in 1:K){
-    if ((phi[1,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][1,k]),na.rm=T)) > max(phi[2,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][2,k]),na.rm=T),phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=T),phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=T),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=T))) psi[k,t] <- 1 else {
-      if ((phi[2,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][2,k]),na.rm=T)) > max(phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=T),phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=T),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=T))) psi[k,t] <- 2 else {
-        if ((phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=T)) > (max(phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=T),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=T)))) psi[k,t] <- 3 else {
-          if ((phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=T)) > (phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=T)))   psi[k,t] <- 4 else {psi[k,t] <- 5}}}}
+    if ((phi[1,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][1,k]),na.rm=TRUE)) > max(phi[2,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][2,k]),na.rm=TRUE),phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=TRUE),phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=TRUE),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=TRUE))) psi[k,t] <- 1 else {
+      if ((phi[2,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][2,k]),na.rm=TRUE)) > max(phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=TRUE),phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=TRUE),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=TRUE))) psi[k,t] <- 2 else {
+        if ((phi[3,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][3,k]),na.rm=TRUE)) > (max(phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=TRUE),phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=TRUE)))) psi[k,t] <- 3 else {
+          if ((phi[4,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][4,k]),na.rm=TRUE)) > (phi[5,t-1] + max(-100000,log(BFGS.trans.mat[[t-1]][5,k]),na.rm=TRUE)))   psi[k,t] <- 4 else {psi[k,t] <- 5}}}}
   }
 }
 
