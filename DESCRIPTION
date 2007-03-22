@@ -6,5 +6,5 @@ Author: Mike L. Smith, John C. Marioni, Steven McKinney, Tom J. Hardcastle, Nata
 Description: Methods for segmenting, normalising and processing aCGH data; including plotting functions for visualising raw and segmented data for individual and multiple arrays.
 biocViews: Microarray, DNACopyNumber, TwoChannel, Preprocessing
 Maintainer: John Marioni <jcm68@cam.ac.uk>
-Depends: limma, tilingArray, DNAcopy, aCGH, GLAD, cluster, methods
+Depends: limma, tilingArray, DNAcopy, GLAD, cluster, methods
 License: GPL

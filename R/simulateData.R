@@ -211,26 +211,26 @@ for (i in 1:22){
 # (2 copies) regions in the non-tiled region.
 
 if (is.null(zerolengthnontiled))
-  data(zero.distr.non.tiled) else {
-zero.length.distr.non.tiled <- zerolengthnontiled}
+  data(zero.length.distr.non.tiled) else {
+zero.length.length.distr.non.tiled <- zerolengthnontiled}
 
 # (ii) An empirical distribution of (the proportional) length of "normal" (2 copies) regions in the tiled region.
 
 if (is.null(zerolengthtiled))
-  data(zero.distr.tiled) else {
-zero.length.distr.tiled <- zerolengthtiled}
+  data(zero.length.distr.tiled) else {
+zero.length.length.distr.tiled <- zerolengthtiled}
 
 # (iii) An empirical distribution of (the proportional) length of "non-normal" regions in the non-tiled regions.
 
 if (is.null(nonzerolengthnontiled))
-  data(non.zero.distr.non.tiled) else {
-non.zero.length.distr.non.tiled <- nonzerolengthnontiled}
+  data(non.zero.length.distr.non.tiled) else {
+non.zero.length.length.distr.non.tiled <- nonzerolengthnontiled}
 
 # (iv) An empirical distribution of (the proportional) length of "non-normal" regions in the tiled regions.
 
 if (is.null(nonzerolengthtiled))
-  data(non.zero.distr.tiled) else {
-non.zero.length.distr.tiled <- nonzerolengthtiled}
+  data(non.zero.length.distr.tiled) else {
+non.zero.length.length.distr.tiled <- nonzerolengthtiled}
 
 # .................
 

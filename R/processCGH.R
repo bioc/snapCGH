@@ -1,89 +1,88 @@
+"prop.na" <- function(x)
+    mean(is.na(x))
 
-"processCGH" <-
-function (input, maxChromThreshold = 22, minChromThreshold = 1, method.of.averaging = NULL, ID = "ID") 
+
+
+"processCGH" <- function (input, maxChromThreshold = 22, minChromThreshold = 1, 
+    method.of.averaging = NULL, ID = "ID",prop.missing=0.1) 
 {
-
-  if(is.null(input$design)){
-    stop("$design component is null")
-  }
-     
-  if(class(input) == "RGList"){
-    MA = MA.RG(input)
-    MA$design = RG$design
-  }
-  else if(class(input) == "MAList")
-    MA = input
-  else
-    stop("Input must be of class RGList or MAList")
-  
-  for(i in 1:length(MA$design)){
-    temp <- MA$design[i]* MA$M[,i]
-    MA$M[,i] <- temp
-  }
-
-  ord <- order(MA$genes$Chr, MA$genes$Position) # re-ordering the clones by chromosome and position on a chromosome
-  if(length(which(colnames(MA$genes) == ID)) == 0){
-    stop("Specified ID column in $genes does not exist. Please check the ID argument")
-  }
-  colnames(MA$genes)[which(colnames(MA$genes) == ID)] = "ID" #renaming the the specified column to "ID"
-
-  #Code to stop the Status attributes being lost when the MAList is reordered.
-  if(!is.null(MA$genes$Status)){
-    valStore <- attr(MA$genes$Status, "values")
-    colStore <- attr(MA$genes$Status, "col")
-  }
-  MA <- MA[ord,]
-
-  ind.unmap <- which(MA$genes$Chr > maxChromThreshold | is.na(MA$genes$Chr) | is.na(MA$genes$Position) | MA$genes$Chr < minChromThreshold)
-  if (length(ind.unmap) > 0) {
-    MA <- MA[-ind.unmap, ]
-  }
-  prop.miss <- apply(MA$M, 1, prop.na)
-  MA <- MA[prop.miss < 0.1,]
-  
-  tbl <- table(MA$genes$ID)
-  if (any(tbl > 1)) {
-    tbl <- tbl[tbl > 1]
-    nms <- names(tbl)
-    if (!is.null(method.of.averaging)) {
-      cat("\nAveraging duplicated clones\n")
-      for (i in 1:length(tbl)) {
-        ind1 <- which(MA$genes$ID == nms[i])
-        vec <- apply(as.matrix(MA$M[ind1,]), 2, method.of.averaging, na.rm = TRUE)
-        for (j in 1:length(ind1)) {
-          if (ncol(log2ratios(MA)) > 1) {
-            MA$M[ind1[j], ] <- vec
-          }
-          else {
-            MA$M[ind1[j]] <- vec
+    if (is.null(input$design)) {
+        stop("$design component is null")
+    }
+    if (class(input) == "RGList") {
+        MA = MA.RG(input)
+        MA$design = RG$design
+    }
+    else if (class(input) == "MAList") 
+        MA = input
+    else stop("Input must be of class RGList or MAList")
+    for (i in 1:length(MA$design)) {
+        temp <- MA$design[i] * MA$M[, i]
+        MA$M[, i] <- temp
+    }
+    ord <- order(MA$genes$Chr, MA$genes$Position)
+    if (length(which(colnames(MA$genes) == ID)) == 0) {
+        stop("Specified ID column in $genes does not exist. Please check the ID argument")
+    }
+    colnames(MA$genes)[which(colnames(MA$genes) == ID)] = "ID"
+    if (!is.null(MA$genes$Status)) {
+        valStore <- attr(MA$genes$Status, "values")
+        colStore <- attr(MA$genes$Status, "col")
+    }
+    MA <- MA[ord, ]
+    ind.unmap <- which(MA$genes$Chr > maxChromThreshold | is.na(MA$genes$Chr) | 
+        is.na(MA$genes$Position) | MA$genes$Chr < minChromThreshold)
+    if (length(ind.unmap) > 0) {
+        MA <- MA[-ind.unmap, ]
+    }
+    prop.miss <- apply(MA$M, 1, prop.na)
+    MA <- MA[prop.miss < prop.missing, ]
+    tbl <- table(MA$genes$ID)
+    if (!is.null(method.of.averaging)){
+      if (any(tbl > 1)) {
+        tbl <- tbl[tbl > 1]
+        nms <- names(tbl)
+        cat("\nAveraging duplicated clones\n")
+        for (i in 1:length(tbl)) {
+          ind1 <- which(MA$genes$ID == nms[i])
+          vec <- apply(as.matrix(MA$M[ind1, ]), 2, method.of.averaging, 
+                       na.rm = TRUE)
+          for (j in 1:length(ind1)) {
+            if (ncol(log2ratios(MA)) > 1) {
+              MA$M[ind1[j], ] <- vec
+            }
+            else {
+              MA$M[ind1[j]] <- vec
+            }
           }
         }
+        dupl <- duplicated(MA$genes$ID)
+        segList <- list()
+        segList$M.observed <- MA$M[!dupl, , drop = FALSE]
+        segList$genes <- MA$genes[!dupl, ]
       }
     }
-    dupl <- duplicated(MA$genes$ID)
-    segList <- list()
-    segList$M.observed <- MA$M[!dupl, ,drop = FALSE]
-    segList$genes <- MA$genes[!dupl, ]
-  }
-  else{
-    segList <- list()
-    segList$M.observed <- MA$M
-    segList$genes <- MA$genes
-  }
-  rownames(segList$genes) <- c(1:length(segList$genes$ID))
-  if(!is.null(segList$genes$Status)){
-    attr(segList$genes$Status, "values") <- valStore
-    attr(segList$genes$Status, "col") <- colStore
-  }
-  
-  if (!is.null(method.of.averaging)){
-    seg.imputed <- imputeMissingValues(segList, chrominfo = chrominfo.Mb, maxChrom = maxChromThreshold, smooth = 0.1)
-    segList$M.observed <- seg.imputed$M.observed
-  }
-  class(segList) = "SegList"
-  segList$design <- MA$design
-  segList
+    else {
+      segList <- list()
+      segList$M.observed <- MA$M
+      segList$genes <- MA$genes
+    }
+    rownames(segList$genes) <- c(1:length(segList$genes$ID))
+    if (!is.null(segList$genes$Status)) {
+        attr(segList$genes$Status, "values") <- valStore
+        attr(segList$genes$Status, "col") <- colStore
+    }
+    if (!is.null(method.of.averaging)) {
+        seg.imputed <- imputeMissingValues(segList, chrominfo = chrominfo.Mb, 
+            maxChrom = maxChromThreshold, smooth = 0.1)
+        segList$M.observed <- seg.imputed$M
+    }
+    class(segList) = "SegList"
+    segList$design <- MA$design
+    segList
 }
+
+
 
 
     
