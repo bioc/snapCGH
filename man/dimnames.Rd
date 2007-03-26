@@ -5,10 +5,10 @@
 Retrieve the dimension names of a microarray data object.
 }
 \usage{
-\method{dimnames}{SegList}(segList)
+\method{dimnames}{SegList}(x)
 }
 \arguments{
-  \item{segList}{\code{SegList}}
+  \item{x}{An object of class \code{SegList}}
 }
 \details{
 The dimensionnames of an microarray object are the same as those of the most important matrix component of that object.

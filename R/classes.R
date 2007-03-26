@@ -8,7 +8,7 @@ setIs("SegList", "LargeDataObject")
 
 dim.SegList <- function(x) if(is.null(x[[1]])) c(0,0) else dim(as.matrix(x[[1]]))
 length.SegList <- function(x) prod(dim(x))
-#dimnames.SegList <- function(x) dimnames(x[[1]])
+dimnames.SegList <- function(x) dimnames(x[[1]])
 
 #allows the subsetting of the SegList object.  
 assign("[.SegList",
@@ -87,9 +87,9 @@ rbind.SegList <- function(..., deparse.level=1){
   }
 }
 
-dimnames.SegList <- function(segList){
-  dimnames(segList$M.observed)
-}
+#dimnames.SegList <- function(segList){
+#  dimnames(segList$M.observed)
+#}
 
 #Taken from Limma
 #I can't get it to use the print.LargeDataObject method for a SegList
