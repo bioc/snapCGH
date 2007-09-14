@@ -8,7 +8,7 @@
 }
 \usage{
 genomePlot(input, array = 1, naut = 22, Y = FALSE, X
-                 = FALSE, status, values, pch, cex, col, chrominfo =
+                 = FALSE, main = NA, status, values, pch, cex, col, chrominfo =
                  chrominfo.Mb, ylim = c(-2, 2), ylb = "Log2Ratio",
                  chrom.to.plot = NA, xlim = c(0,NA), ...)
 }
@@ -19,6 +19,7 @@ genomePlot(input, array = 1, naut = 22, Y = FALSE, X
   \item{naut}{number of autosomes in the organism}
   \item{Y}{TRUE if chromosome Y is to be plotted, FALSE otherwise}
   \item{X}{TRUE if chromosome X is to be plotted, FALSE otherwise}
+  \item{main}{Provides the title of the plot}	
   \item{status}{character vector giving the control status of each spot on the array, of same length as the number of rows of \code{log2ratios(input)}. If omitted, all points are plotted in the default color, symbol and size.}
   \item{values}{character vector giving values of \code{status} to be highlighted on the plot. Defaults to unique values of \code{status}. Ignored if there is no \code{status} vector.}
   \item{pch}{vector or list of plotting characters. Default to integer code 16. Ignored is there is no \code{status} vector.}
