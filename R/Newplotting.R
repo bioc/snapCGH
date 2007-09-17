@@ -1,4 +1,165 @@
-plotSegmentedGenome <- function (..., array = 1, naut = 22, Y = FALSE, X = FALSE, status, 
+"genomePlot" <- function (input, array = 1, naut = 22, Y = FALSE, X = FALSE, main = NA,
+    status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
+    ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim = c(0, 
+        NA), ...) 
+{
+    if (class(input) == "MAList") {
+        if (is.null(input$design)) 
+            stop("MA$design component is null")
+        for (i in 1:length(input$design)) {
+            temp <- input$design[i] * input$M[, i]
+            input$M[, i] <- temp
+        }
+    }    else if (class(input) == "SegList") {
+    }    else {
+        stop("Class must be either MAList or SegList")
+    }
+    data <- log2ratios(input)
+    datainfo <- input$genes
+    ord <- order(datainfo$Chr, datainfo$Position)
+    chrom <- datainfo$Chr[ord]
+    kb <- datainfo$Position[ord]
+    name <- (colnames(data))[array]
+    data <- matrix(data[ord, ], nrow = nrow(as.matrix(data[ord, 
+        ])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
+    ind.unmap <- which(chrom < 1 | is.na(chrom) | is.na(kb) | 
+        (as.numeric(chrom) > (naut + 2)))
+    if (missing(status)) 
+        status <- input$genes$Status
+    if (length(ind.unmap) > 0) {
+        chrom <- chrom[-ind.unmap]
+        kb <- kb[-ind.unmap]
+        data <- data[-ind.unmap, ]
+        valStore <- attr(status, "values")
+        colStore <- attr(status, "col")
+        status <- status[ord]
+        status <- status[-ind.unmap]
+        attr(status, "values") <- valStore
+        attr(status, "col") <- colStore
+    }
+    nchr <- naut
+    if (X) 
+        nchr <- nchr + 1
+    if (Y) 
+        nchr <- nchr + 1
+    if (!is.na(chrom.to.plot)) {
+        nchr <- chrom.to.plot
+        if(!is.null(status))
+          {
+            status.attr <- names(attributes(status))
+            status.list <- list()
+            for(ii in 1:length(status.attr))
+              status.list[[ii]] <- attr(status, status.attr[ii])
+            status <- status[chrom == nchr]
+            for(ii in 1:length(status.attr))
+              attr(status, status.attr[ii]) <- status.list[[ii]]
+          } else status.attr <- status.list <- NULL
+        data <- matrix(data[chrom == nchr, ], nrow = nrow(as.matrix(data[chrom == 
+            nchr, ])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data[chrom == 
+            nchr, ]))
+        clone.genomepos <- kb[chrom == nchr]
+        chrom <- chrom[chrom == nchr]
+        chrominfo <- chrominfo[nchr, ]
+        chrominfo <- chrominfo[1:nchr, ]
+        chrom.start <- 0
+        par(xaxt = "s", cex = 0.6, pch = 18, lab = c(6, 6, 7), 
+            cex.axis = 1.5, xaxs = "i")
+    }
+    else {
+        data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= 
+            nchr, ])), ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data[chrom <= 
+            nchr, ]))
+        kb <- kb[chrom <= nchr]
+        chrom <- chrom[chrom <= nchr]
+        chrominfo <- chrominfo[1:nchr, ]
+        chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
+        clone.genomepos <- vector()
+        for (i in 1:nchr) {
+            clone.genomepos[chrom == i] <- kb[chrom == i] + chrom.start[i]
+        }
+        par(xaxt = "n", tck = -0, cex = 0.6, pch = 18, lab = c(1, 
+            6, 7), cex.axis = 1.5, xaxs = "i")
+    }
+    chrom.centr <- chrom.start + chrominfo$centr
+    chrom.mid <- chrom.start + chrominfo$length/2
+    x <- clone.genomepos
+    y <- data[, array]
+    if (is.na(xlim[2])) {
+        xlim[2] <- clone.genomepos[sum(clone.genomepos > 0)]
+    }
+    if (!is.na(chrom.to.plot)) {
+        plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", 
+            ylab = "", col = "black", bg = "white")
+        mtext(chrom.to.plot, side = 1, line = 0.3, col = "red")
+    }
+    else {
+        plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, 
+            col = "black", bg = "white")
+        for (i in seq(1, naut, b = 2)) mtext(i, side = 1, at = chrom.mid[i], 
+            line = 0.3, col = "red")
+        for (i in seq(2, naut, b = 2)) mtext(i, side = 3, at = chrom.mid[i], 
+            line = 0.3, col = "red")
+    }
+    if(is.na(main))
+      title(main = paste(array, " ", name), ylab = ylb, xlab = "", 
+            cex.lab = 1.5)  else(title(main))
+    if (X & is.na(chrom.to.plot)) {
+        mtext("X", side = 1, at = chrom.mid[naut + 1], line = 0.3, 
+            col = "red")
+    }
+    if (Y & is.na(chrom.to.plot)) {
+        mtext("Y", side = 3, at = chrom.mid[naut + 2], line = 0.3, 
+            col = "red")
+    }
+    abline(v = c(chrom.start, (chrom.start[nchr] + chrominfo$length[nchr])), 
+        lty = 1)
+    abline(v = (chrominfo$centromere + chrom.start), lty = 3, 
+        col = "red")
+    if (!(is.null(status) || all(is.na(status)))) {
+      if (missing(values)) {
+        if (is.null(attr(status, "values")))
+          values <- unique(as.character(status))
+        else values <- attr(status, "values")
+      }
+      sel <- !(status %in% values)
+      nonhi <- any(sel)
+      if (nonhi)
+        points(x[sel], y[sel], pch = 16, cex = 0.3)
+      nvalues <- length(values)
+      if (missing(pch)) {
+        if (is.null(attr(status, "pch")))
+          pch <- rep(16, nvalues)
+        else pch <- attr(status, "pch")
+      }
+      if (missing(cex)) {
+        if (is.null(attr(status, "cex"))) {
+          cex <- rep(1, nvalues)
+          if (!nonhi)
+            cex[1] <- 0.3
+        }
+        else cex <- attr(status, "cex")
+      }
+      if (missing(col)) {
+        if (is.null(attr(status, "col"))) {
+          col <- nonhi + 1:nvalues
+        }
+        else col <- attr(status, "col")
+      }
+      pch <- rep(pch, length = nvalues)
+      col <- rep(col, length = nvalues)
+      cex <- rep(cex, length = nvalues)
+      for (i in 1:nvalues) {
+        sel <- status == values[i]
+        points(x[sel], y[sel], pch = pch[[i]], cex = cex[i],
+               col = col[i])
+      }
+    }
+    
+    abline(h = seq(min(ylim), max(ylim), b = 0.5), lty = 2, col = "red")
+}
+
+
+"plotSegmentedGenome" <- function (..., array = 1, naut = 22, Y = FALSE, X = FALSE, status, 
     values, pch, cex, col, chrominfo = chrominfo.Mb, ylim = c(-2, 
         2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim = c(0, 
         NA), colors = NULL, mark.regions = FALSE, main = NA) 
@@ -66,10 +227,7 @@ plotSegmentedGenome <- function (..., array = 1, naut = 22, Y = FALSE, X = FALSE
     }
     if(mark.regions == TRUE) {
       for(k in 1:nobjects) {
-        if(!is.null(objects[[k]]$regions))
-          regions <- objects[[k]]$regions
-        else
-          break
+        regions <- objects[[k]]$regions
         for(i in 1:nchr) {
           current <- objects[[k]]
           breakpoints <- findBreakPoints(current, array)
@@ -98,7 +256,15 @@ plotSegmentedGenome <- function (..., array = 1, naut = 22, Y = FALSE, X = FALSE
                      x0 = (current$genes$Position[new.start] + chrom.start[i]),
                      y1 = current$M.predicted[new.end, array],
                      x1 = (current$genes$Position[new.end] + chrom.start[i]),
-                     col = new.color, lwd = 2)
+                     col = new.color, lwd = 4)
+
+          spot.segments <- which(!is.na(current.regions$spot))
+          points(y = current$M.predicted[current.regions$region.start[spot.segments], array],
+                 x = current$genes$Position[current.regions$region.start[spot.segments]] + chrom.start[i],
+                 col = current.regions$color[spot.segments], pch = current.regions$spot[spot.segments], cex = 5)
+          points(y = current$M.predicted[current.regions$region.end[spot.segments], array],
+                 x = current$genes$Position[current.regions$region.end[spot.segments]] + chrom.start[i],
+                 col = current.regions$color[spot.segments], pch = current.regions$spot[spot.segments], cex = 5)
         }
       }
     }   
@@ -106,152 +272,7 @@ plotSegmentedGenome <- function (..., array = 1, naut = 22, Y = FALSE, X = FALSE
 }
 
 
-"genomePlot" <-
-function (input, array = 1, naut = 22, 
-    Y = FALSE, X = FALSE, status, values, pch, cex, col, chrominfo = chrominfo.Mb, 
-    ylim = c(-2, 2), ylb = "Log2Ratio", chrom.to.plot = NA, xlim=c(0,NA), ...) 
-{
 
-  ##MALists haven't been adjust with respect to which channel is the test.
-  ##This is done here, but isn't neccessary for SegLists
-  if(class(input) == "MAList"){
-    if (is.null(input$design)) 
-        stop("MA$design component is null")
-    for(i in 1:length(input$design)){
-      temp <- input$design[i]* input$M[,i]
-      input$M[,i] <- temp
-    }
-  }
-  else if(class(input) == "SegList"){} 
-  else{
-    stop("Class must be either MAList or SegList")
-  }
-   
-  
-  data <- log2ratios(input)
-  datainfo <- input$genes
-    
-  ord <- order(datainfo$Chr, datainfo$Position)
-  chrom <- datainfo$Chr[ord]
-  kb <- datainfo$Position[ord]
-  name <- (colnames(data))[array]
-
-  data <- matrix(data[ord, ], nrow = nrow(as.matrix(data[ord,])),ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
-  ind.unmap <- which(chrom < 1 | is.na(chrom) | is.na(kb) | (as.numeric(chrom) > (naut + 2)))
-  
-  if (missing(status)) status <- input$genes$Status
-  
-  if (length(ind.unmap) > 0) {
-        chrom <- chrom[-ind.unmap]
-        kb <- kb[-ind.unmap]
-        data <- as.matrix(data[-ind.unmap,])
-        ## code dealing with the spot types functionality
-        valStore <- attr(status,"values")
-        colStore <- attr(status,"col")
-        status <- status[ord]
-        status <- status[-ind.unmap]
-        attr(status,"values") <- valStore
-        attr(status,"col") <- colStore
-      }
-
-  nchr <- naut
-  if (X) nchr <- nchr + 1
-  if (Y) nchr <- nchr + 1
-  
-  if (!is.na(chrom.to.plot)){
-    status <-  NULL
-    nchr <- chrom.to.plot 
-    data <- matrix(data[chrom==nchr,], nrow = nrow(as.matrix(data[chrom==nchr,])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data[chrom==nchr,]))
-    clone.genomepos <- kb[chrom == nchr]
-    chrom <- chrom[chrom == nchr]
-    chrominfo <- chrominfo[nchr, ]
-    chrominfo <- chrominfo[1:nchr, ]
-    chrom.start <- 0
-    par(xaxt = "s", cex = 0.6, pch = 18, lab = c(6, 6, 7), cex.axis = 1.5, xaxs = "i")
-    } else {
-      data <- matrix(data[chrom <= nchr, ], nrow = nrow(as.matrix(data[chrom <= nchr,])),ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data[chrom <= nchr,])) 
-      kb <- kb[chrom <= nchr]
-      chrom <- chrom[chrom <= nchr]
-      chrominfo <- chrominfo[1:nchr, ]
-      chrom.start <- c(0, cumsum(chrominfo$length))[1:nchr]
-      clone.genomepos <- vector()
-      for (i in 1:nchr) {clone.genomepos[chrom == i] <- kb[chrom == i] + chrom.start[i]}
-      par(xaxt = "n", tck = -0, cex = 0.6, pch = 18, lab = c(1, 6, 7), cex.axis = 1.5, xaxs = "i")
-    }
-
-  chrom.centr <- chrom.start + chrominfo$centr
-  chrom.mid <- chrom.start + chrominfo$length/2
-  x <- clone.genomepos
-  y <- data[, array]
-  if (is.na(xlim[2])) {xlim[2] <- clone.genomepos[sum(clone.genomepos > 0)]}
-  
-   #Plotting functions 
- 
-  if (!is.na(chrom.to.plot)){
-    plot(x, y, ylim = ylim, xlim = xlim, xlab = "Distance along chromosome (Mb)", ylab = "" , col = "black", bg="white")
-    mtext(chrom.to.plot, side = 1, line = 0.3, col = "red")}  else {
-      plot(x, y, ylim = ylim, xlab = "", ylab = "", xlim = xlim, col = "black", bg="white")
-      for (i in seq(1, naut, b = 2)) mtext(i, side = 1, at = chrom.mid[i], line = 0.3, col = "red")
-      for (i in seq(2, naut, b = 2)) mtext(i, side = 3, at = chrom.mid[i], line = 0.3, col = "red")}
-
-  title(main = paste(array, " ", name), ylab = ylb, xlab = "", cex.lab = 1.5)    
-  if (X & is.na(chrom.to.plot)){ mtext("X", side = 1, at = chrom.mid[naut + 1], line = 0.3, col = "red")}
-  if (Y & is.na(chrom.to.plot)){ mtext("Y", side = 3, at = chrom.mid[naut + 2], line = 0.3, col = "red")}
-
-
-  
-  abline(v = c(chrom.start, (chrom.start[nchr] + chrominfo$length[nchr])), lty = 1)
-  abline(h = seq(min(ylim), max(ylim), b = 0.5), lty = 3)
-  abline(v = (chrominfo$centromere + chrom.start), lty = 3, col = "red")
-
-                                        #Code stolen from limma to use the spottype functionality
-  if(is.null(status) || all(is.na(status))) {
-    if(missing(pch)) pch=16
-    if(missing(cex)) cex=0.3
-    points(x,y,pch=pch[[1]],cex=cex[1])
-  } else {
-    if(missing(values)) {
-      if(is.null(attr(status,"values")))
-                                        #				values <- names(sort(table(status),decreasing=TRUE))
-        values <- as.character(status[,1])
-      else
-        values <- attr(status,"values")
-    }
-                                        #		Non-highlighted points
-    sel <- !(status %in% values)
-    nonhi <- any(sel)
-    if(nonhi) points(x[sel],y[sel],pch=16,cex=0.3)
-    
-    nvalues <- length(values)
-    
-    if(missing(pch)) {
-      if(is.null(attr(status,"pch")))
-        pch <- rep(16,nvalues)
-      else
-        pch <- attr(status,"pch")
-    }
-    if(missing(cex)) {
-      if(is.null(attr(status,"cex"))) {
-        cex <- rep(1,nvalues)
-        if(!nonhi) cex[1] <- 0.3
-      } else
-      cex <- attr(status,"cex")
-    }
-    if(missing(col)) {
-      if(is.null(attr(status,"col"))) {
-        col <- nonhi + 1:nvalues
-      } else
-      col <- attr(status,"col")
-    }
-    pch <- rep(pch,length=nvalues)
-    col <- rep(col,length=nvalues)
-    cex <- rep(cex,length=nvalues)
-    for (i in 1:nvalues) {
-      sel <- status==values[i]
-      points(x[sel],y[sel],pch=pch[[i]],cex=cex[i],col=col[i])
-    }
-  } 
-}
 
 #I can't get the dendrogram section of this to work.
 #The matrix transpose screws it completely as the dist function
