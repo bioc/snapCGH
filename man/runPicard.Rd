@@ -7,7 +7,7 @@
   object.  This function requires the library \code{DNAcopy} to be loaded.
 }
 \usage{
-  runPicard(input, maxSeg, maxk = 200, criteria = "BIC")
+  runPicard(input, maxSeg = 5, maxk = 200, criteria = "BIC")
 }
 \arguments{
   \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}

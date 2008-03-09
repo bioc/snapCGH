@@ -1,6 +1,10 @@
 runDNAcopy <- function(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, trim=0.025, alpha = 0.01, p.method = c("hybrid", 
-    "perm"), kmax = 25, nmin = 200, window.size = NULL, overlap = 0.25, undo.splits = c("none", "prune", "sdundo"), 
-    undo.prune = 0.05, undo.SD = 3) {
+    "perm"), kmax = 25, nmin = 200, undo.splits = c("none", "prune", "sdundo"), 
+    undo.prune = 0.05, undo.SD = 3, nperm=10000, eta=0.05, sbdry=NULL) {
+
+  if(length(which(search() == "package:tilingArray")) == 1){
+    detach("package:tilingArray")
+  }
 
   if(class(input) == "MAList"){
     if (is.null(input$design)) 
@@ -14,7 +18,7 @@ runDNAcopy <- function(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.s
 
   cna <- CNA(log2ratios(input), input$genes$Chr, input$genes$Position, sampleid = colnames(input$M.observed))
   cna <- smooth.CNA(cna, smooth.region=smooth.region, outlier.SD.scale = outlier.SD.scale, smooth.SD.scale = smooth.SD.scale, trim=trim) 
-  dna <- segment(cna, alpha = alpha, p.method = p.method, kmax = kmax, nmin = nmin, window.size = window.size, overlap = overlap,
+  dna <- segment(cna, alpha = alpha, p.method = p.method, kmax = kmax, nmin = nmin, nperm=nperm, eta = eta, sbdry=sbdry,
                  trim = trim, undo.splits = undo.splits, undo.prune = undo.prune, undo.SD = undo.SD)
   #changing the output back to the segmentation.info object
 
@@ -56,5 +60,9 @@ runDNAcopy <- function(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.s
   }
   seg.info$method <- "DNAcopy"
   seg.info$genes <- input$genes
+
+    #Re-attaching tilingArray to the search path
+  library(tilingArray, verbose = FALSE, warn.conflicts = FALSE)
+  
   new("SegList",seg.info)
 }

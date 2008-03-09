@@ -8,8 +8,8 @@
 }
 \usage{
 runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, trim=0.025, alpha = 0.01, p.method = c("hybrid", 
-    "perm"), kmax = 25, nmin = 200, window.size = NULL, overlap = 0.25, undo.splits = c("none", "prune", "sdundo"), 
-    undo.prune = 0.05, undo.SD = 3)
+    "perm"), kmax = 25, nmin = 200, undo.splits = c("none", "prune", "sdundo"), 
+    undo.prune = 0.05, undo.SD = 3, nperm = 10000, eta = 0.05, sbdry=NULL)
 }
 \arguments{
   \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
@@ -31,10 +31,6 @@ runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, tr
     in the hybrid method.}
   \item{nmin}{the minimum length of data for which the approximation of
     maximum statistic is used under the hybrid method.}
-  \item{window.size}{size of window used to speed up computations when
-    segment size is too large.  Default is NULL (whole segment used).
-    If p.method is hybrid then this is set to NULL.}
-  \item{overlap}{proportion of data that overlap for adjacent windows.}
   \item{undo.splits}{A character string specifying how change-points are
     to be undone, if at all.  Default is "none".  Other choices are
     "prune", which uses a sum of squares criterion, and "sdundo", which 
@@ -43,6 +39,9 @@ runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, tr
     when eliminating splits if undo.splits="prune".}
   \item{undo.SD}{the number of SDs between means to keep a split if
     undo.splits="sdundo".} 
+  \item{nperm}{number of permutations used for p-value computation.}
+  \item{eta}{the probability to declare a change conditioned on the permuted statistic exceeding the observed statistic exactly j (= 1,...,nperm*alpha) times.}
+  \item{sbdry}{the sequential boundary used to stop and declare a change. This boundary is a function of nperm, alpha and eta. It can be obtained using the function "getbdry" and used instead of having the "segment" function compute it every time it is called.}
 }
 \value{
   The function returns an object of class \code{\link[snapCGH:SegList]{SegList}}

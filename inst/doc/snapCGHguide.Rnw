@@ -70,6 +70,9 @@ targets <- readTargets("targets.txt", path=datadir)
 RG1 <- read.maimages(targets$FileName, path=datadir, source = "genepix")
 @
 
+%
+%
+
 Positional information about the clones on the array (e.g. which chromosome and the position 
 on the chromosome a clone if from) can be incorporated using the \Rfunction{readPositionalInfo}
 function.  This function accepts either an \Robject{RGList} or \Robject{MAList} along with an 
@@ -176,8 +179,8 @@ in other packages, specifically: \Rpackage{DNAcopy}, \Rpackage{GLAD} and \Rpacka
 These are respectively called in the following ways:
 
 <<segmentation2,results=hide, eval = FALSE>>=
-SegInfo.DNAcopy <- runDNAcopy(MA2)
 SegInfo.GLAD <- runGLAD(MA2)
+SegInfo.DNAcopy <- runDNAcopy(MA2)
 SegInfo.picard <- runPicard(MA2)
 @ 
 
@@ -377,7 +380,7 @@ has a mulitude of additional arguments for specifying the specific type of
 data you wish to simulate.  These are documented in the appropriate helpfile.
 
 <<label=Simulation1>>=
-simulation <- simulateData(nArrays = 4)
+simulation <- simulateData(nArrays = 3)
 @ 
 
 In the following example we run the homogeneous HMM and the DNAcopy algorithm on 
@@ -394,6 +397,8 @@ Sim.HomHMM <- runHomHMM(simulation)
 Sim.DNAcopy <- runDNAcopy(simulation)
 rates <- compareSegmentations(simulation, offset = 0, Sim.HomHMM, Sim.DNAcopy)
 @ 
+
+
 
 The output from \Rfunction{compareSegmentations} is a list containing two
 matrices.  The first of these, \texttt{\$TPR}, contains the true positive rate,
