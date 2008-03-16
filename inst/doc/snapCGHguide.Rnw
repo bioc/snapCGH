@@ -383,7 +383,7 @@ data you wish to simulate.  These are documented in the appropriate helpfile.
 simulation <- simulateData(nArrays = 3)
 @ 
 
-In the following example we run the homogeneous HMM and the DNAcopy algorithm on 
+In the following example we run the homogeneous HMM and the GLAD algorithm on 
 the simulated data.  The function \Rfunction{compareSegmentations} can be used
 to evaluate the performance of a segmentation methods against the known truth
 of the simulated data.  It returns true positive and false discovery rates for 
@@ -394,8 +394,8 @@ it is scored.
 
 <<label=Simulation2, results=hide>>=
 Sim.HomHMM <- runHomHMM(simulation)
-Sim.DNAcopy <- runDNAcopy(simulation)
-rates <- compareSegmentations(simulation, offset = 0, Sim.HomHMM, Sim.DNAcopy)
+Sim.GLAD <- runGLAD(simulation)
+rates <- compareSegmentations(simulation, offset = 0, Sim.HomHMM, Sim.GLAD)
 @ 
 
 
