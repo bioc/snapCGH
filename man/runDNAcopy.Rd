@@ -9,7 +9,7 @@
 \usage{
 runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, trim=0.025, alpha = 0.01, p.method = c("hybrid", 
     "perm"), kmax = 25, nmin = 200, undo.splits = c("none", "prune", "sdundo"), 
-    undo.prune = 0.05, undo.SD = 3, nperm = 10000, eta = 0.05, sbdry=NULL)
+    undo.prune = 0.05, undo.SD = 3, nperm = 10000, eta = 0.05)
 }
 \arguments{
   \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
@@ -41,7 +41,6 @@ runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, tr
     undo.splits="sdundo".} 
   \item{nperm}{number of permutations used for p-value computation.}
   \item{eta}{the probability to declare a change conditioned on the permuted statistic exceeding the observed statistic exactly j (= 1,...,nperm*alpha) times.}
-  \item{sbdry}{the sequential boundary used to stop and declare a change. This boundary is a function of nperm, alpha and eta. It can be obtained using the function "getbdry" and used instead of having the "segment" function compute it every time it is called.}
 }
 \value{
   The function returns an object of class \code{\link[snapCGH:SegList]{SegList}}

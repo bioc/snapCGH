@@ -176,15 +176,13 @@ SegInfo.Hom <- runHomHMM(MA2, criteria = "AIC")
 At the current time there are methods for calling four other segmentation algorithms 
 in addition to the method shown above.  Three of these are included as wrapper functions to methods available 
 in other packages, specifically: \Rpackage{DNAcopy}, \Rpackage{GLAD} and \Rpackage{tilingArray}.
-GLAD and the tilingArray algorithm can be called as follows:
+These functions can be called using the following code:
 
 <<segmentation2,results=hide, eval = FALSE>>=
 SegInfo.GLAD <- runGLAD(MA2)
 SegInfo.DNAcopy <- runDNAcopy(MA2)
 SegInfo.TilingArray <- runTilingArray(MA2)
 @ 
-
-
 
 The final method, called BioHMM, is a heterogeneous hidden Markov model and is maintained within \Rpackage{snapCGH}.
 It can be called using the following command.  By default it incorporates the distance between clones into
@@ -382,10 +380,10 @@ has a mulitude of additional arguments for specifying the specific type of
 data you wish to simulate.  These are documented in the appropriate helpfile.
 
 <<label=Simulation1>>=
-simulation <- simulateData(nArrays = 3)
+simulation <- simulateData(nArrays = 4)
 @ 
 
-In the following example we run the homogeneous HMM and the GLAD algorithm on 
+In the following example we run the homogeneous HMM and the DNAcopy algorithm on 
 the simulated data.  The function \Rfunction{compareSegmentations} can be used
 to evaluate the performance of a segmentation methods against the known truth
 of the simulated data.  It returns true positive and false discovery rates for 
@@ -396,8 +394,8 @@ it is scored.
 
 <<label=Simulation2, results=hide>>=
 Sim.HomHMM <- runHomHMM(simulation)
-Sim.GLAD <- runGLAD(simulation)
-rates <- compareSegmentations(simulation, offset = 0, Sim.HomHMM, Sim.GLAD)
+Sim.DNAcopy <- runDNAcopy(simulation)
+rates <- compareSegmentations(simulation, offset = 0, Sim.HomHMM, Sim.DNAcopy)
 @ 
 
 
