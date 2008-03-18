@@ -176,13 +176,15 @@ SegInfo.Hom <- runHomHMM(MA2, criteria = "AIC")
 At the current time there are methods for calling four other segmentation algorithms 
 in addition to the method shown above.  Three of these are included as wrapper functions to methods available 
 in other packages, specifically: \Rpackage{DNAcopy}, \Rpackage{GLAD} and \Rpackage{tilingArray}.
-These are respectively called in the following ways:
+GLAD and the tilingArray algorithm can be called as follows:
 
 <<segmentation2,results=hide, eval = FALSE>>=
 SegInfo.GLAD <- runGLAD(MA2)
 SegInfo.DNAcopy <- runDNAcopy(MA2)
-SegInfo.picard <- runPicard(MA2)
+SegInfo.TilingArray <- runTilingArray(MA2)
 @ 
+
+
 
 The final method, called BioHMM, is a heterogeneous hidden Markov model and is maintained within \Rpackage{snapCGH}.
 It can be called using the following command.  By default it incorporates the distance between clones into
