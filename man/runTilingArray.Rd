@@ -1,13 +1,13 @@
-\name{runPicard}
-\alias{runPicard}
+\name{runTilingArray}
+\alias{runTilingArray}
 \title{Results of segmenting an MAList data object using the Picard et
   al algorithm found in the tilingArray library}
 \description{
-  Wrapper calling the Picard et al segmentation algorithm on an MAList
+  Wrapper calling the Tiling Array segmentation algorithm on an MAList
   object.  This function requires the library \code{DNAcopy} to be loaded.
 }
 \usage{
-  runPicard(input, maxSeg = 5, maxk = 200, criteria = "BIC")
+  runTilingArray(input, maxSeg = 5, maxk = 200, criteria = "BIC")
 }
 \arguments{
   \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}

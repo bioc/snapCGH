@@ -1,4 +1,4 @@
-runPicard <- function(input, maxSeg = 5, maxk = 200, criteria = "BIC"){
+runTilingArray <- function(input, maxSeg = 5, maxk = 200, criteria = "BIC"){
 
   #Because both DNAcopy and tilingArray have methods called "segment"
   #I have to detach DNAcopy from the search path in order to run
