@@ -11,7 +11,7 @@
     }
     if (class(input) == "RGList") {
         MA = MA.RG(input)
-        MA$design = RG$design
+        MA$design = input$design
     }
     else if (class(input) == "MAList") 
         MA = input
@@ -57,13 +57,13 @@
           }
         }
         dupl <- duplicated(MA$genes$ID)
-        segList <- list()
+        segList <- new("SegList")
         segList$M.observed <- MA$M[!dupl, , drop = FALSE]
         segList$genes <- MA$genes[!dupl, ]
       }
     }
     else {
-      segList <- list()
+      segList <- new("SegList")
       segList$M.observed <- MA$M
       segList$genes <- MA$genes
     }
@@ -77,7 +77,6 @@
             maxChrom = maxChromThreshold, smooth = 0.1)
         segList$M.observed <- seg.imputed$M
     }
-    class(segList) = "SegList"
     segList$design <- MA$design
     segList
 }

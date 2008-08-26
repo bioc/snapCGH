@@ -1,14 +1,10 @@
-setClass("LargeDataObject")
+setClass("SegList", representation("list"), prototype = prototype(list(state = NULL, rpred = NULL, prob = NULL, M.predicted = NULL, dispersion = NULL, variance = NULL, M.observed = NULL, genes = NULL)), contains = "list")
 
-setClass("SegList",
-representation("list")
-)
+setIs("SegList", "list")
 
-setIs("SegList", "LargeDataObject")
-
-dim.SegList <- function(x) if(is.null(x[[1]])) c(0,0) else dim(as.matrix(x[[1]]))
-length.SegList <- function(x) prod(dim(x))
-dimnames.SegList <- function(x) dimnames(x[[1]])
+setMethod("dim", signature = "SegList", function(x) if(is.null(x[[1]])) c(0,0) else dim(as.matrix(x[[1]])))
+setMethod("length", signature = "SegList", function(x) {prod(dim(x))})
+setMethod("dimnames", signature = "SegList", function(x) {dimnames(x[[1]])})
 
 #allows the subsetting of the SegList object.  
 assign("[.SegList",
@@ -87,27 +83,20 @@ rbind.SegList <- function(..., deparse.level=1){
   }
 }
 
-#dimnames.SegList <- function(segList){
-#  dimnames(segList$M.observed)
-#}
-
-#Taken from Limma
-#I can't get it to use the print.LargeDataObject method for a SegList
-#when a NAMESPACE is used.  Hopefully this will be sorted in the future.
-print.SegList <- function(x, ...) {
-	cat("An object of class \"",class(x),"\"\n",sep="")
-	for (what in names(x)) {
-		y <- x[[what]]
+setMethod("show", signature = "SegList", function(object) {
+	cat("An object of class \"",class(object),"\"\n",sep="")
+	for (what in names(object)) {
+		y <- object[[what]]
 		cat("$",what,"\n",sep="")
 		printHead(y)
 		cat("\n")
 	}
-	for (what in setdiff(slotNames(x),".Data")) {
-		y <- slot(x,what)
+	for (what in setdiff(slotNames(object),".Data")) {
+		y <- slot(object,what)
 		if(length(y) > 0) {
 			cat("@",what,"\n",sep="")
 			printHead(y)
 			cat("\n")
 		}
 	}
-}
+})

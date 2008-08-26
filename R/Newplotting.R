@@ -10,9 +10,9 @@
             temp <- input$design[i] * input$M[, i]
             input$M[, i] <- temp
         }
-    }    else if (class(input) == "SegList") {
+    }    else if (class(input) == "SegList" | class(input) == "ClassifySegList") {
     }    else {
-        stop("Class must be either MAList or SegList")
+        stop("Class must be either MAList or SegList or ClassifySegList (bayesCGH)")
     }
     data <- log2ratios(input)
     datainfo <- input$genes
@@ -299,11 +299,11 @@ function (input, response = as.factor(rep("All", ncol(input))),
     }
 	data <- input$M
   }
-  else if(class(input) == "SegList"){
+  else if(class(input) == "SegList" | class(input) == "ClassifySegList"){
 	data <- input$M.predicted
 	} 
   else{
-    stop("Class must be either MAList or SegList")
+    stop("Class must be either MAList or SegList or ClassifySegList (bayesCGH)")
   }
     
     if(ncol(input) == 1) {
