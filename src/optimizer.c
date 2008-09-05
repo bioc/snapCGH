@@ -129,7 +129,7 @@ static double fr_two (int n, double par[8], void *ex){
    
     //for(i = 0; i < 2; i++){
     for(i = 2; i--;){
-      alpha[i][t] = alphahat[0][t-1]*gammaC[i][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[i][1]*emis_prob[1][t];
+      alpha[i][t] = alphahat[0][t-1]*gammaC[0][i]*emis_prob[i][t] + alphahat[1][t-1]*gammaC[1][i]*emis_prob[i][t];
     }
 
     temp3 = 1/(alpha[0][t]+alpha[1][t]);
@@ -141,7 +141,7 @@ static double fr_two (int n, double par[8], void *ex){
 
   for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i];
-    output = output+(log(denom));
+    output = output+(log(1/denom));
     // output *= denom;
   }
 
@@ -319,9 +319,9 @@ static double fr_three(int n, double par[15], void *ex){
     }
 
 
-    alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[0][2]*emis_prob[2][t];
-    alpha[1][t] = alphahat[0][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[1][2]*emis_prob[2][t];
-    alpha[2][t] = alphahat[0][t-1]*gammaC[2][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[2][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t];
+    alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[2][t-1]*gammaC[2][0]*emis_prob[0][t];
+    alpha[1][t] = alphahat[0][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][1]*emis_prob[1][t];
+    alpha[2][t] = alphahat[0][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[1][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t];
 
     temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]);
 
@@ -332,7 +332,7 @@ static double fr_three(int n, double par[15], void *ex){
 
   for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i]+alpha[2][i];
-     output = output+(log(denom));
+     output = output+(log(1/denom));
      // output *= denom;
   }
 
@@ -569,10 +569,10 @@ static double fr_four(int n, double par[24], void *ex){
       break;
     }
 
-      alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[0][3]*emis_prob[3][t];
-      alpha[1][t] = alphahat[0][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[1][3]*emis_prob[3][t];
-      alpha[2][t] = alphahat[0][t-1]*gammaC[2][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[2][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[2][3]*emis_prob[3][t];
-      alpha[3][t] = alphahat[0][t-1]*gammaC[3][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[3][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[3][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[3][3]*emis_prob[3][t];
+      alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[2][t-1]*gammaC[2][0]*emis_prob[0][t] + alphahat[3][t-1]*gammaC[3][0]*emis_prob[0][t];
+      alpha[1][t] = alphahat[0][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][1]*emis_prob[1][t] + alphahat[3][t-1]*gammaC[3][1]*emis_prob[1][t];
+      alpha[2][t] = alphahat[0][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[1][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[3][2]*emis_prob[2][t];
+      alpha[3][t] = alphahat[0][t-1]*gammaC[0][3]*emis_prob[3][t] + alphahat[1][t-1]*gammaC[1][3]*emis_prob[3][t] + alphahat[2][t-1]*gammaC[2][3]*emis_prob[3][t] + alphahat[3][t-1]*gammaC[3][3]*emis_prob[3][t];
 
       temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t]);
 
@@ -585,7 +585,7 @@ static double fr_four(int n, double par[24], void *ex){
 
   for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i]+alpha[2][i]+alpha[3][i];
-     output = output+(log(denom));
+     output = output+(log(1/denom));
      //output *= denom;
   }
   return (-1*(output));
@@ -907,11 +907,11 @@ static double fr_five(int n, double par[35], void *ex){
       break;
     }
 
-      alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[0][3]*emis_prob[3][t] + alphahat[4][t-1]*gammaC[0][4]*emis_prob[4][t];
-      alpha[1][t] = alphahat[0][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[1][3]*emis_prob[3][t] + alphahat[4][t-1]*gammaC[1][4]*emis_prob[4][t];
-	  alpha[2][t] = alphahat[0][t-1]*gammaC[2][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[2][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[2][3]*emis_prob[3][t] + alphahat[4][t-1]*gammaC[2][4]*emis_prob[4][t];
-      alpha[3][t] = alphahat[0][t-1]*gammaC[3][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[3][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[3][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[3][3]*emis_prob[3][t] + alphahat[4][t-1]*gammaC[3][4]*emis_prob[4][t];
-      alpha[4][t] = alphahat[0][t-1]*gammaC[4][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[4][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[4][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[4][3]*emis_prob[3][t] + alphahat[4][t-1]*gammaC[4][4]*emis_prob[4][t];
+      alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[2][t-1]*gammaC[2][0]*emis_prob[0][t] + alphahat[3][t-1]*gammaC[3][0]*emis_prob[0][t] + alphahat[4][t-1]*gammaC[4][0]*emis_prob[0][t];
+      alpha[1][t] = alphahat[0][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][1]*emis_prob[1][t] + alphahat[3][t-1]*gammaC[3][1]*emis_prob[1][t] + alphahat[4][t-1]*gammaC[4][1]*emis_prob[1][t];
+	  alpha[2][t] = alphahat[0][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[1][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[3][2]*emis_prob[2][t] + alphahat[4][t-1]*gammaC[4][2]*emis_prob[2][t];
+      alpha[3][t] = alphahat[0][t-1]*gammaC[0][3]*emis_prob[3][t] + alphahat[1][t-1]*gammaC[1][3]*emis_prob[3][t] + alphahat[2][t-1]*gammaC[2][3]*emis_prob[3][t] + alphahat[3][t-1]*gammaC[3][3]*emis_prob[3][t] + alphahat[4][t-1]*gammaC[4][3]*emis_prob[3][t];
+      alpha[4][t] = alphahat[0][t-1]*gammaC[0][4]*emis_prob[4][t] + alphahat[1][t-1]*gammaC[1][4]*emis_prob[4][t] + alphahat[2][t-1]*gammaC[2][4]*emis_prob[4][t] + alphahat[3][t-1]*gammaC[3][4]*emis_prob[4][t] + alphahat[4][t-1]*gammaC[4][4]*emis_prob[4][t];
 
       temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t]+alpha[4][t]);
 
@@ -923,7 +923,7 @@ static double fr_five(int n, double par[35], void *ex){
 
   for(i=nrow1; i--;){
     denom = alpha[0][i]+alpha[1][i]+alpha[2][i]+alpha[3][i]+alpha[4][i];
-     output = output+(log(denom));
+     output = output+(log(1/denom));
      // output *= denom;
   }
 
