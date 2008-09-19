@@ -14,7 +14,7 @@ runGLAD <- function(input, smoothfunc="lawsglad", base=FALSE, sigma = NULL, band
     rowtemp <- vector()
     rowtemp[1:length(unique(input$genes$Chr))] <- paste("Chrom",unique(input$genes$Chr))
   
-    template = matrix(NA,nrow(input),ncol(input),dimnames=dimnames(input))
+    template = matrix(NA,nrow(input$M),ncol(input$M),dimnames=dimnames(input$M))
     segList <- list(M.predicted=template,state=template,M.observed=template,
                     num.states=matrix(NA, length(unique(input$genes$Chr)),
                       ncol = ncol(log2ratios(input)), dimnames = list(rowtemp, colnames(input))))

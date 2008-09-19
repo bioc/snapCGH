@@ -30,7 +30,7 @@ runTilingArray <- function(input, maxSeg = 5, maxk = 200, criteria = "BIC"){
 
   seg.info$M.observed = input$M
   
-  for(i in 1:ncol(input)){
+  for(i in 1:ncol(input$M)){
     counter = 0
 
     for(j in chrom.uniq){

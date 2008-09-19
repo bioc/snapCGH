@@ -75,7 +75,7 @@
     if (!is.null(method.of.averaging)) {
         seg.imputed <- imputeMissingValues(segList, chrominfo = chrominfo.Mb, 
             maxChrom = maxChromThreshold, smooth = 0.1)
-        segList$M.observed <- seg.imputed$M
+        segList$M <- seg.imputed$M
     }
     segList$design <- MA$design
     segList

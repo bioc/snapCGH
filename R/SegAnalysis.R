@@ -16,7 +16,7 @@ compareSegmentations <- function(TrueSeg,offset = 0,...){
   
   objects <- list(...)
   nobj <- length(objects)
-  nsamps <- ncol(TrueSeg)
+  nsamps <- ncol(TrueSeg$M.observed)
   
   
   # The vector TrueOutVec has an entry of 1 if a probe is the first probe of a new state. It takes a value of 0 otherwise.

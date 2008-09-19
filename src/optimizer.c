@@ -20,9 +20,9 @@ static double fr_two (int n, double par[8], void *ex){
   covars2 = ext->covars2;
   covars3 = ext->covars3; 
 
-  double pr1, p1, p2, rate1;
+  double pr1[2], p1, p2, rate1;
   double S[2], mu[2], Sigma[2];
-  double gammaA[2][2], gammaB[2][2], gammaC[2][2], alpha[2][nrow1], alphahat[2][nrow1], emis_prob[2][nrow1];
+  double gammaA[2][2], gammaB[2][2], gammaC[2][2], alpha[2][nrow1], emis_prob[2][nrow1];
   double denom, temp, temp2, temp3;
 
   //initialize output
@@ -46,11 +46,13 @@ static double fr_two (int n, double par[8], void *ex){
       }
   
   if (prior < 20) {
-    pr1 = exp(prior)/(1+exp(prior)); 
+    pr1[0] = exp(prior)/(1+exp(prior)); 
       }
   else {
-    pr1 = 1;
+    pr1[0] = 1;
       }
+
+  pr1[1] = 1 - pr1[0];
   
   if (eta < 20) {
     p1 = exp(eta)/(1+exp(eta));
@@ -93,14 +95,6 @@ static double fr_two (int n, double par[8], void *ex){
     }
   }
 
-  alpha[0][0] = pr1*(emis_prob[0][0]);
-  alpha[1][0] = (1 - pr1)*emis_prob[1][0];
-
-  temp2 = 1/(alpha[0][0]+alpha[1][0]);
-
-  alphahat[0][0] = alpha[0][0]*temp2;
-  alphahat[1][0] = alpha[1][0]*temp2;
-
   for(t = 1; t < nrow1; t++){
 
     switch(ncovars){
@@ -126,28 +120,60 @@ static double fr_two (int n, double par[8], void *ex){
       gammaC[1][1] = gammaA[1][1] + (temp*gammaB[1][1]);
       break;
     }
-   
-    //for(i = 0; i < 2; i++){
-    for(i = 2; i--;){
-      alpha[i][t] = alphahat[0][t-1]*gammaC[0][i]*emis_prob[i][t] + alphahat[1][t-1]*gammaC[1][i]*emis_prob[i][t];
+
+    // compute alpha[aa][0]
+    
+    double c[nrow1];
+    
+    c[0] = 0;
+    for (i=0;i<2;i++){
+        alpha[i][0] = pr1[i]*emis_prob[i][0];
+        c[0] = c[0] + alpha[i][0]; 
     }
 
-    temp3 = 1/(alpha[0][t]+alpha[1][t]);
+    // scale the alpha[i][0]
 
-    for(i = 2; i--;){
-      alphahat[i][t] = alpha[i][t]*temp3;
+    c[0] = 1/c[0];
+    for (j=0;j<2;j++){
+        alpha[j][0] = c[0] * alpha[j][0];
     }
-  }
 
-  for(i=nrow1; i--;){
-    denom = alpha[0][i]+alpha[1][i];
-    output = output+(log(1/denom));
-    // output *= denom;
-  }
+    // compute alpha[i][t] (t = exon, i = state) 
+    
+    int d,l;
+    
+    for(t = 1; t < nrow1; t++){
+        c[t] = 0;
+        for(k = 0; k < 2; k++){
+            alpha[k][t] = 0;
+            for(d=0;d<2;d++){
+                alpha[k][t] = alpha[k][t] + alpha[d][t-1]*gammaC[d][k];
+            }
+            alpha[k][t] = alpha[k][t]*emis_prob[k][t];
+            c[t] = c[t] + alpha[k][t];
+        }
 
-  return(-1*(output));
+        // scale alpha[k][t]
+
+        c[t] = 1/c[t];
+        
+        for (l=0;l<2;l++){
+            alpha[l][t] = c[t]*alpha[l][t];
+        }
+    }
+        
+    // log-likelihood
+
+    int q;
+    output = 0;
+    for (q=0;q<nrow1;q++){
+        output = output + log(c[q]);
+    }
+    output = ((-1)*output);
+  }    
+    return(-1*(output));
 }
-
+    
 static double fr_three(int n, double par[15], void *ex){
 
   dataStore *ext;
@@ -163,7 +189,7 @@ static double fr_three(int n, double par[15], void *ex){
   covars3 = ext->covars3;
   unsigned int varfixed = ext->var;
 
-  double pr1, pr2, p1, p2, p3, p4, p5, p6, rate1;
+  double pr[3], p1, p2, p3, p4, p5, p6, rate1;
   double S[3], mu[3], Sigma[3];
   double gammaA[3][3], gammaB[3][3], gammaC[3][3], alpha[3][nrow1], alphahat[3][nrow1], emis_prob[3][nrow1];
   double denom, temp, temp2, temp3;
@@ -196,18 +222,20 @@ static double fr_three(int n, double par[15], void *ex){
   }
   
   if (prior1 < 20) {
-    pr1 = exp(prior1)/(1+exp(prior1)); 
+    pr[0] = exp(prior1)/(1+exp(prior1)); 
       }
   else {
-    pr1 = 1;
+    pr[0] = 1;
       }
 
    if (prior2 < 20) {
-    pr2 = (1 - pr1)*exp(prior2)/(1+exp(prior2)); 
+    pr[1] = (1 - pr[0])*exp(prior2)/(1+exp(prior2)); 
       }
   else {
-    pr2 = (1- pr1);
+    pr[1] = (1- pr[0]);
       }
+
+   pr[2] = 1 - pr[0] - pr[1];
   
   if (eta < 20) {
     p1 = exp(eta)/(1+exp(eta));
@@ -279,16 +307,6 @@ static double fr_three(int n, double par[15], void *ex){
     }
   }
 
-  alpha[0][0] = pr1*(emis_prob[0][0]);
-  alpha[1][0] = pr2*(emis_prob[1][0]);
-  alpha[2][0] = (1-pr1-pr2)*(emis_prob[2][0]);
-
-  temp2 = 1/(alpha[0][0]+alpha[1][0]+alpha[2][0]);
-
-  alphahat[0][0] = alpha[0][0]*temp2;
-  alphahat[1][0] = alpha[1][0]*temp2;
-  alphahat[2][0] = alpha[2][0]*temp2;
-
   for(t = 1; t < nrow1; t++){
 
     switch(ncovars){
@@ -319,25 +337,59 @@ static double fr_three(int n, double par[15], void *ex){
     }
 
 
-    alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[2][t-1]*gammaC[2][0]*emis_prob[0][t];
-    alpha[1][t] = alphahat[0][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][1]*emis_prob[1][t];
-    alpha[2][t] = alphahat[0][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[1][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t];
+        // compute alpha[aa][0]
+    
+    double c[nrow1];
+    
+    c[0] = 0;
+    for (i=0;i<3;i++){
+        alpha[i][0] = pr[i]*emis_prob[i][0];
+        c[0] = c[0] + alpha[i][0]; 
+    }
 
-    temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]);
+    // scale the alpha[i][0]
 
-    alphahat[0][t] = alpha[0][t]*temp3;
-    alphahat[1][t] = alpha[1][t]*temp3;
-    alphahat[2][t] = alpha[2][t]*temp3;
-  }
+    c[0] = 1/c[0];
+    for (j=0;j<3;j++){
+        alpha[j][0] = c[0] * alpha[j][0];
+    }
 
-  for(i=nrow1; i--;){
-    denom = alpha[0][i]+alpha[1][i]+alpha[2][i];
-     output = output+(log(1/denom));
-     // output *= denom;
-  }
+    // compute alpha[i][t] (t = exon, i = state) 
+    
+    int d,l;
+    
+    for(t = 1; t < nrow1; t++){
+        c[t] = 0;
+        for(k = 0; k < 3; k++){
+            alpha[k][t] = 0;
+            for(d=0;d<3;d++){
+                alpha[k][t] = alpha[k][t] + alpha[d][t-1]*gammaC[d][k];
+            }
+            alpha[k][t] = alpha[k][t]*emis_prob[k][t];
+            c[t] = c[t] + alpha[k][t];
+        }
 
-  return (-1*(output));
-}
+        // scale alpha[k][t]
+
+        c[t] = 1/c[t];
+        
+        for (l=0;l<3;l++){
+            alpha[l][t] = c[t]*alpha[l][t];
+        }
+    }
+        
+    // log-likelihood
+
+    int q;
+    output = 0;
+    for (q=0;q<nrow1;q++){
+        output = output + log(c[q]);
+    }
+    output = ((-1)*output);
+  }    
+    return(-1*(output));
+}    
+
 
 static double fr_four(int n, double par[24], void *ex){
 
@@ -355,7 +407,7 @@ static double fr_four(int n, double par[24], void *ex){
   covars3 = ext->covars3;
   int varfixed = ext->var;
 
-  double pr1, pr2, pr3, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, rate1;
+  double pr[4], p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, rate1;
   double S[4], mu[4], Sigma[4];
   double gammaA[4][4], gammaB[4][4], gammaC[4][4], alpha[4][nrow1], alphahat[4][nrow1], emis_prob[4][nrow1];
   double denom, temp, temp2, temp3;
@@ -398,25 +450,27 @@ static double fr_four(int n, double par[24], void *ex){
   }
   
   if (prior1 < 20) {
-    pr1 = exp(prior1)/(1+exp(prior1)); 
+    pr[0] = exp(prior1)/(1+exp(prior1)); 
       }
   else {
-    pr1 = 1;
+    pr[0] = 1;
       }
 
    if (prior2 < 20) {
-    pr2 = (1 - pr1)*exp(prior2)/(1+exp(prior2)); 
+    pr[1] = (1 - pr[0])*exp(prior2)/(1+exp(prior2)); 
       }
   else {
-    pr2 = (1- pr1);
+    pr[1] = (1- pr[0]);
       }
 
    if (prior3 < 20) {
-    pr3 = (1 -pr1-pr2)*exp(prior3)/(1+exp(prior3)); 
+    pr[2] = (1 -pr[0]-pr[1])*exp(prior3)/(1+exp(prior3)); 
       }
   else {
-    pr3 = (1-pr1-pr2);
+    pr[2] = (1-pr[0]-pr[1]);
       }
+
+   pr[3] = 1 - pr[0] - pr[1] - pr[2];
   
   if (eta < 20) {
     p1 = exp(eta)/(1+exp(eta));
@@ -528,19 +582,7 @@ static double fr_four(int n, double par[24], void *ex){
     }
   }
 
-  alpha[0][0] = pr1*(emis_prob[0][0]);
-  alpha[1][0] = pr2*(emis_prob[1][0]);
-  alpha[2][0] = pr2*(emis_prob[2][0]);
-  alpha[3][0] = (1-pr1-pr2-pr3)*(emis_prob[3][0]);
-
-  temp2 = 1/(alpha[0][0]+alpha[1][0]+alpha[2][0]+alpha[3][0]);
-
-  alphahat[0][0] = alpha[0][0]*temp2;
-  alphahat[1][0] = alpha[1][0]*temp2;
-  alphahat[2][0] = alpha[2][0]*temp2;
-  alphahat[3][0] = alpha[3][0]*temp2;
-
-  for(t = 1; t < nrow1; t++){  
+for(t = 1; t < nrow1; t++){  
 
     switch(ncovars){
     case 1:
@@ -569,26 +611,58 @@ static double fr_four(int n, double par[24], void *ex){
       break;
     }
 
-      alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[2][t-1]*gammaC[2][0]*emis_prob[0][t] + alphahat[3][t-1]*gammaC[3][0]*emis_prob[0][t];
-      alpha[1][t] = alphahat[0][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][1]*emis_prob[1][t] + alphahat[3][t-1]*gammaC[3][1]*emis_prob[1][t];
-      alpha[2][t] = alphahat[0][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[1][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[3][2]*emis_prob[2][t];
-      alpha[3][t] = alphahat[0][t-1]*gammaC[0][3]*emis_prob[3][t] + alphahat[1][t-1]*gammaC[1][3]*emis_prob[3][t] + alphahat[2][t-1]*gammaC[2][3]*emis_prob[3][t] + alphahat[3][t-1]*gammaC[3][3]*emis_prob[3][t];
 
-      temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t]);
+              // compute alpha[aa][0]
+    
+    double c[nrow1];
+    
+    c[0] = 0;
+    for (i=0;i<4;i++){
+        alpha[i][0] = pr[i]*emis_prob[i][0];
+        c[0] = c[0] + alpha[i][0]; 
+    }
 
-      alphahat[0][t] = alpha[0][t]*temp3;
-      alphahat[1][t] = alpha[1][t]*temp3;
-      alphahat[2][t] = alpha[2][t]*temp3;
-      alphahat[3][t] = alpha[3][t]*temp3;
+    // scale the alpha[i][0]
 
-  }
+    c[0] = 1/c[0];
+    for (j=0;j<4;j++){
+        alpha[j][0] = c[0] * alpha[j][0];
+    }
 
-  for(i=nrow1; i--;){
-    denom = alpha[0][i]+alpha[1][i]+alpha[2][i]+alpha[3][i];
-     output = output+(log(1/denom));
-     //output *= denom;
-  }
-  return (-1*(output));
+    // compute alpha[i][t] (t = exon, i = state) 
+    
+    int d,l;
+    
+    for(t = 1; t < nrow1; t++){
+        c[t] = 0;
+        for(k = 0; k < 4; k++){
+            alpha[k][t] = 0;
+            for(d=0;d<4;d++){
+                alpha[k][t] = alpha[k][t] + alpha[d][t-1]*gammaC[d][k];
+            }
+            alpha[k][t] = alpha[k][t]*emis_prob[k][t];
+            c[t] = c[t] + alpha[k][t];
+        }
+
+        // scale alpha[k][t]
+
+        c[t] = 1/c[t];
+        
+        for (l=0;l<4;l++){
+            alpha[l][t] = c[t]*alpha[l][t];
+        }
+    }
+        
+    // log-likelihood
+
+    int q;
+    output = 0;
+    for (q=0;q<nrow1;q++){
+        output = output + log(c[q]);
+    }
+    output = ((-1)*output);
+  }    
+    return(-1*(output));
 }
 
 
@@ -607,7 +681,7 @@ static double fr_five(int n, double par[35], void *ex){
   covars3 = ext->covars3;
   int varfixed = ext->var;
 
-  double  pr1, pr2, pr3, pr4, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, rate1;
+  double  pr[5], p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, rate1;
   double S[5], mu[5], Sigma[5];
   double gammaA[5][5], gammaB[5][5], gammaC[5][5], alpha[5][nrow1], alphahat[5][nrow1], emis_prob[5][nrow1];
   double denom, temp, temp2, temp3;
@@ -662,33 +736,35 @@ static double fr_five(int n, double par[35], void *ex){
   }
   
   if (prior1 < 20) {
-    pr1 = exp(prior1)/(1+exp(prior1)); 
+    pr[0] = exp(prior1)/(1+exp(prior1)); 
       }
   else {
-    pr1 = 1;
+    pr[0] = 1;
       }
 
    if (prior2 < 20) {
-    pr2 = (1 - pr1)*exp(prior2)/(1+exp(prior2)); 
+    pr[1] = (1 - pr[0])*exp(prior2)/(1+exp(prior2)); 
       }
   else {
-    pr2 = (1- pr1);
+    pr[1] = (1- pr[0]);
       }
 
    if (prior3 < 20) {
-    pr3 = (1 -pr1-pr2)*exp(prior3)/(1+exp(prior3)); 
+    pr[2] = (1 -pr[0]-pr[1])*exp(prior3)/(1+exp(prior3)); 
       }
   else {
-    pr3 = (1-pr1-pr2);
+    pr[2] = (1-pr[0]-pr[1]);
       }
 
    if (prior4 < 20) {
-    pr4 = (1 -pr1-pr2-pr3)*exp(prior4)/(1+exp(prior4)); 
+    pr[3] = (1 -pr[0]-pr[1]-pr[2])*exp(prior4)/(1+exp(prior4)); 
       }
   else {
-    pr4 = (1-pr1-pr2-pr3);
+    pr[3] = (1-pr[0]-pr[1]-pr[2]);
       }
-  
+
+   pr[4] = 1-pr[0]-pr[1]-pr[2]-pr[3];
+   
   if (eta < 20) {
     p1 = exp(eta)/(1+exp(eta));
       }
@@ -864,21 +940,7 @@ static double fr_five(int n, double par[35], void *ex){
     }
   }
 
-  alpha[0][0] = pr1*(emis_prob[0][0]);
-  alpha[1][0] = pr2*(emis_prob[1][0]);
-  alpha[2][0] = pr2*(emis_prob[2][0]);
-  alpha[3][0] = pr4*(emis_prob[3][0]);
-  alpha[4][0] = (1-pr1-pr2-pr3-pr4)*(emis_prob[4][0]);
-
-  temp2 = 1/(alpha[0][0]+alpha[1][0]+alpha[2][0]+alpha[3][0]+alpha[4][0]);
-
-  alphahat[0][0] = alpha[0][0]*temp2;
-  alphahat[1][0] = alpha[1][0]*temp2;
-  alphahat[2][0] = alpha[2][0]*temp2;
-  alphahat[3][0] = alpha[3][0]*temp2;
-  alphahat[4][0] = alpha[4][0]*temp2;
-
-  for(t = 1; t < nrow1; t++){
+   for(t = 1; t < nrow1; t++){
   
     switch(ncovars){
     case 1:
@@ -906,28 +968,58 @@ static double fr_five(int n, double par[35], void *ex){
       }
       break;
     }
+                  // compute alpha[aa][0]
+    
+    double c[nrow1];
+    
+    c[0] = 0;
+    for (i=0;i<5;i++){
+        alpha[i][0] = pr[i]*emis_prob[i][0];
+        c[0] = c[0] + alpha[i][0]; 
+    }
 
-      alpha[0][t] = alphahat[0][t-1]*gammaC[0][0]*emis_prob[0][t] + alphahat[1][t-1]*gammaC[1][0]*emis_prob[0][t] + alphahat[2][t-1]*gammaC[2][0]*emis_prob[0][t] + alphahat[3][t-1]*gammaC[3][0]*emis_prob[0][t] + alphahat[4][t-1]*gammaC[4][0]*emis_prob[0][t];
-      alpha[1][t] = alphahat[0][t-1]*gammaC[0][1]*emis_prob[1][t] + alphahat[1][t-1]*gammaC[1][1]*emis_prob[1][t] + alphahat[2][t-1]*gammaC[2][1]*emis_prob[1][t] + alphahat[3][t-1]*gammaC[3][1]*emis_prob[1][t] + alphahat[4][t-1]*gammaC[4][1]*emis_prob[1][t];
-	  alpha[2][t] = alphahat[0][t-1]*gammaC[0][2]*emis_prob[2][t] + alphahat[1][t-1]*gammaC[1][2]*emis_prob[2][t] + alphahat[2][t-1]*gammaC[2][2]*emis_prob[2][t] + alphahat[3][t-1]*gammaC[3][2]*emis_prob[2][t] + alphahat[4][t-1]*gammaC[4][2]*emis_prob[2][t];
-      alpha[3][t] = alphahat[0][t-1]*gammaC[0][3]*emis_prob[3][t] + alphahat[1][t-1]*gammaC[1][3]*emis_prob[3][t] + alphahat[2][t-1]*gammaC[2][3]*emis_prob[3][t] + alphahat[3][t-1]*gammaC[3][3]*emis_prob[3][t] + alphahat[4][t-1]*gammaC[4][3]*emis_prob[3][t];
-      alpha[4][t] = alphahat[0][t-1]*gammaC[0][4]*emis_prob[4][t] + alphahat[1][t-1]*gammaC[1][4]*emis_prob[4][t] + alphahat[2][t-1]*gammaC[2][4]*emis_prob[4][t] + alphahat[3][t-1]*gammaC[3][4]*emis_prob[4][t] + alphahat[4][t-1]*gammaC[4][4]*emis_prob[4][t];
+    // scale the alpha[i][0]
 
-      temp3 = 1/(alpha[0][t]+alpha[1][t]+alpha[2][t]+alpha[3][t]+alpha[4][t]);
+    c[0] = 1/c[0];
+    for (j=0;j<5;j++){
+        alpha[j][0] = c[0] * alpha[j][0];
+    }
 
-      for(i = 5; i--;){
-	alphahat[i][t] = alpha[i][t]*temp3;
-      }
+    // compute alpha[i][t] (t = exon, i = state) 
+    
+    int d,l;
+    
+    for(t = 1; t < nrow1; t++){
+        c[t] = 0;
+        for(k = 0; k < 5; k++){
+            alpha[k][t] = 0;
+            for(d=0;d<5;d++){
+                alpha[k][t] = alpha[k][t] + alpha[d][t-1]*gammaC[d][k];
+            }
+            alpha[k][t] = alpha[k][t]*emis_prob[k][t];
+            c[t] = c[t] + alpha[k][t];
+        }
 
-  }
+        // scale alpha[k][t]
 
-  for(i=nrow1; i--;){
-    denom = alpha[0][i]+alpha[1][i]+alpha[2][i]+alpha[3][i]+alpha[4][i];
-     output = output+(log(1/denom));
-     // output *= denom;
-  }
+        c[t] = 1/c[t];
+        
+        for (l=0;l<5;l++){
+            alpha[l][t] = c[t]*alpha[l][t];
+        }
+    }
+        
+    // log-likelihood
 
-  return (-1*(output));
+    int q;
+    output = 0;
+    for (q=0;q<nrow1;q++){
+        output = output + log(c[q]);
+    }
+    output = ((-1)*output);
+  }    
+    return(-1*(output));
+ 
 }
 
 void runNelderMead(int *nrow, double *xin, double *xout, double *Fmin, double *data, double *covars1, double *covars2, double *covars3, int *ncovars, int *var, double *epsilon, int *trace, int *numit, int *nstates){
