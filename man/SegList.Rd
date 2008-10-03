@@ -2,6 +2,7 @@
 \docType{class}
 \alias{SegList-class}
 \alias{print.SegList}
+\alias{show,SegList-method}
 \alias{[.SegList}
 \title{Segmentation States - class}
 

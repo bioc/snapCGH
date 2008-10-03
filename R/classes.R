@@ -2,6 +2,11 @@ setClass("SegList", representation("list"), prototype = prototype(list(state = N
 
 setIs("SegList", "list")
 
+dim.SegList <- function(x) if(is.null(x[[1]])) c(0,0) else dim(as.matrix(x[[1]]))
+length.SegList <- function(x) prod(dim(x))
+dimnames.SegList <- function(x) dimnames(x[[1]])
+
+
 setMethod("dim", signature = "SegList", function(x) if(is.null(x[[1]])) c(0,0) else dim(as.matrix(x[[1]])))
 setMethod("length", signature = "SegList", function(x) {prod(dim(x))})
 setMethod("dimnames", signature = "SegList", function(x) {dimnames(x[[1]])})

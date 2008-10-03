@@ -1,4 +1,6 @@
 \name{dimnames}
+\alias{dimnames}
+\alias{dimnames,SegList-method}
 \alias{dimnames.SegList}
 \title{Retrieve the Dimension Names of an RGList, MAList or SegList Object}
 \description{

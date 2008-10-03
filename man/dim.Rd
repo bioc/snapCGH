@@ -1,10 +1,14 @@
 \name{dim}
+\alias{dim}
+\alias{length}
 \alias{dim.RGList}
 \alias{dim.MAList}
 \alias{dim.SegList}
+\alias{dim,SegList-method}
 \alias{length.RGList}
 \alias{length.MAList}
 \alias{length.SegList}
+\alias{length,SegList-method}
 \title{Retrieve the Dimensions of an RGList, MAList or SegList Object}
 \description{
 Retrieve the number of rows (genes) and columns (arrays) for an RGList, MAList or SegList object.
