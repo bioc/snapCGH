@@ -1,4 +1,4 @@
-\name{compareSemmentations}
+\name{compareSegmentations}
 \alias{compareSegmentations}
 \alias{compareBreakPoints}
 
