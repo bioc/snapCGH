@@ -8,4 +8,3 @@ biocViews: Microarray, DNACopyNumber, TwoChannel, Preprocessing
 Maintainer: Thomas Hardcastle <tjh48@cam.ac.uk>
 Depends: limma, tilingArray, DNAcopy, GLAD, cluster, methods, aCGH
 License: GPL
-Packaged: Tue Aug 26 12:09:31 2008; tjh48
