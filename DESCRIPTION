@@ -1,10 +1,10 @@
 Package: snapCGH
 Title: Segmentation, normalisation and processing of aCGH data.
-Version: 1.11.1
-Date: 2008-03-18
+Version: 1.11.2
+Date: 2000-04-07
 Author: Mike L. Smith, John C. Marioni, Steven McKinney, Thomas Hardcastle, Natalie P. Thorne
 Description: Methods for segmenting, normalising and processing aCGH data; including plotting functions for visualising raw and segmented data for individual and multiple arrays.
 biocViews: Microarray, DNACopyNumber, TwoChannel, Preprocessing
-Maintainer: Thomas Hardcastle <tjh48@cam.ac.uk>
+Maintainer: John Marioni <marioni@uchicago.edu>
 Depends: limma,tilingArray,DNAcopy,GLAD,cluster,methods,aCGH
 License: GPL
