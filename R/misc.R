@@ -1,5 +1,4 @@
-"read.clonesinfo" <-
-function (file, RG, path = NULL, sep="\t", quote="\"") 
+read.clonesinfo <- function (file, RG, path = NULL, sep="\t", quote="\"") 
 {
     if (!is.null(path)) 
         file <- file.path(path, file)

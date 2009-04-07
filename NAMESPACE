@@ -1,1 +1,2 @@
-export(findBreakPoints, genomePlot, plotSegmentedGenome, processCGH, runBioHMM, runGLAD, runHMM, runTilingArray, SegList, compareSegmentations, zoomChromosome, zoomGenome)
+export(findBreakPoints, genomePlot, plotSegmentedGenome, processCGH, runBioHMM, runGLAD, runTilingArray, compareSegmentations, zoomChromosome, zoomGenome,read.clonesinfo,runHomHMM,mergeStates,runDNAcopy,simulateData,dim.SegList,length.SegList,dimnames.SegList,cbind.SegList,rbind.SegList)
+exportClasses(SegList)
