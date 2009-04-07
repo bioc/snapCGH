@@ -16,7 +16,7 @@ convert.output(input)
 }
 \value{
   This function outputs a list with entries
-  \item{M }{A matrix continaing the $\mbox{log}_2$ ratios}
+  \item{M }{A matrix containing the \eqn{\log_2} ratios}
   \item{genes }{A matrix containing the simulated midpoints and the chromosome which forms the template upon which the simulation is based.}
 }
 \author{ Michael Smith, John Marioni }

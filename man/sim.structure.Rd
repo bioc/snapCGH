@@ -4,7 +4,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{A function for simulating aCGH data and the corresponding clone layout}
 \description{
-  This simulation scheme operates in two stages. Initially, we simulate the layout of clones before using a modified version of the scheme developed by Willenbrock et al., 2005 to generate the $\mbox{log}_2$ ratios. For each simulated clone layout we generate 20 sets of simulated $\mbox{log}_2$ ratios from one of five templates. Additionally, we also take account of the cellularity of the test sample in our simulation.
+  This simulation scheme operates in two stages. Initially, we simulate the layout of clones before using a modified version of the scheme developed by Willenbrock et al., 2005 to generate the \eqn{\log_2} ratios. For each simulated clone layout we generate 20 sets of simulated \eqn{\log_2} ratios from one of five templates. Additionally, we also take account of the cellularity of the test sample in our simulation.
 }
 \usage{
 simulateData(nArrays = 20, chrominfo = NULL, prb.short.tiled = 0.5,
@@ -27,7 +27,7 @@ simulateData(nArrays = 20, chrominfo = NULL, prb.short.tiled = 0.5,
   \item{non.tiled.lower.res}{ The lower limit for the distance (in Mbs) between adjacent clones in non-tiled regions of the genome (defaults to 0.9Mb).}
   \item{non.tiled.upper.res}{ The upper limit for the distance (in Mbs) between adjacent clones in non-tiled regions of the genome (defaults to 1.1Mb). }
   \item{length.clone.lower}{ The lower limit for the length (in Mbs) of a clone (this defaults to 0.05Mb). }
-  \item{length.clone.upper} {The upper limit for the length (in Mbs) of a clone (this defaults to 0.2Mb). }
+  \item{length.clone.upper}{ The upper limit for the length (in Mbs) of a clone (this defaults to 0.2Mb). }
   \item{tiled.lower.res}{ The lower limit for the distance (in Mbs) between adjacent clones in tiled regions of the genome (defaults to -0.05Mb). }
   \item{tiled.upper.res}{ The upper limit for the distance (in Mbs) between adjacent clones in tiled regions of the genome (defaults to 0Mb). }
   \item{sd}{ The standard deviation of the simulated data in each of the states. Defaults to being randomly sampled between 0.1 and 0.2. }
@@ -47,8 +47,8 @@ simulateData(nArrays = 20, chrominfo = NULL, prb.short.tiled = 0.5,
   \item{clones}{Gives the start, end and midpoint of the simulated clones.}
   \item{class.output }{A list of the true underlying state clones are assigned to for each of the twenty simulations associated with each clone layout.}
   \item{class.matrix}{Defines the true underlying state clones are assigned to in each of the five classes}
-  \item{classes}{Which of the five class outputs has been used to simulate the $\mbox{log}_2$ ratios}
-  \item{datamatrix}{A matrix containing twenty columns each of which contains the simulated $\mbox{log}_2$ ratios associated with each of the simulations for a particular clone layout.}
+  \item{classes}{Which of the five class outputs has been used to simulate the \eqn{\log_2} ratios}
+  \item{datamatrix}{A matrix containing twenty columns each of which contains the simulated \eqn{\log_2} ratios associated with each of the simulations for a particular clone layout.}
   \item{samples}{Gives information about the cellularity associated with each of the samples.}
 }
 \references{ See the relevant article in Bioinformatics or the following website: www.damtp.cam.ac.uk/user/jcm68 }

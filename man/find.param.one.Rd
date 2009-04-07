@@ -16,7 +16,7 @@ find.param.one(output.optim)
 }
 \value{
   This function outputs the state means/variances, transition matrices, rate parameters, maximised likelihood and convergence information provided
-  by fitting a heterogeneous HMM with one underlying state.}
+  by fitting a heterogeneous HMM with one underlying state.
 }
 \author{ John Marioni }
 

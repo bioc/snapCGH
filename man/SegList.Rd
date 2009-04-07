@@ -28,7 +28,6 @@ Optional:\cr
   \code{prob}:\tab Probability of the clone being in the assigned state.\cr
 }
 }
-}
 
 \section{Methods}{
 \code{SegLists} can be subsetted and combined.  They also return dimensions
