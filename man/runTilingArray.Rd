@@ -10,7 +10,8 @@
   runTilingArray(input, maxSeg = 5, maxk = 200, criteria = "BIC")
 }
 \arguments{
-  \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
+  \item{input}{An object of class \code{\link[limma:malist]{MAList}} or
+    \code{\link[snapCGH:SegList]{SegList}}}
   \item{maxSeg}{integer of length 1, maximum number of segments (= 1 +
     maximum number of change points)}
   \item{maxk}{integer of length 1, maximum length of a single segment}
@@ -22,7 +23,7 @@
 }
 \seealso{
   \code{\link[tilingArray]{segment}}
-  \code{\link[limma]{MAList}}
+  \code{\link[limma:malist]{MAList}}
   \code{\link{runHomHMM}}
   \code{\link{runGLAD}}
   \code{\link[snapCGH:SegList]{SegList}}

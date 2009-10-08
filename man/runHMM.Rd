@@ -5,7 +5,7 @@
 \title{A function to fit unsupervised Hidden Markov model}
 \description{
   This function fits an unsupervised Hidden Markov model to a given
-  \code{\link[limma]{MAList} or \code{\link[snapCGH:SegList]{SegList}}}
+  \code{\link[limma:malist]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}
 }
 \usage{
 runHomHMM(input, vr = 0.01,
@@ -14,12 +14,12 @@ runHomHMM(input, vr = 0.01,
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{input}{an object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
-  \item{vr}{Gets passed to the function
-    \code{\link[pkg:repeated]{hidden}} as the \code{pshape} arguement.}
-  \item{maxiter}{Gets passed to the function
-    \code{\link[pkg:repeated]{hidden}} as the \code{iterlim}
-    arguement. }
+  \item{input}{an object of class \code{\link[limma:malist]{MAList}} or
+    \code{\link[snapCGH:SegList]{SegList}}}
+  \item{vr}{Gets passed to the function \code{repeated::hidden} as the
+    \code{pshape} argument.}
+  \item{maxiter}{Gets passed to the function \code{repeated::hidden} as
+    the \code{iterlim} argument. }
   \item{criteria}{Choice of which selection criteria should be used in
     the algorithm.  The choices are either AIC or BIC}.
   \item{delta}{Delta value used of the BIC is selected.  If no value is

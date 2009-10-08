@@ -22,7 +22,7 @@ zoomGenome(..., array = 1, colors = NULL, chrominfo = chrominfo.Mb)
 \details{
   If colors is unspecified then all objects passed to this function will
   be plotted in blue.  Since this makes it quite hard to tell which is
-  which it is highly recommened to specify the colors vector if more
+  which it is highly recommended to specify the colors vector if more
   than one object is being passe to this function.
 }
 

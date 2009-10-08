@@ -15,7 +15,8 @@ processCGH(input, maxChromThreshold = 22, minChromThreshold = 1,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{input}{Object of class \code{\link[limma]{MAList}} or \code{\link[limma]{RGList}}}
+  \item{input}{Object of class \code{\link[limma:malist]{MAList}} or
+    \code{\link[limma:rglist]{RGList}}}
   \item{maxChromThreshold}{Chromosomes are ordered and numbered as
     usual, except for X and Y chromosome, which in for Homo sapiens
     genome have numbers 23 and 24 respectively, in for Mus musculus 20
@@ -41,7 +42,7 @@ processCGH(input, maxChromThreshold = 22, minChromThreshold = 1,
 }
 \author{Jane Fridlyand, Peter Dimitrov, John Marioni and Mike Smith}
 \seealso{
-  \code{\link[limma]{MAList}}
+  \code{\link[limma:malist]{MAList}}
 }
 
 \keyword{file}% at least one, from doc/KEYWORDS

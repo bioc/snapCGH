@@ -5,9 +5,9 @@
 \alias{combine.func}
 
 %- Also NEED an `\alias' for EACH other topic documented here.
-\title{Funtion to merge states based on their state means}
+\title{Function to merge states based on their state means}
 \description{
-  \code{mergeStates} takes the output of a segementation algorithm in
+  \code{mergeStates} takes the output of a segmentation algorithm in
   the form of a \code{\link[snapCGH:SegList]{SegList}} and iteratively merges the
   states with means closer than a supplied threshold.
 }
@@ -27,7 +27,7 @@ mergeStates(segList, MergeType = 1, pv.thres=0.0001, ansari.sign=0.01, minDiff =
     level merging.  Used when MergeType = 1.}
   \item{ansari.sign}{Significance threshold for Ansari-Bradley test. Used when MergeType = 1.}
   \item{minDiff}{The states whose predicted values are less than minDiff
-    apart are merged into one state and all the predicited values are
+    apart are merged into one state and all the predicted values are
     recomputed.  Used when MergeType = 2.   
   }
 }

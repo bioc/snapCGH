@@ -21,7 +21,7 @@ imputeMissingValues(seg, chrominfo = chrominfo.Mb, maxChrom =
   One is that given that imputation is reasonable,
   one can increase the analytical power and improve results.
   Another, more practical, is that at the moment many widely used
-  fuctions in R do not support missing values.
+  functions in R do not support missing values.
   While procedures such as kNN imputations is widely used for gene
   expression data, it is more powerful to take advantage of the
   genomic structure of the array CGH data and use a smoother.

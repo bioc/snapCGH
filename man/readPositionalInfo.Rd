@@ -4,7 +4,7 @@
 \title{readPositionalInfo}
 \description{
   This function automatically inserts information about the chromosomal
-  postional of a clone into the \$genes matrix of an RGList or MAList.
+  positional of a clone into the \$genes matrix of an RGList or MAList.
   This information is used in all the available segmentation methods as
   well as many of the plotting functions available in snapCGH.
 }
@@ -12,8 +12,8 @@
 readPositionalInfo(input, source, path = NULL)
 }
 \arguments{
-  \item{input}{An object of class \code{\link[limma]{RGList}} or
-    \code{\link[limma]{MAList}}}
+  \item{input}{An object of class \code{\link[limma:rglist]{RGList}} or
+    \code{\link[limma:malist]{MAList}}}
   \item{source}{Defines which platform or technology this data was
     produced on.  Currently supported options are: "aglient",
     "bluefuse", "nimblegen".  This list will be expanded in time.}

@@ -14,7 +14,7 @@ chrominfo.Mb, ylim = c(-2, 2))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-	\item{...}{Objects of type \code{\link[limma:MAList]{MAList}} or
+	\item{...}{Objects of type \code{\link[limma:malist]{MAList}} or
 	  \code{\link[snapCGH:SegList]{SegList}}}
 	\item{array}{Specify which array should be plotted.}
 	\item{chrom.to.plot}{Which chromosome should be plotted}
@@ -26,7 +26,7 @@ chrominfo.Mb, ylim = c(-2, 2))
 \details{
   If colors is unspecified then all SegLists passed to this function will
   be plotted in blue.  Since this makes it quite hard to tell which is
-  which it is highly recommened to specify the colors vector if more
+  which it is highly recommended to specify the colors vector if more
   than one object is being passe to this function.
 }
 

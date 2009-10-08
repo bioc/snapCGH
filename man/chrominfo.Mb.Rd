@@ -24,7 +24,7 @@ chrominfo.basepair
 }
 \details{
   This file is used for many plotting functions. The centromeric location is
-  approximately extimated by taking mid-point between the last
+  approximately estimated by taking mid-point between the last
   fish-mapped clone on the p-arm and the first fish-mapped clone on the
   q-arm using relevant UCSC freeze.
   For an alternative freeze, one needs to manually create a 3-column

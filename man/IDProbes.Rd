@@ -15,7 +15,7 @@ IDProbes(input, array = 1, naut = 22, Y = FALSE, X
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{input}{an object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
+  \item{input}{an object of class \code{\link[limma:malist]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
   \item{array}{integer of the array (sample) to be plotted.}
   \item{naut}{number of autosomes in the organism}
   \item{Y}{TRUE if chromosome Y is to be plotted, FALSE otherwise}

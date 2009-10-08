@@ -4,7 +4,7 @@
 \title{ This function implements the BioHMM}
 \description{
   This function reads in a dataset of log2 ratios and the corresponding clone and covariate information. It calculates a heterogeneous HMM when there are 
-  1,2,3,4 or 5 underlying states and chooses betwen them using either the AIC or BIC. It then assigns clones using a modified version of the Viterbi
+  1,2,3,4 or 5 underlying states and chooses between them using either the AIC or BIC. It then assigns clones using a modified version of the Viterbi
   algorithm.
 }
 \usage{
@@ -29,7 +29,7 @@ runBioHMM(input, useCloneDists = TRUE, covariates, criteria="AIC", delta=NA
     variance to be the same across all states. Defaults to FALSE}
   \item{epsilon}{Stopping criterion for the optimization algorithm.}
   \item{numiter}{Number of iterations to be used in the
-    optimization alogithm.}
+    optimization algorithm.}
 }
 \value{
   The model returns an object of class \code{\link[snapCGH:SegList]{SegList}}.

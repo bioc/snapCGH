@@ -22,7 +22,8 @@ heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{input}{object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
+  \item{input}{object of class \code{\link[limma:malist]{MAList}} or
+    \code{\link[snapCGH:SegList]{SegList}}}
   \item{response}{phenotype of interest. defaults to the same phenotype
     assigned to all samples}
   \item{chrominfo}{a chromosomal information associated with the mapping
@@ -49,7 +50,7 @@ heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
  % \item{dendPlot}{logical indicating whether dendogram needs to be
  %   drawn. defaults to T.}
   \item{categoricalPheno}{logical indicating whether phenotype is
-    categorical. Continious phenotypes are treated as "no groups" except
+    categorical. Continuous phenotypes are treated as "no groups" except
     that their values are dispalyed.defaults to TRUE.}
     \item{CENTROMERE}{logical indicating whether to plot the centromere
   }
@@ -62,7 +63,7 @@ heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
   chromosomes that is requested and clusters samples based on these
   chromosomes only. It draws the chromosomal boundaries and displays
   high level changes and homozygous deletions. If phenotype if not
-  categical, its values may still be displayed but groups are not formed
+  categorical, its values may still be displayed but groups are not formed
   and byclass = F.
   Image plot has the samples reordered according to clustering order.
 }

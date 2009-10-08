@@ -9,7 +9,8 @@
 \usage{log2ratios(x)}
 
 \arguments{
-  \item{x}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
+  \item{x}{An object of class \code{\link[limma:malist]{MAList}} or
+    \code{\link[snapCGH:SegList]{SegList}}}
 }
 
 \author{Mike Smith}

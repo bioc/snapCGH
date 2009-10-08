@@ -9,7 +9,8 @@
 \description{
 A list based class for storing the results of a segmentation algorithm.
 They are generally created by running one of the following functions
-\code{\link{runHomHMM}}, \code{\link{runGLAD}} or \code{\link{runDNAcopy}} on an \code{\link[limma]{MAList} object}.
+\code{\link{runHomHMM}}, \code{\link{runGLAD}} or \code{\link{runDNAcopy}}
+on an \code{\link[limma:malist]{MAList} object}.
 }
 
 \section{Slots/List Components}{
@@ -31,9 +32,11 @@ Optional:\cr
 
 \section{Methods}{
 \code{SegLists} can be subsetted and combined.  They also return dimensions
-so functions such as \code{\link[limma]{dim}}, \code{\link[base]{nrow}} and \code{\link[base]{ncol}} are also defined.  \code{SegList}
-inherits the \code{\link[methods]{show}} method from the Limma class \code{\link[limma]{LargeDataObject}}.  This
-means that the \code{SegList} will print in a relatively compact way.
+so functions such as \code{\link[base]{dim}}, \code{\link[base]{nrow}} and
+\code{\link[base:nrow]{ncol}} are also defined.  \code{SegList} inherits the
+\code{\link[methods]{show}} method from the Limma class
+\code{\link[limma]{LargeDataObject}}.  This means that the \code{SegList}
+will print in a relatively compact way.
 }
 \author{Mike Smith}
 

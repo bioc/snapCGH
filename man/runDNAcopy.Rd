@@ -12,7 +12,8 @@ runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, tr
     undo.prune = 0.05, undo.SD = 3, nperm = 10000, eta = 0.05)
 }
 \arguments{
-  \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
+  \item{input}{An object of class \code{\link[limma:malist]{MAList}} or
+    \code{\link[snapCGH:SegList]{SegList}}}
   \item{smooth.region}{number of points to consider on the left and the
     right of a point to detect it as an outlier.}
   \item{outlier.SD.scale}{the number of SDs away from the nearest point
@@ -47,7 +48,7 @@ runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, tr
 }
 \seealso{
   \code{\link[DNAcopy]{segment}}
-  \code{\link[limma]{MAList}}
+  \code{\link[limma:malist]{MAList}}
   \code{\link{runHomHMM}}
   \code{\link{runGLAD}}
   \code{\link[snapCGH:SegList]{SegList}}

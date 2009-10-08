@@ -13,28 +13,28 @@ type="tricubic", param=c(d=6), alpha=0.001, method="centroid",
 nmax=8, verbose=FALSE, ...)
 }
 \arguments{
-  \item{input}{An object of class \code{\link[limma]{MAList}} or \code{\link[snapCGH:SegList]{SegList}}}
+  \item{input}{An object of class \code{\link[limma:malist]{MAList}} or
+    \code{\link[snapCGH:SegList]{SegList}}}
   
   \item{smoothfunc}{Type of algorithm used to smooth \code{LogRatio} by a
-    piecewise constant function. Choose either \code{lawsglad}, \code{\link[aws]{aws}} or
-    \code{\link[aws]{laws}}.}
+    piecewise constant function. Choose either \code{lawsglad}, \code{aws::aws}
+    or \code{aws::laws}.}
 
   \item{base}{If \code{TRUE}, the position of clone is the physical position onto
     the chromosome, otherwise the rank position is used.}
 
   \item{sigma}{Value to be passed to either argument \code{sigma2}   
-    of\code{ \link[aws]{aws}} function or \code{shape} of
-    \code{\link[aws]{laws}}. If \code{NULL}, sigma is calculated from
-    the data.}
+    of \code{aws::aws} function or \code{shape} of \code{aws::laws}.
+    If \code{NULL}, sigma is calculated from the data.}
   
   \item{bandwidth}{Set the maximal bandwidth \code{hmax} in the
-    \code{\link[aws]{aws}} or  \code{\link[aws]{laws}} function. For
-    example, if \code{bandwidth=10} then the \code{hmax} value is set
-    to 10*\eqn{X_N} where \eqn{X_N} is the position of the last clone.}
+    \code{aws::aws} or \code{aws::laws} function. For example, if
+    \code{bandwidth=10} then the \code{hmax} value is set to 10*\eqn{X_N}
+    where \eqn{X_N} is the position of the last clone.}
 
   \item{round}{The smoothing results are rounded or not depending on
     the \code{round} argument. The \code{round} value is passed to the
-    argument \code{digits} of the \code{\link[base]{round}} function.}
+    argument \code{digits} of the \code{\link[base:Round]{round}} function.}
 
   \item{lambdabreak}{Penalty term (\eqn{\lambda'}) used during the 
       \bold{Optimization of the number of breakpoints} step.}
@@ -76,7 +76,7 @@ nmax=8, verbose=FALSE, ...)
 }
 \seealso{
   \code{\link[GLAD]{glad}}
-  \code{\link[limma]{MAList}}
+  \code{\link[limma:malist]{MAList}}
   \code{\link{runHomHMM}}
   \code{\link{runDNAcopy}}
   \code{\link[snapCGH:SegList]{SegList}}
