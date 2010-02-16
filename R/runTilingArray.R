@@ -1,12 +1,5 @@
 runTilingArray <- function(input, maxSeg = 5, maxk = 200, criteria = "BIC"){
 
-  #Because both DNAcopy and tilingArray have methods called "segment"
-  #I have to detach DNAcopy from the search path in order to run
-  #segment for tilingArray.  Ugly, but I can't see another solution at the moment
-  if(length(which(search() == "package:DNAcopy")) == 1){
-    detach("package:DNAcopy")
-  }
-  
   chrom.uniq <- unique(input$genes$Chr)
 
   if(class(input) == "MAList"){
@@ -36,7 +29,7 @@ runTilingArray <- function(input, maxSeg = 5, maxk = 200, criteria = "BIC"){
     for(j in chrom.uniq){
 
       log2ratios <- input$M[input$genes$Chr == j, i]
-      seg <- segment(log2ratios, maxk = length(log2ratios), maxseg = min(length(log2ratios), maxSeg))
+      seg <- tilingArray::segment(log2ratios, maxk = length(log2ratios), maxseg = min(length(log2ratios), maxSeg))
       selected <- which.max(logLik(seg, penalty = criteria))
 
       est <- c(1,seg@breakpoints[[selected]][,1], (length(log2ratios)+1))
@@ -54,9 +47,6 @@ runTilingArray <- function(input, maxSeg = 5, maxk = 200, criteria = "BIC"){
   }
   seg.info$genes <- input$genes
   seg.info$method <- "Picard"
-  #Re-attaching DNAcopy to the search path
-  library(DNAcopy, verbose = FALSE, warn.conflicts = FALSE)
-  
   new("SegList",seg.info)
 }
     
