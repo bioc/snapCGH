@@ -52,7 +52,7 @@ nmax=8, verbose=FALSE, ...)
   
   \item{param}{Parameter of kernel used in the penalty term.}
 
-  \item{alpha}{Parameter for ?????.}
+  \item{alpha}{Risk alpha used for the \bold{Outlier detection} step.}
   
   \item{method}{The agglomeration method to be used during the \bold{MSHR
       clustering by chromosome} and the \bold{HCSR
@@ -65,7 +65,7 @@ nmax=8, verbose=FALSE, ...)
 
   \item{verbose}{If \code{TRUE} some information are printed}  
   
-  \item{...}{}
+  \item{...}{...}
 }
 \details{
   For a detailed explanation of the GLAD algorithm please see the
