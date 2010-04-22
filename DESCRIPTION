@@ -3,10 +3,12 @@ Title: Segmentation, normalisation and processing of aCGH data.
 Version: 1.19.0
 Date: 2009-10-08
 Author: Mike L. Smith, John C. Marioni, Steven McKinney, Thomas Hardcastle, Natalie P. Thorne
-Description: Methods for segmenting, normalising and processing aCGH data; including plotting functions for visualising raw and segmented data for individual and multiple arrays.
+Description: Methods for segmenting, normalising and processing aCGH data;
+             including plotting functions for visualising raw and segmented
+             data for individual and multiple arrays.
 biocViews: Microarray, CopyNumberVariants, TwoChannel, Preprocessing
 Maintainer: John Marioni <marioni@uchicago.edu>
 Depends: limma, DNAcopy, methods
 Imports: aCGH, cluster, DNAcopy, GLAD, graphics, grDevices, limma,
-         methods, multtest, stats, tilingArray, utils
+         methods, stats, tilingArray, utils
 License: GPL

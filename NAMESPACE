@@ -2,8 +2,6 @@ useDynLib(snapCGH)
 
 import(methods)
 
-importMethodsFrom(multtest, plot)
-
 importMethodsFrom(tilingArray, logLik)
 
 importFrom(aCGH, clones.info, combine.func, maPalette, states.hmm.func)
@@ -15,8 +13,8 @@ importFrom(DNAcopy, CNA, smooth.CNA)
 importFrom(GLAD, glad)
 
 importFrom(graphics, abline, close.screen, identify, image, locator,
-           mtext, par, points, rect, screen, segments, split.screen,
-           title)
+           mtext, par, plot, points, rect, screen, segments,
+           split.screen, title)
 
 importFrom(grDevices, rainbow)
 
