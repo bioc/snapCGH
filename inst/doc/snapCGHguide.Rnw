@@ -40,7 +40,7 @@ Smith, M.L., Marioni, J.C., Hardcastle, T.J., Thorne, N.P.\\
 
 \noindent If you make use of the function \Rfunction{runBioHMM}, please cite:\\
 
-Marioni, J. C., Thorne, N. P., and Tavaré, S. (2006).\\
+Marioni, J. C., Thorne, N. P., and Tavar\'{e}, S. (2006).\\
 \indent BioHMM: a heterogeneous hidden Markov model for segmenting array CGH data.\\
 \indent \textit{Bioinformatics} \textbf{22}, 1144 - 1146
 
