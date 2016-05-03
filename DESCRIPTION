@@ -1,6 +1,6 @@
 Package: snapCGH
 Title: Segmentation, normalisation and processing of aCGH data.
-Version: 1.42.0
+Version: 1.43.0
 Date: 2009-10-08
 Author: Mike L. Smith, John C. Marioni, Steven McKinney, Thomas
         Hardcastle, Natalie P. Thorne
