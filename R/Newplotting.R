@@ -21,7 +21,7 @@
     kb <- datainfo$Position[ord]
     name <- (colnames(data))[array]
     data <- matrix(data[ord, ], nrow = nrow(as.matrix(data[ord, 
-        ])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data))
+        ])), ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data))
     ind.unmap <- which(chrom < 1 | is.na(chrom) | is.na(kb) | 
         (as.numeric(chrom) > (naut + 2)))
     if (missing(status)) 
@@ -55,7 +55,7 @@
               attr(status, status.attr[ii]) <- status.list[[ii]]
           } else status.attr <- status.list <- NULL
         data <- matrix(data[chrom == nchr, ], nrow = nrow(as.matrix(data[chrom == 
-            nchr, ])), ncol = ncol(data), b = FALSE, dimnames = dimnames(data[chrom == 
+            nchr, ])), ncol = ncol(data), byrow = FALSE, dimnames = dimnames(data[chrom == 
             nchr, ]))
         clone.genomepos <- kb[chrom == nchr]
         chrom <- chrom[chrom == nchr]

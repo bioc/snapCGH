@@ -7,9 +7,10 @@
   the library \code{DNAcopy} to be loaded.
 }
 \usage{
-runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2, trim=0.025, alpha = 0.01, p.method = c("hybrid", 
-    "perm"), kmax = 25, nmin = 200, undo.splits = c("none", "prune", "sdundo"), 
-    undo.prune = 0.05, undo.SD = 3, nperm = 10000, eta = 0.05)
+    runDNAcopy(input, smooth.region=2, outlier.SD.scale = 4, smooth.SD.scale = 2,
+        trim=0.025, alpha = 0.01, p.method = c("hybrid", "perm"), kmax = 25, nmin = 200,
+        undo.splits = c("none", "prune", "sdundo"), undo.prune = 0.05, undo.SD = 3, 
+        nperm = 10000, eta = 0.05)
 }
 \arguments{
   \item{input}{An object of class \code{\link[limma:malist]{MAList}} or

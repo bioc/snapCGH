@@ -65,7 +65,7 @@ MergeLevels.new <- function(seg.info,pv.thres=0.0001,ansari.sign=0.01){
 
 		#To extract indices of the mean pairs:
             dst.row=matrix(1:nrow(dst), nrow=nrow(dst), ncol=ncol(dst))
-            dst.col=matrix(1:ncol(dst), nrow=nrow(dst), ncol=ncol(dst), b=TRUE)
+            dst.col=matrix(1:ncol(dst), nrow=nrow(dst), ncol=ncol(dst), byrow=TRUE)
             lt=lower.tri(dst)  #lower triangle of the distance matrix
             dst=matrix(cbind(dst[lt], dst.row[lt], dst.col[lt]),ncol=3)
 

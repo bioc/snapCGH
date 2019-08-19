@@ -5,8 +5,8 @@ function(y,BFGS.output,BFGS.trans)
 K <- 3
 n <- length(y)
   
-psi <- matrix(nrow=K,ncol=n,b=TRUE)
-phi <- matrix(nrow=K,ncol=n,b=TRUE)
+psi <- matrix(nrow=K,ncol=n,byrow=TRUE)
+phi <- matrix(nrow=K,ncol=n,byrow=TRUE)
 q.star <- vector()
 
 for (i in 1:K)

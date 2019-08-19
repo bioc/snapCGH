@@ -48,11 +48,5 @@ genomePlot(input, array = 1, naut = 22, Y = FALSE, X
   \code{\link[snapCGH:SegList]{SegList}}
 }
 \author{John Marioni}
-\examples{
 
-%#reading the spot types file
-%spotTypes <- readSpotTypes("SpotTypes.txt")
-%MA$genes$Status <- controlStatus(spotTypes, MA)
-%genomePlot(MA)
-}
 \keyword{hplot}% at least one, from doc/KEYWORDS

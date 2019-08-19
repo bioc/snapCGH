@@ -49,11 +49,5 @@ mark.regions = FALSE, main = NA)
   \code{\link[snapCGH:SegList]{SegList}}
 }
 \author{Mike Smith}
-\examples{
 
-%#reading the spot types file
-%spotTypes <- readSpotTypes("SpotTypes.txt")
-%MA$genes$Status <- controlStatus(spotTypes, MA)
-%genomePlot(MA)
-}
 \keyword{hplot}% at least one, from doc/KEYWORDS

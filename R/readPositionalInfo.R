@@ -66,7 +66,7 @@
              if (all(input$genes$Position >= 1)) 
                input$genes$Position <- as.numeric(input$genes$Position)/1000000
            },
-           stop("Source argument not recognised"),
+           stop("Source argument not recognised")
            )
     input$genes <- data.frame(input$genes, Chr = as.numeric(chr), Start = (as.numeric(start)/1000000), End = (as.numeric(end)/1000000))
     input

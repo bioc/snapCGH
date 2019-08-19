@@ -28,8 +28,8 @@ function(output.optim,var.fixed)
     
     object$prior <- c(pr1,pr2,pr3,1-pr1-pr2-pr3)
     if (output.optim$x[24] < 700) object$rate1 <- exp(output.optim$x[24]) else object$rate1 <- exp(50)
-    object$LH.trans <- matrix(c(abs(1-p1-p2-p3), p1, p2, p3, p4, abs(1-p4-p5-p6), p5, p6, p7, p8, abs(1-p7-p8-p9), p9, p10, p11, p12, abs(1-p10-p11-p12)),ncol=4,b=TRUE)
-    object$RH.trans <- matrix(c(p1+p2+p3, -p1, -p2, -p3, -p4, p4 + p5 + p6, -p5, -p6, -p7,-p8,p7+p8+p9,-p9,-p10,-p11,-p12,p10+p11+p12),ncol=4,b=TRUE)
+    object$LH.trans <- matrix(c(abs(1-p1-p2-p3), p1, p2, p3, p4, abs(1-p4-p5-p6), p5, p6, p7, p8, abs(1-p7-p8-p9), p9, p10, p11, p12, abs(1-p10-p11-p12)),ncol=4,byrow=TRUE)
+    object$RH.trans <- matrix(c(p1+p2+p3, -p1, -p2, -p3, -p4, p4 + p5 + p6, -p5, -p6, -p7,-p8,p7+p8+p9,-p9,-p10,-p11,-p12,p10+p11+p12),ncol=4,byrow=TRUE)
     object$minus.logLikelihood <- output.optim$val
     # object$convergence <- output.optim$code
     object

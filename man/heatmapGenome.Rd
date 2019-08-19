@@ -73,7 +73,6 @@ heatmapGenome(input, response = as.factor(rep("All", ncol(input))),
 \seealso{
   \code{\link[stats:heatmap]{heatmap}}
 }
-\examples{
-}
+
 \keyword{hplot}
 \keyword{cluster}

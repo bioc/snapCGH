@@ -26,6 +26,7 @@
 \usepackage{Sweave}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \maketitle
 
@@ -52,6 +53,7 @@ Pole and Paul AW Edwards.
 
 <<1,results=hide>>=
 library(snapCGH)
+library(limma)
 @
 
 \Rpackage{snapCGH} is designed to be used in conjunction with \Rpackage{limma} and
@@ -66,8 +68,8 @@ following commands.
 
 <<2, results=hide>>=
 datadir <- system.file("testdata", package="snapCGH")
-targets <- readTargets("targets.txt", path=datadir)
-RG1 <- read.maimages(targets$FileName, path=datadir, source = "genepix")
+targets <- limma::readTargets("targets.txt", path=datadir)
+RG1 <- limma::read.maimages(targets$FileName, path=datadir, source = "genepix")
 @
 
 %

@@ -1,14 +1,14 @@
 Package: snapCGH
-Title: Segmentation, normalisation and processing of aCGH data.
-Version: 1.55.0
-Date: 2009-10-08
+Title: Segmentation, normalisation and processing of aCGH data
+Version: 1.55.1
+Date: 2019-08-19
 Author: Mike L. Smith, John C. Marioni, Steven McKinney, Thomas
         Hardcastle, Natalie P. Thorne
 Description: Methods for segmenting, normalising and processing aCGH
         data; including plotting functions for visualising raw and
         segmented data for individual and multiple arrays.
-Maintainer: John Marioni <marioni@uchicago.edu>
-Depends: limma, DNAcopy, methods
+Maintainer: John Marioni <marioni@ebi.ac.uk>
+Depends: R (>= 3.5.0)
 Imports: aCGH, cluster, DNAcopy, GLAD, graphics, grDevices, limma,
         methods, stats, tilingArray, utils
 License: GPL

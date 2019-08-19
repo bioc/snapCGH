@@ -54,7 +54,5 @@ simulateData(nArrays = 20, chrominfo = NULL, prb.short.tiled = 0.5,
 \references{ See the relevant article in Bioinformatics or the following website: www.damtp.cam.ac.uk/user/jcm68 }
 \author{ John Marioni and Natalie Thorne }
 
-\examples{
-}
 \keyword{ datasets }% at least one, from doc/KEYWORDS
 
