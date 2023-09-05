@@ -1,6 +1,6 @@
 Package: snapCGH
 Title: Segmentation, normalisation and processing of aCGH data
-Version: 1.71.0
+Version: 1.71.1
 Date: 2019-08-19
 Author: Mike L. Smith, John C. Marioni, Steven McKinney, Thomas
         Hardcastle, Natalie P. Thorne
@@ -13,3 +13,4 @@ Imports: aCGH, cluster, DNAcopy, GLAD, graphics, grDevices, limma,
         methods, stats, tilingArray, utils
 License: GPL
 biocViews: Microarray, CopyNumberVariation, TwoChannel, Preprocessing
+PackageStatus: Deprecated
